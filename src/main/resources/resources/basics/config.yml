@@ -1,0 +1,22 @@
+# Don't edit this.
+version: 1
+
+# The highest number to check when testing a player's permissions for the maximum number of homes they can set.
+max-home-permission-check: 3
+
+messages:
+  # The message of the day which is displayed when a player joins the server.
+  motd:
+    - "Use <red>/help</red> for a list of commands and <red>/rules</red> for the rules."
+    - "Currently online: <player_list>"
+
+  # The rules which are displayed in the rules command.
+  rules:
+    - "<red>#1</red> Don't grief."
+    - "<red>#2</red> Don't steal, lure or scam."
+    - "<red>#3</red> Don't use hacks or abuse glitches."
+    - "<red>#4</red> Don't advertise."
+    - "<red>#5</red> Be respectful of others."
+    - "<red>#6</red> Don't use profanity anywhere."
+    - "<red>#7</red> Have fun!"
+    - "<yellow>Type <click:run_command:/apply>/apply</click> to request removal from the greylist."

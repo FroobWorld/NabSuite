@@ -1,0 +1,153 @@
+package com.froobworld.nabsuite.modules.protect.area;
+
+import com.froobworld.nabsuite.data.DataLoader;
+import com.froobworld.nabsuite.data.DataSaver;
+import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.admin.tasks.StaffTask;
+import com.froobworld.nabsuite.modules.protect.ProtectModule;
+import com.froobworld.nabsuite.modules.protect.area.flag.enforcers.*;
+import com.froobworld.nabsuite.modules.protect.user.User;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.util.Vector;
+
+import java.io.File;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
+
+public class AreaManager {
+    public static final String EDIT_ALL_AREAS_PERMISSION = "nabsuite.editallareas";
+    public static final Component AREA_PROTECTED_MESSAGE = Component.text("This area is protected.").color(NamedTextColor.RED);
+    private static final Set<String> defaultFlags = Set.of("no-build", "no-interact", "no-explode");
+    public static final Pattern areaNamePattern = Pattern.compile("^[a-zA-z0-9-_]+$");
+    private static final Pattern fileNamePattern = Pattern.compile("^[a-zA-z0-9-_]+\\.json$");
+    protected final DataSaver areaSaver;
+    private final ProtectModule protectModule;
+    private final BiMap<String, Area> areaMap = HashBiMap.create();
+    private final File directory;
+
+    public AreaManager(ProtectModule protectModule) {
+        this.protectModule = protectModule;
+        directory = new File(protectModule.getDataFolder(), "areas/");
+        areaSaver = new DataSaver(protectModule.getPlugin(), 1200);
+        areaMap.putAll(DataLoader.loadAll(
+                directory,
+                fileName -> fileNamePattern.matcher(fileName.toLowerCase()).matches(),
+                bytes -> Area.fromJsonString(this, protectModule.getUserManager(), new String(bytes)),
+                (fileName, area) -> area.getName().toLowerCase()
+        ));
+        areaSaver.start();
+        areaSaver.addDataType(Area.class, area -> area.toJsonString().getBytes(), area -> new File(directory, area.getName() + ".json"));
+        initiateFlagEnforcers();
+    }
+
+    public void postStartup() {
+        Supplier<List<StaffTask>> areaRequestTaskSupplier = () -> {
+            List<StaffTask> tasks = new ArrayList<>();
+            List<String> areasRequiringApproval = getAreas().stream()
+                    .filter(Predicate.not(Area::isApproved))
+                    .map(Area::getName)
+                    .sorted()
+                    .toList();
+            for (String area : areasRequiringApproval) {
+                StaffTask task = new StaffTask(
+                        "nabsuite.command.area.approve",
+                        Component.text("Requested area '" + area + "' requires reviewing.")
+                );
+                tasks.add(task);
+            }
+            return tasks;
+        };
+        protectModule.getPlugin().getModule(AdminModule.class).getStaffTaskManager().addStaffTaskSupplier(areaRequestTaskSupplier);
+    }
+
+    public void shutdown() {
+        areaSaver.stop();
+    }
+
+    public Area createArea(UUID creator, String name, World world, Vector corner1, Vector corner2, User owner, boolean approved) {
+        if (getArea(name) != null) {
+            throw new IllegalStateException("Area with that name already exists");
+        }
+        Area parent = null;
+        if (name.contains(":")) {
+            parent = getArea(name.substring(0, name.lastIndexOf(":")));
+            String[] nameSplit = name.split(":");
+            name = nameSplit[nameSplit.length - 1];
+        }
+        if (!areaNamePattern.matcher(name).matches()) {
+            throw new IllegalArgumentException("Name does not match pattern: " + areaNamePattern);
+        }
+        Area area = new Area(this, protectModule.getUserManager(), parent, creator, name, world, corner1, corner2, owner, approved, defaultFlags);
+        if (parent != null) {
+            parent.addChild(area);
+        } else {
+            areaMap.put(name.toLowerCase(), area);
+            areaSaver.scheduleSave(area);
+        }
+        return area;
+    }
+
+    public void deleteArea(Area area) {
+        if (area.getParent() != null) {
+            area.getParent().deleteChild(area);
+        } else {
+            areaMap.remove(area.getName().toLowerCase());
+            areaSaver.scheduleDeletion(area);
+        }
+    }
+
+    public Area getArea(String name) {
+        if (name.contains(":")) {
+            String[] nameSplit = name.split(":", 2);
+            Area area = areaMap.get(nameSplit[0].toLowerCase());
+            for (String nextName : nameSplit[1].split(":")) {
+                if (area == null) {
+                    return null;
+                }
+                area = area.getChild(nextName);
+            }
+            return area;
+        } else {
+            return areaMap.get(name.toLowerCase());
+        }
+    }
+
+    public Set<Area> getAreas() {
+        return areaMap.values();
+    }
+
+    public Set<Area> getTopMostAreasAtLocation(Location location) {
+        Set<Area> areaSet = new HashSet<>();
+        for (Area area : areaMap.values()) {
+            if (area.isApproved()) {
+                areaSet.addAll(area.getTopMostArea(location));
+            }
+        }
+        return areaSet;
+    }
+
+    private void initiateFlagEnforcers() {
+        Set.of(
+                new NoBuildFlagEnforcer(this),
+                new NoInteractFlagEnforcer(this),
+                new NoExplodeFlagEnforcer(this),
+                new NoFireDestroyFlagEnforcer(this),
+                new NoFireSpreadFlagEnforcer(this),
+                new NoMobDamageFlagEnforcer(this),
+                new NoMobTargetFlagEnforcer(this),
+                new NoMobSpawnFlagEnforcer(this),
+                new NoMobGriefFlagEnforcer(this),
+                new NoPvpFlagEnforcer(this),
+                new KeepInventoryFlagEnforcer(this)
+        ).forEach(enforcer -> Bukkit.getPluginManager().registerEvents(enforcer, protectModule.getPlugin()));
+    }
+
+}

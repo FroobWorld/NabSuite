@@ -1,0 +1,11 @@
+# Don't edit this.
+version: 1
+
+# The URL provided to banned players for the purpose of appealing.
+ban-appeal-url: "froobworld.com"
+
+# Which commands should players who are in jail be allowed to use?
+jail-command-whitelist:
+  - /rules
+  - /message
+  - /mail

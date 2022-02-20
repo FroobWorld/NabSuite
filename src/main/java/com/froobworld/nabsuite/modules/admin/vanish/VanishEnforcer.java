@@ -1,0 +1,172 @@
+package com.froobworld.nabsuite.modules.admin.vanish;
+
+import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.player.*;
+
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
+
+public class VanishEnforcer implements Listener {
+    private static final int PERK_DISTANCE = 150;
+    private static final long PERK_CHECK_TIMEOUT = TimeUnit.MINUTES.toMillis(1);
+    private final VanishManager vanishManager;
+    private final Map<Player, Long> lastSuccessfulPerkCheck = new WeakHashMap<>();
+
+    public VanishEnforcer(VanishManager vanishManager) {
+        this.vanishManager = vanishManager;
+    }
+
+    private boolean perkCheck(Player player) {
+        for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
+            if (!otherPlayer.canSee(player) && otherPlayer.getWorld() == player.getWorld()) {
+                if (otherPlayer.getLocation().distanceSquared(player.getLocation()) <= PERK_DISTANCE * PERK_DISTANCE) {
+                    lastSuccessfulPerkCheck.put(player, System.currentTimeMillis());
+                    return true;
+                }
+            }
+        }
+        return System.currentTimeMillis() - lastSuccessfulPerkCheck.getOrDefault(player, 0L) < PERK_CHECK_TIMEOUT;
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        vanishManager.globalUpdateVanish();
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.getPlayer().sendMessage(
+                    Component.text("You are currently vanished.").color(NamedTextColor.YELLOW)
+            );
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        if (vanishManager.isVanished(player) && perkCheck(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHungerChange(FoodLevelChangeEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        if (event.getFoodLevel() > event.getEntity().getFoodLevel()) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        if (vanishManager.isVanished(player) && perkCheck(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityTarget(EntityTargetEvent event) {
+        if (!(event.getTarget() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        if (vanishManager.isVanished(player) && perkCheck(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPhantomSpawn(PhantomPreSpawnEvent event) {
+        if (!(event.getSpawningEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getSpawningEntity();
+        if (vanishManager.isVanished(player) && perkCheck(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onItemPickup(PlayerAttemptPickupItemEvent event) {
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onArrowPickup(PlayerPickupArrowEvent event) {
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_AIR || event.getAction() != Action.RIGHT_CLICK_AIR) {
+            return;
+        }
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockBreakEvent event) {
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDamageEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player)) {
+            return;
+        }
+        if (vanishManager.isVanished((Player) event.getDamager())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        if (vanishManager.isVanished(event.getEntity())) {
+            event.setKeepInventory(true);
+            event.setKeepLevel(true);
+            event.getEntity().sendMessage(
+                    Component.text("As you are vanished, you have kept your items and experience.")
+            );
+        }
+    }
+
+}

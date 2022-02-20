@@ -1,0 +1,213 @@
+name: NabSuite
+main: com.froobworld.nabsuite.NabSuite
+version: 1.0.0
+api-version: 1.16
+description: "Provides essential systems for the FroobWorld server."
+author: froobynooby
+permissions:
+  # Basics module commands
+  nabsuite.command.back:
+    description: "Access to the /back command."
+  nabsuite.command.delhome:
+    description: "Access to the /delhome command."
+  nabsuite.command.delwarp:
+    description: "Access to the /delwarp command."
+  nabsuite.command.firstjoin:
+    description: "Access to the /firstjoin command."
+  nabsuite.command.friend:
+    description: "Access to the /friend command."
+  nabsuite.command.holding:
+    description: "Access to the /holding command."
+  nabsuite.command.home:
+    description: "Access to the /home command."
+  nabsuite.command.homes:
+    description: "Access to the /homes command."
+  nabsuite.command.ignore:
+    description: "Access to the /ignore command."
+  nabsuite.command.mail.clear:
+    description: "Access to the /mail clear command."
+    children:
+      - nabsuite.command.mail
+  nabsuite.command.mail.read:
+    description: "Access to the /mail read command."
+    children:
+      - nabsuite.command.mail
+  nabsuite.command.mail.send:
+    description: "Access to the /mail send command."
+    children:
+      - nabsuite.command.mail
+  nabsuite.command.me:
+    description: "Access to the /me command."
+  nabsuite.command.message:
+    description: "Access to the /message command."
+  nabsuite.command.motd:
+    description: "Access to the /motd command."
+  nabsuite.command.names:
+    description: "Access to the /names command."
+  nabsuite.command.ping:
+    description: "Access to the /ping command."
+  nabsuite.command.playerlist:
+    description: "Access to the /playerlist command."
+  nabsuite.command.reply:
+    description: "Access to the /reply command."
+  nabsuite.command.rules:
+    description: "Access to the /rules command."
+  nabsuite.command.seen:
+    description: "Access to the /seen command."
+  nabsuite.command.sethome:
+    description: "Access to the /sethome command."
+  nabsuite.command.setwarp:
+    description: "Access to the /setwarp command."
+  nabsuite.command.tpaccept:
+    description: "Access to the /tpaccept command."
+  nabsuite.command.teleport:
+    description: "Access to the /teleport command."
+  nabsuite.command.tpdeny:
+    description: "Access to the /tpdeny command."
+  nabsuite.command.tpahere:
+    description: "Access to the /tpahere command."
+  nabsuite.command.tpa:
+    description: "Access to the /tpa command."
+  nabsuite.command.tptoggle:
+    description: "Access to the /tptoggle command."
+  nabsuite.command.warp:
+    description: "Access to the /warp command."
+  nabsuite.command.warps:
+    description: "Access to the /warps command."
+  nabsuite.command.weather:
+    description: "Access to the /weather command."
+  # Basics module other permissions
+  nabsuite.teleport.all:
+    description: "Provides the ability to teleport to all players."
+
+  # Admin module commands
+  #nabsuite.command.accept:
+  #  description: "Access to the /accept command."
+  #nabsuite.command.apply:
+  #  description: "Access to the /apply command."
+  nabsuite.command.ban:
+    description: "Access to the /ban command."
+  nabsuite.command.deljail:
+    description: "Access to the /deljail command."
+  #nabsuite.command.deny:
+  #  description: "Access to the /deny command."
+  #nabsuite.command.greylist.add:
+  #  description: "Access to the /greylist add command."
+  #nabsuite.command.greylist.check:
+  #  description: "Access to the /greylist check command."
+  #nabsuite.command.greylist.remove:
+  #  description: "Access to the /greylist remove command."
+  #nabsuite.command.greylist.requests:
+  #  description: "Access to the /greylist requests command."
+  nabsuite.command.jail:
+    description: "Access to the /jail command."
+  nabsuite.command.jails:
+    description: "Access to the /jails command."
+  nabsuite.command.mute:
+    description: "Access to the /mute command."
+  nabsuite.command.orestats:
+    description: "Access to the /orestats command."
+  nabsuite.command.punishmenthistory:
+    description: "Access to the /punishmenthistory command."
+  nabsuite.command.setjail:
+    description: "Access to the /setjail command."
+  nabsuite.command.stafftasks:
+    description: "Access to the /stafftasks command."
+  nabsuite.command.tempban:
+    description: "Access to the /tempban command."
+  nabsuite.command.unban:
+    description: "Access to the /unban command."
+  nabsuite.command.unjail:
+    description: "Access to the /unjail command."
+  nabsuite.command.unmute:
+    description: "Access to the /unmute command."
+  nabsuite.command.vanish:
+    description: "Access to the /vanish command."
+
+  # Admin module other permissions
+  nabsuite.vanish:
+    description: "Allows players to appear vanished."
+  nabsuite.vanish.see:
+    description: "Allows players to see vanished players."
+  nabsuite.orealert:
+    description: "Allows players to receive ore alerts."
+
+  # Mechs module commands
+  nabsuite.command.pvp:
+    description: "Access to the /pvp command."
+
+  # Protect module commands
+  nabsuite.command.area.addflag:
+    description: "Access to the /area addflag command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.addmanager:
+    description: "Access to the /area addmanager command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.addowner:
+    description: "Access to the /area addowner command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.adduser:
+    description: "Access to the /area adduser command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.approve:
+    description: "Access to the /area approve command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.deny:
+    description: "Access to the /area deny command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.here:
+    description: "Access to the /area here command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.info:
+    description: "Access to the /area info command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.remflag:
+    description: "Access to the /area remflag command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.remmanager:
+    description: "Access to the /area remmanager command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.remowner:
+    description: "Access to the /area remowner command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.area.remuser:
+    description: "Access to the /area remuser command."
+    children:
+      - nabsuite.command.area
+  nabsuite.command.areas:
+    description: "Access to the /areas command."
+  nabsuite.command.claim:
+    description: "Access to the /claim command."
+  nabsuite.command.claimhorse:
+    description: "Access to the /claimhorse command."
+  nabsuite.command.corner:
+    description: "Access to the /corner1 and /corner2 commands."
+  nabsuite.command.delarea:
+    description: "Access to the /delarea command."
+  nabsuite.command.lock:
+    description: "Access to the /lock command."
+  nabsuite.command.setarea:
+    description: "Access to the /setarea command."
+  nabsuite.command.unclaimhorse:
+    description: "Access to the /unclaimhorse command."
+
+  # Protect module other permissions
+  nabsuite.editallareas:
+    description: "The ability to edit all areas."
+  nabsuite.editallhorses:
+    description: "The ability to edit all horses."
+  nabsuite.bypasslocks:
+    description: "The ability to bypass all locks."
+
+
