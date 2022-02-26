@@ -123,6 +123,14 @@ permissions:
     description: "Access to the /unmute command."
   nabsuite.command.vanish:
     description: "Access to the /vanish command."
+  nabsuite.command.setportal:
+    description: "Access to the /setportal command."
+  nabsuite.command.delportal:
+    description: "Access to the /delportal command."
+  nabsuite.command.linkportals:
+    description: "Access to the /linkportals command."
+  nabsuite.command.tpportal:
+    description: "Access to the /tpportal command."
 
   # Admin module other permissions
   nabsuite.vanish:

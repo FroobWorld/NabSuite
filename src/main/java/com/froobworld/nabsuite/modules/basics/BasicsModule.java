@@ -11,6 +11,7 @@ import com.froobworld.nabsuite.modules.basics.player.mail.MailCentre;
 import com.froobworld.nabsuite.modules.basics.teleport.BackManager;
 import com.froobworld.nabsuite.modules.basics.teleport.PlayerTeleporter;
 import com.froobworld.nabsuite.modules.basics.teleport.home.HomeManager;
+import com.froobworld.nabsuite.modules.basics.teleport.portal.PortalManager;
 import com.froobworld.nabsuite.modules.basics.teleport.request.TeleportRequestHandler;
 import com.froobworld.nabsuite.modules.basics.teleport.warp.WarpManager;
 import com.google.common.collect.Lists;
@@ -22,6 +23,7 @@ public class BasicsModule extends NabModule {
     private PlayerDataManager playerDataManager;
     private HomeManager homeManager;
     private WarpManager warpManager;
+    private PortalManager portalManager;
     private TeleportRequestHandler teleportRequestHandler;
     private BackManager backManager;
     private PlayerTeleporter playerTeleporter;
@@ -45,6 +47,7 @@ public class BasicsModule extends NabModule {
         playerDataManager = new PlayerDataManager(this);
         homeManager = new HomeManager(this);
         warpManager = new WarpManager(this);
+        portalManager = new PortalManager(this);
         messageCentre = new MessageCentre(this);
         teleportRequestHandler = new TeleportRequestHandler(this);
         backManager = new BackManager(this);
@@ -83,7 +86,11 @@ public class BasicsModule extends NabModule {
                 new RulesCommand(this),
                 new FirstJoinCommand(this),
                 new SeenCommand(this),
-                new MailCommand(this)
+                new MailCommand(this),
+                new SetPortalCommand(this),
+                new DeletePortalCommand(this),
+                new LinkPortalsCommand(this),
+                new TeleportPortalCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -92,6 +99,7 @@ public class BasicsModule extends NabModule {
         playerDataManager.shutdown();
         homeManager.shutdown();
         warpManager.shutdown();
+        portalManager.shutdown();
         mailCentre.shutdown();
     }
 
@@ -109,6 +117,10 @@ public class BasicsModule extends NabModule {
 
     public WarpManager getWarpManager() {
         return warpManager;
+    }
+
+    public PortalManager getPortalManager() {
+        return portalManager;
     }
 
     public HomeManager getHomeManager() {
