@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.basics.motd;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.util.PlayerList;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Bukkit;
@@ -33,6 +34,13 @@ public class MotdManager implements Listener {
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
+        if (!event.getPlayer().hasPlayedBefore()) {
+            Bukkit.getScheduler().runTaskLater(basicsModule.getPlugin(), () -> {
+                Bukkit.broadcast(event.getPlayer().displayName()
+                        .append(Component.text(" just joined for the first time.", NamedTextColor.LIGHT_PURPLE))
+                );
+            }, 5);
+        }
         Bukkit.getScheduler().runTaskLater(basicsModule.getPlugin(), () -> getMotd().forEach(event.getPlayer()::sendMessage), 10);
     }
 
