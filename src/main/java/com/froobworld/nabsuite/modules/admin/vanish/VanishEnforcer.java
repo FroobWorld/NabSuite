@@ -76,10 +76,9 @@ public class VanishEnforcer implements Listener {
 
     @EventHandler
     public void onEntityTarget(EntityTargetEvent event) {
-        if (!(event.getTarget() instanceof Player)) {
+        if (!(event.getTarget() instanceof Player player)) {
             return;
         }
-        Player player = (Player) event.getEntity();
         if (vanishManager.isVanished(player) && perkCheck(player)) {
             event.setCancelled(true);
         }
