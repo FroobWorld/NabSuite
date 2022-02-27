@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.basics.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
+import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.util.PlayerList;
 import com.froobworld.nabsuite.util.NumberDisplayer;
 import net.kyori.adventure.text.Component;
@@ -11,8 +12,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 public class PlayerListCommand extends NabCommand {
+    private final BasicsModule basicsModule;
 
-    public PlayerListCommand() {
+    public PlayerListCommand(BasicsModule basicsModule) {
         super(
                 "playerlist",
                 "Get a list of online players.",
@@ -20,6 +22,7 @@ public class PlayerListCommand extends NabCommand {
                 CommandSender.class,
                 "players", "who", "online", "list"
         );
+        this.basicsModule = basicsModule;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class PlayerListCommand extends NabCommand {
                 Component.text("There " + NumberDisplayer.toStringWithModifierAndPrefix(Bukkit.getOnlinePlayers().size(), " player ", " players ", "is ", "are ") + "online.")
                         .color(NamedTextColor.YELLOW)
         );
-        sender.sendMessage(PlayerList.getPlayerList());
+        sender.sendMessage(PlayerList.getPlayerListDecorated(basicsModule));
     }
 
     @Override

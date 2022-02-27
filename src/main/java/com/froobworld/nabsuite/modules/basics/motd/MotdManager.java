@@ -26,7 +26,7 @@ public class MotdManager implements Listener {
         return basicsModule.getConfig().messages.motd.get().stream()
                 .map(string -> MiniMessage.get().parse(
                         string,
-                        Template.of("player_list", PlayerList.getPlayerList())
+                        Template.of("player_list", PlayerList.getPlayerListDecorated(basicsModule))
                 ))
                 .collect(Collectors.toList());
     }

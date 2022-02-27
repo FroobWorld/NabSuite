@@ -2,6 +2,7 @@ package com.froobworld.nabsuite.modules.basics;
 
 import com.froobworld.nabsuite.NabModule;
 import com.froobworld.nabsuite.NabSuite;
+import com.froobworld.nabsuite.modules.basics.afk.AfkManager;
 import com.froobworld.nabsuite.modules.basics.command.*;
 import com.froobworld.nabsuite.modules.basics.config.BasicsConfig;
 import com.froobworld.nabsuite.modules.basics.help.HelpManager;
@@ -33,6 +34,7 @@ public class BasicsModule extends NabModule {
     private MailCentre mailCentre;
     private HelpManager helpManager;
     private LuckPermsHook luckPermsHook;
+    private AfkManager afkManager;
 
     public BasicsModule(NabSuite nabSuite) {
         super(nabSuite, "basics");
@@ -60,6 +62,7 @@ public class BasicsModule extends NabModule {
         mailCentre = new MailCentre(this);
         helpManager = new HelpManager();
         luckPermsHook = new LuckPermsHook(this);
+        afkManager = new AfkManager(this);
 
         Lists.newArrayList(
                 new MessageCommand(this),
@@ -85,7 +88,7 @@ public class BasicsModule extends NabModule {
                 new TeleportDenyCommand(this),
                 new BackCommand(this),
                 new FriendCommand(this),
-                new PlayerListCommand(),
+                new PlayerListCommand(this),
                 new MotdCommand(this),
                 new TeleportToggleFriendsCommand(this),
                 new TeleportToggleRequestsCommand(this),
@@ -97,7 +100,8 @@ public class BasicsModule extends NabModule {
                 new DeletePortalCommand(this),
                 new LinkPortalsCommand(this),
                 new TeleportPortalCommand(this),
-                new HelpCommand(this)
+                new HelpCommand(this),
+                new AfkCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -161,5 +165,9 @@ public class BasicsModule extends NabModule {
 
     public HelpManager getHelpManager() {
         return helpManager;
+    }
+
+    public AfkManager getAfkManager() {
+        return afkManager;
     }
 }

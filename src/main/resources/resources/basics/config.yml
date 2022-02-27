@@ -4,6 +4,14 @@ version: 1
 # The highest number to check when testing a player's permissions for the maximum number of homes they can set.
 max-home-permission-check: 3
 
+# Settings regarding the AFK system.
+afk-settings:
+  # The time in seconds after which a player is automatically signalled as AFK.
+  afk-time: 180
+
+  # The time in seconds after which a player is automatically kicked for being AFK.
+  afk-kick-time: 180
+
 messages:
   # The message of the day which is displayed when a player joins the server.
   motd:

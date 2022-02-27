@@ -86,6 +86,8 @@ permissions:
     description: "Access to the /tpportal command."
   nabsuite.command.help:
     description: "Access to the /help command."
+  nabsuite.command.afk:
+    description: "Access to the /afk command."
 
   # Basics module other permissions
   nabsuite.teleport.all:

@@ -25,6 +25,20 @@ public class BasicsConfig extends NabConfiguration {
     @Entry(key = "max-home-permission-check")
     public final ConfigEntry<Integer> maxHomePermissionCheck = ConfigEntries.integerEntry();
 
+
+    @Section(key = "afk-settings")
+    public final AfkSettings afkSettings = new AfkSettings();
+
+    public static class AfkSettings extends ConfigSection {
+
+        @Entry(key = "afk-time")
+        public final ConfigEntry<Long> afkTime = ConfigEntries.longEntry();
+
+        @Entry(key = "afk-kick-time")
+        public final ConfigEntry<Long> afkKickTime = ConfigEntries.longEntry();
+
+    }
+
     @Section(key = "messages")
     public final Messages messages = new Messages();
 
