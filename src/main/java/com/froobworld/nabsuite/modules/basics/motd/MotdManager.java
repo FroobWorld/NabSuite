@@ -33,7 +33,7 @@ public class MotdManager implements Listener {
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
-        Bukkit.getScheduler().runTask(basicsModule.getPlugin(), () -> getMotd().forEach(event.getPlayer()::sendMessage));
+        Bukkit.getScheduler().runTaskLater(basicsModule.getPlugin(), () -> getMotd().forEach(event.getPlayer()::sendMessage), 10);
     }
 
 }
