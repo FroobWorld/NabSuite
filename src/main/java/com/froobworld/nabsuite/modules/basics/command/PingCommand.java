@@ -23,7 +23,7 @@ public class PingCommand extends NabCommand {
         Player sender = (Player) context.getSender();
         String response = "Pong!";
         TextComponent message = Component.text(response)
-                .append(Component.text(" (" + sender.spigot().getPing() + "ms)").color(NamedTextColor.YELLOW));
+                .append(Component.text(" (" + sender.spigot().getPing() + "ms)").color(NamedTextColor.WHITE));
         sender.sendMessage(message);
     }
 
