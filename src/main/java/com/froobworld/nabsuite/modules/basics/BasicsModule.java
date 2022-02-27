@@ -4,6 +4,7 @@ import com.froobworld.nabsuite.NabModule;
 import com.froobworld.nabsuite.NabSuite;
 import com.froobworld.nabsuite.modules.basics.command.*;
 import com.froobworld.nabsuite.modules.basics.config.BasicsConfig;
+import com.froobworld.nabsuite.modules.basics.help.HelpManager;
 import com.froobworld.nabsuite.modules.basics.message.MessageCentre;
 import com.froobworld.nabsuite.modules.basics.motd.MotdManager;
 import com.froobworld.nabsuite.modules.basics.player.PlayerDataManager;
@@ -29,6 +30,7 @@ public class BasicsModule extends NabModule {
     private PlayerTeleporter playerTeleporter;
     private MotdManager motdManager;
     private MailCentre mailCentre;
+    private HelpManager helpManager;
 
     public BasicsModule(NabSuite nabSuite) {
         super(nabSuite, "basics");
@@ -54,6 +56,7 @@ public class BasicsModule extends NabModule {
         playerTeleporter = new PlayerTeleporter(this);
         motdManager = new MotdManager(this);
         mailCentre = new MailCentre(this);
+        helpManager = new HelpManager();
 
         Lists.newArrayList(
                 new MessageCommand(this),
@@ -90,7 +93,8 @@ public class BasicsModule extends NabModule {
                 new SetPortalCommand(this),
                 new DeletePortalCommand(this),
                 new LinkPortalsCommand(this),
-                new TeleportPortalCommand(this)
+                new TeleportPortalCommand(this),
+                new HelpCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -145,5 +149,9 @@ public class BasicsModule extends NabModule {
 
     public MailCentre getMailCentre() {
         return mailCentre;
+    }
+
+    public HelpManager getHelpManager() {
+        return helpManager;
     }
 }

@@ -131,6 +131,8 @@ permissions:
     description: "Access to the /linkportals command."
   nabsuite.command.tpportal:
     description: "Access to the /tpportal command."
+  nabsuite.command.help:
+    description: "Access to the /help command."
 
   # Admin module other permissions
   nabsuite.vanish:
