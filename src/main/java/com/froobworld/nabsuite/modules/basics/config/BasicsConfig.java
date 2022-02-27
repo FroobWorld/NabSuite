@@ -1,15 +1,14 @@
 package com.froobworld.nabsuite.modules.basics.config;
 
-import com.froobworld.nabconfiguration.ConfigEntries;
-import com.froobworld.nabconfiguration.ConfigEntry;
-import com.froobworld.nabconfiguration.ConfigSection;
-import com.froobworld.nabconfiguration.NabConfiguration;
+import com.froobworld.nabconfiguration.*;
 import com.froobworld.nabconfiguration.annotations.Entry;
+import com.froobworld.nabconfiguration.annotations.EntryMap;
 import com.froobworld.nabconfiguration.annotations.Section;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Function;
 
 public class BasicsConfig extends NabConfiguration {
     private static final int CONFIG_VERSION = 1;
@@ -36,6 +35,22 @@ public class BasicsConfig extends NabConfiguration {
 
         @Entry(key = "rules")
         public final ConfigEntry<List<String>> rules = ConfigEntries.stringListEntry();
+
+    }
+
+    @EntryMap(key = "display-name-formats", defaultKey = "default")
+    public final ConfigEntryMap<String, String> displayNameFormats = new ConfigEntryMap<>(Function.identity(), ConfigEntry::new, true);
+
+    @Section(key = "auto-promote")
+    public final AutoPromote autoPromote = new AutoPromote();
+
+    public static class AutoPromote extends ConfigSection {
+
+        @Entry(key = "track")
+        public final ConfigEntry<String> track = new ConfigEntry<>();
+
+        @EntryMap(key = "required-time", defaultKey = "other")
+        public final ConfigEntryMap<String, Integer> requiredTime = new ConfigEntryMap<>(Function.identity(), ConfigEntries::integerEntry, true);
 
     }
 

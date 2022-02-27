@@ -76,9 +76,22 @@ permissions:
     description: "Access to the /warps command."
   nabsuite.command.weather:
     description: "Access to the /weather command."
+  nabsuite.command.setportal:
+    description: "Access to the /setportal command."
+  nabsuite.command.delportal:
+    description: "Access to the /delportal command."
+  nabsuite.command.linkportals:
+    description: "Access to the /linkportals command."
+  nabsuite.command.tpportal:
+    description: "Access to the /tpportal command."
+  nabsuite.command.help:
+    description: "Access to the /help command."
+
   # Basics module other permissions
   nabsuite.teleport.all:
     description: "Provides the ability to teleport to all players."
+  nabsuite.changegroupalert:
+    description: "Alerts when a user changes group."
 
   # Admin module commands
   #nabsuite.command.accept:
@@ -123,16 +136,6 @@ permissions:
     description: "Access to the /unmute command."
   nabsuite.command.vanish:
     description: "Access to the /vanish command."
-  nabsuite.command.setportal:
-    description: "Access to the /setportal command."
-  nabsuite.command.delportal:
-    description: "Access to the /delportal command."
-  nabsuite.command.linkportals:
-    description: "Access to the /linkportals command."
-  nabsuite.command.tpportal:
-    description: "Access to the /tpportal command."
-  nabsuite.command.help:
-    description: "Access to the /help command."
 
   # Admin module other permissions
   nabsuite.vanish:

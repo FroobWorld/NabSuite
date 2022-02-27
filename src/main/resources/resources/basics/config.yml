@@ -20,3 +20,23 @@ messages:
     - "<red>#6</red> Don't use profanity anywhere."
     - "<red>#7</red> Have fun!"
     - "<yellow>Type <click:run_command:/apply>/apply</click> to request removal from the greylist."
+
+# Display name format for each group.
+display-name-formats:
+  default: <gray><name></gray>
+  loyalist: <green><name></green>
+  veteran: <dark_green><name></dark_green>
+  trusted: <blue><name></blue>
+  staff: <aqua><name></aqua>
+  admin: <dark_red><name></dark_red>
+
+# Auto promote users based on their play time.
+auto-promote:
+  # Which track to promote the user along
+  track: main
+
+  # How long (in days) does the user need to have been playing for to be promoted from this group?
+  required-time:
+    other: -1
+    default: 7
+    loyalist: 30
