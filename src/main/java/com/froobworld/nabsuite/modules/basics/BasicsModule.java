@@ -16,6 +16,7 @@ import com.froobworld.nabsuite.modules.basics.teleport.PlayerTeleporter;
 import com.froobworld.nabsuite.modules.basics.teleport.home.HomeManager;
 import com.froobworld.nabsuite.modules.basics.teleport.portal.PortalManager;
 import com.froobworld.nabsuite.modules.basics.teleport.request.TeleportRequestHandler;
+import com.froobworld.nabsuite.modules.basics.teleport.spawn.SpawnManager;
 import com.froobworld.nabsuite.modules.basics.teleport.warp.WarpManager;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
@@ -35,6 +36,7 @@ public class BasicsModule extends NabModule {
     private HelpManager helpManager;
     private LuckPermsHook luckPermsHook;
     private AfkManager afkManager;
+    private SpawnManager spawnManager;
 
     public BasicsModule(NabSuite nabSuite) {
         super(nabSuite, "basics");
@@ -63,6 +65,7 @@ public class BasicsModule extends NabModule {
         helpManager = new HelpManager();
         luckPermsHook = new LuckPermsHook(this);
         afkManager = new AfkManager(this);
+        spawnManager = new SpawnManager(this);
 
         Lists.newArrayList(
                 new MessageCommand(this),
@@ -101,7 +104,9 @@ public class BasicsModule extends NabModule {
                 new LinkPortalsCommand(this),
                 new TeleportPortalCommand(this),
                 new HelpCommand(this),
-                new AfkCommand(this)
+                new AfkCommand(this),
+                new SpawnCommand(this),
+                new SetSpawnCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -169,5 +174,9 @@ public class BasicsModule extends NabModule {
 
     public AfkManager getAfkManager() {
         return afkManager;
+    }
+
+    public SpawnManager getSpawnManager() {
+        return spawnManager;
     }
 }

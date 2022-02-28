@@ -88,6 +88,10 @@ permissions:
     description: "Access to the /help command."
   nabsuite.command.afk:
     description: "Access to the /afk command."
+  nabsuite.command.spawn:
+    description: "Access to the /spawn command."
+  nabsuite.command.setspawn:
+    description: "Access to the /setspawn command."
 
   # Basics module other permissions
   nabsuite.teleport.all:
