@@ -78,7 +78,7 @@ public class MailCentre implements Listener {
         if (getMailBox(event.getPlayer().getUniqueId()).hasUnread()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(basicsModule.getPlugin(), () -> {
                 event.getPlayer().sendMessage(
-                        Component.text("You've got mail'. /mail read").color(NamedTextColor.YELLOW)
+                        Component.text("You've got mail (/mail read).").color(NamedTextColor.YELLOW)
                                 .clickEvent(ClickEvent.runCommand("/mail read"))
                 );
             }, 20);
