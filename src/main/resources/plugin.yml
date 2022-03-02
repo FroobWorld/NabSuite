@@ -154,6 +154,12 @@ permissions:
   # Mechs module commands
   nabsuite.command.pvp:
     description: "Access to the /pvp command."
+  nabsuite.command.nabmode:
+    description: "Access to the /nabmode command."
+
+  # Mechs module other permissions
+  nabsuite.nabmode:
+    description: "Allows player access to nab mode."
 
   # Protect module commands
   nabsuite.command.area.addflag:

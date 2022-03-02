@@ -32,6 +32,7 @@ public class NabSuite extends JavaPlugin {
             addModule(new ProtectModule(this));
             addModule(new MechsModule(this));
         }
+        modules.values().forEach(NabModule::preModulesEnable);
         modules.values().forEach(NabModule::onEnable);
         modules.values().forEach(NabModule::postModulesEnable);
     }

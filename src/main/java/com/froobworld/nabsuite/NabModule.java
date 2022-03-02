@@ -18,6 +18,8 @@ public abstract class NabModule {
 
     public void onDisable() {}
 
+    public void preModulesEnable() {}
+
     public void postModulesEnable() {}
 
     public File getDataFolder() {

@@ -26,6 +26,7 @@ dependencies {
     implementation 'cloud.commandframework:cloud-minecraft-extras:1.6.1'
     implementation 'com.froobworld:nab-configuration:1.0.2'
     implementation 'net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT'
+    implementation 'org.jooq:joor-java-8:0.9.14'
 }
 
 test {
