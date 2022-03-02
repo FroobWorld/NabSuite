@@ -29,6 +29,7 @@ public class TeleportPortalCommand extends NabCommand {
         Player sender = (Player) context.getSender();
         Portal portal = context.get("portal");
         basicsModule.getPlayerTeleporter().teleport(sender, portal.getLocation());
+        basicsModule.getPortalManager().getPortalEnforcer().setPortalImmune(sender);
         sender.sendMessage(Component.text("Whoosh!", NamedTextColor.YELLOW));
     }
 

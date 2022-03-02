@@ -17,6 +17,7 @@ public class PortalManager {
     protected final DataSaver portalSaver;
     private final BiMap<String, Portal> portalMap = HashBiMap.create();
     private final File directory;
+    private final PortalEnforcer portalEnforcer;
 
     public PortalManager(BasicsModule basicsModule) {
         directory = new File(basicsModule.getDataFolder(), "portals/");
@@ -29,7 +30,7 @@ public class PortalManager {
         ));
         portalSaver.start();
         portalSaver.addDataType(Portal.class, portal -> portal.toJsonString().getBytes(), portal -> new File(directory, portal.getName() + ".json"));
-        new PortalEnforcer(basicsModule, this);
+        this.portalEnforcer = new PortalEnforcer(basicsModule, this);
     }
 
     public void shutdown() {
@@ -60,6 +61,10 @@ public class PortalManager {
 
     public Set<Portal> getPortals() {
         return portalMap.values();
+    }
+
+    public PortalEnforcer getPortalEnforcer() {
+        return portalEnforcer;
     }
 
 }

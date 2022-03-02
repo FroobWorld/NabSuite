@@ -42,8 +42,12 @@ public class PortalEnforcer {
     private void handleInPortal(Player player, Portal portal) {
         if (!immunePlayers.contains(player.getUniqueId())) {
             player.teleport(portal.getLink().getLocation());
-            immunePlayers.add(player.getUniqueId());
+            setPortalImmune(player);
         }
+    }
+
+    public void setPortalImmune(Player player) {
+        immunePlayers.add(player.getUniqueId());
     }
 
 }
