@@ -82,6 +82,8 @@ permissions:
     description: "Access to the /delportal command."
   nabsuite.command.linkportals:
     description: "Access to the /linkportals command."
+  nabsuite.command.portals:
+    description: "Access to the /portals command."
   nabsuite.command.tpportal:
     description: "Access to the /tpportal command."
   nabsuite.command.help:

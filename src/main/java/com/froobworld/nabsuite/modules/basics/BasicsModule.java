@@ -102,6 +102,7 @@ public class BasicsModule extends NabModule {
                 new SetPortalCommand(this),
                 new DeletePortalCommand(this),
                 new LinkPortalsCommand(this),
+                new PortalsCommand(this),
                 new TeleportPortalCommand(this),
                 new HelpCommand(this),
                 new AfkCommand(this),
