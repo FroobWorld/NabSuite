@@ -20,12 +20,11 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-    compileOnly 'io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
     compileOnly 'net.luckperms:api:5.4'
-    implementation 'cloud.commandframework:cloud-paper:1.6.1'
-    implementation 'cloud.commandframework:cloud-minecraft-extras:1.6.1'
+    implementation 'cloud.commandframework:cloud-paper:1.6.2'
+    implementation 'cloud.commandframework:cloud-minecraft-extras:1.6.2'
     implementation 'com.froobworld:nab-configuration:1.0.2'
-    implementation 'net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT'
     implementation 'org.jooq:joor-java-8:0.9.14'
 }
 

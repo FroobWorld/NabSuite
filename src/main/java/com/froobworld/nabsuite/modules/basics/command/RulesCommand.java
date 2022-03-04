@@ -23,7 +23,7 @@ public class RulesCommand extends NabCommand {
     @Override
     public void execute(CommandContext<CommandSender> context) {
         basicsModule.getConfig().messages.rules.get().stream()
-                .map(MiniMessage.get()::parse)
+                .map(MiniMessage.miniMessage()::deserialize)
                 .forEach(context.getSender()::sendMessage);
     }
 

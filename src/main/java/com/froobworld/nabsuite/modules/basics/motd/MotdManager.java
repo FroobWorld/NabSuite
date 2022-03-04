@@ -5,7 +5,8 @@ import com.froobworld.nabsuite.modules.basics.util.PlayerList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,9 +26,9 @@ public class MotdManager implements Listener {
 
     public List<Component> getMotd() {
         return basicsModule.getConfig().messages.motd.get().stream()
-                .map(string -> MiniMessage.get().parse(
+                .map(string -> MiniMessage.miniMessage().deserialize(
                         string,
-                        Template.of("player_list", PlayerList.getPlayerListDecorated(basicsModule))
+                        TagResolver.resolver("player_list", Tag.inserting(PlayerList.getPlayerListDecorated(basicsModule)))
                 ))
                 .collect(Collectors.toList());
     }

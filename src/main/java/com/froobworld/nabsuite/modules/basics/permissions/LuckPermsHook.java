@@ -2,13 +2,13 @@ package com.froobworld.nabsuite.modules.basics.permissions;
 
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
-import com.froobworld.nabsuite.modules.basics.group.Group;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.event.user.track.UserTrackEvent;
@@ -92,7 +92,7 @@ public class LuckPermsHook implements Listener {
 
     private void updateDisplayName(Player player, String group) {
         String format = basicsModule.getConfig().displayNameFormats.of(group).get();
-        player.displayName(MiniMessage.get().parse(format, Template.of("name", player.getName())));
+        player.displayName(MiniMessage.miniMessage().deserialize(format, TagResolver.resolver("name", Tag.inserting(Component.text(player.getName())))));
     }
 
 
