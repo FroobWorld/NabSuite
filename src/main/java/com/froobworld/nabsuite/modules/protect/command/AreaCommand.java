@@ -27,7 +27,8 @@ public class AreaCommand extends NabParentCommand {
                 new AreaAddFlagCommand(protectModule),
                 new AreaRemFlagCommand(protectModule),
                 new AreaApproveCommand(protectModule),
-                new AreaDenyCommand(protectModule)
+                new AreaDenyCommand(protectModule),
+                new AreaReviewCommand(protectModule)
         ));
     }
 

@@ -212,6 +212,10 @@ permissions:
     description: "Access to the /area remuser command."
     children:
       - nabsuite.command.area
+  nabsuite.command.area.review:
+    description: "Access to the /area review command."
+    children:
+      - nabsuite.command.area
   nabsuite.command.areas:
     description: "Access to the /areas command."
   nabsuite.command.claim:

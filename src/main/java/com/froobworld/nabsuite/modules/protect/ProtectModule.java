@@ -5,12 +5,15 @@ import com.froobworld.nabsuite.NabSuite;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import com.froobworld.nabsuite.modules.protect.area.PlayerSelectionManager;
 import com.froobworld.nabsuite.modules.protect.command.*;
+import com.froobworld.nabsuite.modules.protect.config.ProtectConfig;
 import com.froobworld.nabsuite.modules.protect.horse.HorseManager;
 import com.froobworld.nabsuite.modules.protect.lock.LockManager;
 import com.froobworld.nabsuite.modules.protect.user.UserManager;
 import com.google.common.collect.Lists;
+import org.bukkit.Bukkit;
 
 public class ProtectModule extends NabModule {
+    private ProtectConfig protectConfig;
     private final PlayerSelectionManager playerSelectionManager = new PlayerSelectionManager();
     private UserManager userManager;
     private AreaManager areaManager;
@@ -24,6 +27,14 @@ public class ProtectModule extends NabModule {
 
     @Override
     public void onEnable() {
+        protectConfig = new ProtectConfig(this);
+        try {
+            protectConfig.load();
+        } catch (Exception e) {
+            getPlugin().getSLF4JLogger().error("Exception while loading config", e);
+            Bukkit.getPluginManager().disablePlugin(getPlugin());
+            return;
+        }
         userManager = new UserManager(this);
         areaManager = new AreaManager(this);
         horseManager = new HorseManager(this);
@@ -48,6 +59,10 @@ public class ProtectModule extends NabModule {
     public void onDisable() {
         areaManager.shutdown();
         horseManager.shutdown();
+    }
+
+    public ProtectConfig getConfig() {
+        return protectConfig;
     }
 
     @Override

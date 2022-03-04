@@ -1,0 +1,5 @@
+# Don't edit this.
+version: 1
+
+# What is the URL of the Dynmap instance?
+map-url: "http://s.froobworld.com:8124/"
