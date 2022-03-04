@@ -3,9 +3,14 @@ package com.froobworld.nabsuite.modules.basics.teleport;
 import com.froobworld.nabsuite.data.SchemaEntries;
 import com.froobworld.nabsuite.data.SimpleDataSchema;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +24,12 @@ public class BackManager {
 
     public BackManager(BasicsModule basicsModule) {
         backLocationKey = new NamespacedKey(basicsModule.getPlugin(), "back-location");
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+            private void onPlayerDeath(PlayerDeathEvent event) {
+                setBackLocation(event.getPlayer(), event.getPlayer().getLocation());
+            }
+        }, basicsModule.getPlugin());
     }
 
     public Location getBackLocation(Player player) {
