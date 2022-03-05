@@ -52,7 +52,7 @@ public class PlayerOreStatsData {
                     data -> data.netherrack,
                     (data, netherrack) -> data.netherrack = netherrack
             ))
-            .addField("netherGold", SchemaEntries.integerEntry(
+            .addField("nether-gold", SchemaEntries.integerEntry(
                     data -> data.netherGold,
                     (data, netherGold) -> data.netherGold = netherGold
             ))
