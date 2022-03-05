@@ -35,7 +35,7 @@ public class SetPortalCommand extends NabCommand {
         double radius = context.get("radius");
         Portal portal = basicsModule.getPortalManager().createPortal(portalName, radius, player);
         player.sendMessage(
-                Component.text("Created portal '" + portal.getName() + "' at your location").color(NamedTextColor.YELLOW)
+                Component.text("Created portal '" + portal.getName() + "' at your location.").color(NamedTextColor.YELLOW)
         );
     }
 

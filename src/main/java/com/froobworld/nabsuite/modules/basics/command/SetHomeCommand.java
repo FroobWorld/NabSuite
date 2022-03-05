@@ -43,7 +43,7 @@ public class SetHomeCommand extends NabCommand {
 
         Home home = basicsModule.getHomeManager().createHome(player, homeName);
         player.sendMessage(
-                Component.text("Created home '" + home.getName() + "' at your location").color(NamedTextColor.YELLOW)
+                Component.text("Created home '" + home.getName() + "' at your location.").color(NamedTextColor.YELLOW)
         );
     }
 

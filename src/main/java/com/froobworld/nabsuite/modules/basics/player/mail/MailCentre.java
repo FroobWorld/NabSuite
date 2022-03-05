@@ -66,7 +66,7 @@ public class MailCentre implements Listener {
         Player player = Bukkit.getPlayer(recipient);
         if (player != null) {
             player.sendMessage(
-                    Component.text("You have received some mail. /mail read", NamedTextColor.YELLOW)
+                    Component.text("You have received some mail (/mail read).", NamedTextColor.YELLOW)
                             .clickEvent(ClickEvent.runCommand("/mail read"))
             );
         }

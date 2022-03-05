@@ -61,7 +61,7 @@ public class SetAreaCommand extends NabCommand {
             );
         } else {
             sender.sendMessage(
-                    Component.text("Area set pending approval from a staff member.")
+                    Component.text("Area set pending approval from a staff member.", NamedTextColor.YELLOW)
             );
         }
     }

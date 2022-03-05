@@ -34,7 +34,7 @@ public class SetWarpCommand extends NabCommand {
         String warpName = context.get("name");
         Warp warp = basicsModule.getWarpManager().createWarp(warpName, player);
         player.sendMessage(
-                Component.text("Created warp '" + warp.getName() + "' at your location").color(NamedTextColor.YELLOW)
+                Component.text("Created warp '" + warp.getName() + "' at your location.").color(NamedTextColor.YELLOW)
         );
     }
 

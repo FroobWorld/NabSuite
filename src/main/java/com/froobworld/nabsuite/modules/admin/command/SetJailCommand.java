@@ -36,7 +36,7 @@ public class SetJailCommand extends NabCommand {
         double radius = context.get("radius");
         Jail jail = adminModule.getJailManager().createJail(jailName, radius, player);
         player.sendMessage(
-                Component.text("Created jail '" + jail.getName() + "' at your location").color(NamedTextColor.YELLOW)
+                Component.text("Created jail '" + jail.getName() + "' at your location.").color(NamedTextColor.YELLOW)
         );
     }
 

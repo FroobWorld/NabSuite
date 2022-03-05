@@ -54,7 +54,7 @@ public class ClaimCommand extends NabCommand {
             );
         } else {
             sender.sendMessage(
-                    Component.text("Area claimed pending approval from a staff member.")
+                    Component.text("Area claimed pending approval from a staff member.", NamedTextColor.YELLOW)
             );
         }
     }
