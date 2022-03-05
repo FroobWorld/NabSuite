@@ -10,6 +10,7 @@ import com.froobworld.nabsuite.modules.protect.user.User;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -59,7 +60,8 @@ public class AreaManager {
             for (String area : areasRequiringApproval) {
                 StaffTask task = new StaffTask(
                         "nabsuite.command.area.approve",
-                        Component.text("Requested area '" + area + "' requires reviewing.")
+                        Component.text("Requested area '" + area + "' requires reviewing (/area review).")
+                                .clickEvent(ClickEvent.suggestCommand("/area review " + area))
                 );
                 tasks.add(task);
             }
@@ -91,6 +93,9 @@ public class AreaManager {
         } else {
             areaMap.put(name.toLowerCase(), area);
             areaSaver.scheduleSave(area);
+        }
+        if (!area.isApproved()) {
+            protectModule.getPlugin().getModule(AdminModule.class).getStaffTaskManager().notifyNewTask("nabsuite.command.area.approve");
         }
         return area;
     }

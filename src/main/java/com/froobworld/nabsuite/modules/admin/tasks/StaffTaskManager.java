@@ -6,6 +6,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -52,6 +53,14 @@ public class StaffTaskManager implements Listener {
                 .stream()
                 .filter(staffTask -> sender.hasPermission(staffTask.getPermission()))
                 .collect(Collectors.toList());
+    }
+
+    public void notifyNewTask(String permission) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.hasPermission(permission)) {
+                player.sendMessage(Component.text("There is a new staff task requiring action (/stafftasks).", NamedTextColor.YELLOW));
+            }
+        }
     }
 
 }
