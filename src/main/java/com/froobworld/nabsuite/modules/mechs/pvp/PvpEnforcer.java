@@ -35,9 +35,11 @@ public class PvpEnforcer implements Listener {
     private void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player) {
             Player victim = (Player) event.getEntity();
-            Player damager = PlayerCauser.getPlayerCauser(event.getDamager());
-            if (damager != null) {
-                if (!tryPvp(damager, victim, true));
+            Player damager = PlayerCauser.getPlayerCauser(event.getDamager(), false);
+            if (damager != null && !damager.equals(victim)) {
+                if (!tryPvp(damager, victim, true)) {
+                    event.setCancelled(true);
+                }
             }
         }
     }

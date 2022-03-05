@@ -5,7 +5,7 @@ import org.bukkit.projectiles.ProjectileSource;
 
 public class PlayerCauser {
 
-    public static Player getPlayerCauser(Entity causer) {
+    public static Player getPlayerCauser(Entity causer, boolean includeTargets) {
         if (causer instanceof Player) {
             return (Player) causer;
         }
@@ -15,7 +15,7 @@ public class PlayerCauser {
                 return getPlayerCauser((Entity) source);
             }
         }
-        if (causer instanceof Monster) {
+        if (includeTargets && causer instanceof Monster) {
             return getPlayerCauser(((Monster) causer).getTarget());
         }
         if (causer instanceof Tameable) {
@@ -25,6 +25,10 @@ public class PlayerCauser {
             }
         }
         return null;
+    }
+
+    public static Player getPlayerCauser(Entity causer) {
+        return getPlayerCauser(causer, true);
     }
 
 }
