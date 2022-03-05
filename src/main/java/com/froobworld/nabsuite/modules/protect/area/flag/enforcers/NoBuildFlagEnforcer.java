@@ -70,6 +70,9 @@ public class NoBuildFlagEnforcer implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onBlockIgniteEvent(BlockIgniteEvent event) {
+        if (event.getPlayer() == null) {
+            return;
+        }
         if (!canBuild(event.getBlock().getLocation(), event.getPlayer(), true)) {
             event.setCancelled(true);
         }
