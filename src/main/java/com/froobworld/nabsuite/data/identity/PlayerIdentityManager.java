@@ -26,7 +26,7 @@ public class PlayerIdentityManager implements Listener {
     private final File directory;
 
     public PlayerIdentityManager(Plugin plugin) {
-        directory = new File("plugins/FroobLib/player-identity");
+        directory = new File(plugin.getDataFolder(),  "player-identity/");
         playerIdentitySaver = new DataSaver(plugin, 1);
         playerIdentityMap.putAll(DataLoader.loadAll(
                 directory,
