@@ -30,7 +30,7 @@ public class UserManager {
             return switch (type) {
                 case "player" -> new PlayerUser(protectModule, UUID.fromString(value));
                 case "friends" -> new FriendsUser(protectModule, UUID.fromString(value));
-                case "group" -> null;
+                case "group" -> new GroupUser(protectModule, value);
                 default -> new UnknownUser(type, value);
             };
         } catch (IOException e) {

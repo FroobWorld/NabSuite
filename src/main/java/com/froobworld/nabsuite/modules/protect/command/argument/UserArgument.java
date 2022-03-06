@@ -10,6 +10,7 @@ import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.data.identity.PlayerIdentityManager;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.user.FriendsUser;
+import com.froobworld.nabsuite.modules.protect.user.GroupUser;
 import com.froobworld.nabsuite.modules.protect.user.PlayerUser;
 import com.froobworld.nabsuite.modules.protect.user.User;
 import org.bukkit.Bukkit;
@@ -50,7 +51,11 @@ public class UserArgument<C> extends CommandArgument<C, User> {
             String input = inputQueue.remove();
             User user;
             if (input.toLowerCase().startsWith("group:")) {
-                user = null;
+                input = input.split(":", 2)[1];
+                if (!protectModule.getGroupUserManager().getAllowableGroups().contains(input.toLowerCase())) {
+                    return ArgumentParseResult.failure(new IllegalArgumentException("Unknown group '" + input + "'"));
+                }
+                return ArgumentPredicate.testAll(commandContext, new GroupUser(protectModule, input.toLowerCase()), predicates);
             } else {
                 boolean friends = false;
                 if (input.toLowerCase().startsWith("friends:")) {
@@ -129,6 +134,13 @@ public class UserArgument<C> extends CommandArgument<C, User> {
                         .filter(playerIdentity -> ("friends:" + playerIdentity.getUuid().toString().toLowerCase()).startsWith(input.toLowerCase()))
                         .filter(playerIdentity -> ArgumentPredicate.testAll(commandContext, new FriendsUser(protectModule, playerIdentity.getUuid()), predicates).getFailure().isEmpty())
                         .map(playerIdentity -> "Friends:" + playerIdentity.getUuid().toString())
+                        .collect(Collectors.toList());
+            }
+            if (suggestions.isEmpty()) {
+                suggestions = protectModule.getGroupUserManager().getAllowableGroups().stream()
+                        .filter(group -> ("group:" + group).startsWith(input.toLowerCase()))
+                        .filter(group -> ArgumentPredicate.testAll(commandContext, new GroupUser(protectModule, group), predicates).getFailure().isEmpty())
+                        .map(group -> "Group:" + group)
                         .collect(Collectors.toList());
             }
             return suggestions;
