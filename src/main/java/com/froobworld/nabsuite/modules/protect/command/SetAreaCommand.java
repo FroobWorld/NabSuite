@@ -50,8 +50,8 @@ public class SetAreaCommand extends NabCommand {
                 sender.getUniqueId(),
                 name,
                 corner1.getWorld(),
-                corner1.toVector(),
-                corner2.toVector(),
+                corner1.toVector().setY(-64),
+                corner2.toVector().setY(320),
                 new PlayerUser(protectModule, sender.getUniqueId()),
                 autoApproved
         );

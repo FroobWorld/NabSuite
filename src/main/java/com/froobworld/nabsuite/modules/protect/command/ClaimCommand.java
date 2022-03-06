@@ -37,7 +37,7 @@ public class ClaimCommand extends NabCommand {
         Location corner1 = sender.getLocation().subtract(radius, 0, radius);
         Location corner2 = sender.getLocation().add(radius, 0, radius);
         corner1.setY(-64);
-        corner2.setY(360);
+        corner2.setY(320);
         boolean autoApproved = sender.hasPermission(AreaManager.EDIT_ALL_AREAS_PERMISSION) || name.contains(":");
         Area area = protectModule.getAreaManager().createArea(
                 sender.getUniqueId(),
