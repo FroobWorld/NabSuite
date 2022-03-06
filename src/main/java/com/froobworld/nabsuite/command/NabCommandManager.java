@@ -26,7 +26,7 @@ public class NabCommandManager extends PaperCommandManager<CommandSender> {
                 Function.identity()
         );
         if (queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
-            registerBrigadier();
+            //registerBrigadier();
         }
         setCommandSuggestionProcessor(new CaseInsensitiveFilteringCommandSuggestionProcessor<>());
         new MinecraftExceptionHandler<CommandSender>()
