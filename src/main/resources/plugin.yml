@@ -200,6 +200,10 @@ permissions:
     description: "Access to the /area remflag command."
     children:
       - nabsuite.command.area
+  nabsuite.command.area.setverticalbounds:
+    description: "Access to the /area setverticalbounds command."
+    children:
+      - nabsuite.command.area
   nabsuite.command.area.remmanager:
     description: "Access to the /area remmanager command."
     children:
@@ -216,6 +220,8 @@ permissions:
     description: "Access to the /area review command."
     children:
       - nabsuite.command.area
+  nabsuite.command.redefinearea:
+    description: "Access to the /redefinearea command."
   nabsuite.command.areas:
     description: "Access to the /areas command."
   nabsuite.command.claim:

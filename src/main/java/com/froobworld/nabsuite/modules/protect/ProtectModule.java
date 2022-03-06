@@ -50,6 +50,7 @@ public class ProtectModule extends NabModule {
                 new Corner2Command(this),
                 new SetAreaCommand(this),
                 new DelAreaCommand(this),
+                new RedefineAreaCommand(this),
                 new ClaimCommand(this),
                 new ClaimHorseCommand(this),
                 new UnclaimHorseCommand(this),

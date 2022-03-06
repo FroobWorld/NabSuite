@@ -282,6 +282,12 @@ public class Area {
         scheduleSave();
     }
 
+    public void setCorners(Vector corner1, Vector corner2) {
+        this.corner1 = corner1;
+        this.corner2 = corner2;
+        scheduleSave();
+    }
+
     public boolean containsLocation(Location location) {
         int minX = Math.min(corner1.getBlockX(), corner2.getBlockX());
         int maxX = Math.max(corner1.getBlockX(), corner2.getBlockX());
