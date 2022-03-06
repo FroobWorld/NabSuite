@@ -20,8 +20,8 @@ public final class DurationDisplayer {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(timeMillis);
         timeMillis -= TimeUnit.MINUTES.toMillis(minutes);
         long seconds = TimeUnit.MILLISECONDS.toSeconds(timeMillis);
-        if (days + hours + minutes == 0) {
-            return "less than a minute";
+        if (days + hours + minutes + seconds == 0) {
+            return "less than a second";
         }
         List<String> components = new ArrayList<>();
         if (days > 0 && (numberOfUnits < 0 || components.size() < numberOfUnits)) {
