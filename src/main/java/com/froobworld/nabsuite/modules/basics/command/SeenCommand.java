@@ -36,7 +36,7 @@ public class SeenCommand extends NabCommand {
             );
         } else {
             context.getSender().sendMessage(
-                    Component.text(playerIdentity.getLastName() + " last played " + DurationDisplayer.asMinutesHoursDays(timeSinceLastPlay) + " ago.").color(NamedTextColor.YELLOW)
+                    Component.text(playerIdentity.getLastName() + " last played " + DurationDisplayer.asDurationString(timeSinceLastPlay) + " ago.").color(NamedTextColor.YELLOW)
             );
         }
     }

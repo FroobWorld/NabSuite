@@ -33,7 +33,7 @@ public class FirstJoinCommand extends NabCommand {
         long timeSinceFirstJoin = System.currentTimeMillis() - playerData.getFirstJoined();
 
         context.getSender().sendMessage(
-                Component.text(playerIdentity.getLastName() + " joined " + DurationDisplayer.asMinutesHoursDays(timeSinceFirstJoin) + " ago.").color(NamedTextColor.YELLOW)
+                Component.text(playerIdentity.getLastName() + " joined " + DurationDisplayer.asDurationString(timeSinceFirstJoin) + " ago.").color(NamedTextColor.YELLOW)
         );
     }
 

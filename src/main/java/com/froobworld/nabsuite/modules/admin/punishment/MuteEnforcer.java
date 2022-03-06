@@ -51,7 +51,7 @@ public class MuteEnforcer implements Listener {
             if (duration > 0) {
                 message = message.append(Component.newline())
                         .append(Component.text("You will be unmuted in "))
-                        .append(Component.text(DurationDisplayer.asMinutesHoursDays(duration)))
+                        .append(Component.text(DurationDisplayer.asDurationString(duration)))
                         .append(Component.text("."))
                         .color(NamedTextColor.YELLOW);
             }
@@ -112,7 +112,7 @@ public class MuteEnforcer implements Listener {
                 if (mutePunishment.getDuration() > 0) {
                     message = message.append(Component.newline())
                             .append(Component.text("You will be unmuted in "))
-                            .append(Component.text(DurationDisplayer.asMinutesHoursDays(mutePunishment.getTime() + mutePunishment.getDuration() - System.currentTimeMillis())))
+                            .append(Component.text(DurationDisplayer.asDurationString(mutePunishment.getTime() + mutePunishment.getDuration() - System.currentTimeMillis())))
                             .append(Component.text("."))
                             .color(NamedTextColor.YELLOW);
                 }

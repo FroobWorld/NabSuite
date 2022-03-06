@@ -103,7 +103,7 @@ public class BanEnforcer implements Listener {
                     .append(Component.newline())
                     .append(Component.newline())
                     .append(Component.text("You will be unbanned in "))
-                    .append(Component.text(DurationDisplayer.asMinutesHoursDays(banPunishment.getTime() + banPunishment.getDuration() - System.currentTimeMillis())).color(NamedTextColor.RED))
+                    .append(Component.text(DurationDisplayer.asDurationString(banPunishment.getTime() + banPunishment.getDuration() - System.currentTimeMillis())).color(NamedTextColor.RED))
                     .append(Component.text("."));
         }
         kickMessage = kickMessage

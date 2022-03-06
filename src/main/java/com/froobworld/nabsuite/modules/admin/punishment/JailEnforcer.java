@@ -56,7 +56,7 @@ public class JailEnforcer implements Listener {
             if (duration > 0) {
                 message = message.append(Component.newline())
                         .append(Component.text("You will be released in "))
-                        .append(Component.text(DurationDisplayer.asMinutesHoursDays(duration)))
+                        .append(Component.text(DurationDisplayer.asDurationString(duration)))
                         .append(Component.text("."))
                         .color(NamedTextColor.YELLOW);
             }
@@ -129,7 +129,7 @@ public class JailEnforcer implements Listener {
         if (jailPunishment.getDuration() > 0) {
             message = message.append(Component.newline())
                     .append(Component.text("You will be unjailed in "))
-                    .append(Component.text(DurationDisplayer.asMinutesHoursDays(jailPunishment.getTime() + jailPunishment.getDuration() - System.currentTimeMillis())))
+                    .append(Component.text(DurationDisplayer.asDurationString(jailPunishment.getTime() + jailPunishment.getDuration() - System.currentTimeMillis())))
                     .append(Component.text("."))
                     .color(NamedTextColor.YELLOW);
         }

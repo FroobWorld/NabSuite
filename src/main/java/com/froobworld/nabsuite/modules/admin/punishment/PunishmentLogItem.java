@@ -81,7 +81,7 @@ public class PunishmentLogItem {
         }
         if (duration > 0) {
             action = action.append(Component.text(" for "))
-                    .append(Component.text(DurationDisplayer.asMinutesHoursDays(duration)));
+                    .append(Component.text(DurationDisplayer.asDurationString(duration)));
         }
         if (type == Type.UNBAN_AUTOMATIC || type == Type.UNMUTE_AUTOMATIC || type == Type.UNJAIL_AUTOMATIC) {
             action = action.append(Component.text(" automatically"));
@@ -94,7 +94,7 @@ public class PunishmentLogItem {
                     .append(Component.text("\""));
         }
         action = action.append(Component.space())
-                .append(Component.text(DurationDisplayer.asMinutesHoursDays(System.currentTimeMillis() - time)))
+                .append(Component.text(DurationDisplayer.asDurationString(System.currentTimeMillis() - time)))
                 .append(Component.text(" ago."));
         return subject.append(action);
     }

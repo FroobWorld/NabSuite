@@ -52,7 +52,7 @@ public class Mail {
         return Component.text("From ", NamedTextColor.GRAY)
                 .append(senderName).color(NamedTextColor.GRAY)
                 .append(Component.text(" (", NamedTextColor.GRAY))
-                .append(Component.text(DurationDisplayer.asMinutesHoursDays(timeSinceReceipt), NamedTextColor.GRAY))
+                .append(Component.text(DurationDisplayer.asDurationString(timeSinceReceipt), NamedTextColor.GRAY))
                 .append(Component.text(" ago)", NamedTextColor.GRAY))
                 .append(Component.text(":", NamedTextColor.GRAY))
                 .append(Component.newline())
