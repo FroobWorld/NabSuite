@@ -30,4 +30,14 @@ public final class DataLoader {
         return dataMap;
     }
 
+    public static <D> D load(File file, Function<byte[], D> deserialiser) {
+        try {
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            return deserialiser.apply(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

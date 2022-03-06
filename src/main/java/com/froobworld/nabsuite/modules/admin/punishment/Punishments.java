@@ -102,6 +102,7 @@ public class Punishments {
         }
         punishmentHistory.add(punishmentLogItem);
         punishmentManager.punishmentsSaver.scheduleSave(this);
+        punishmentManager.getPunishmentLog().addPunishmentLogItem(punishmentLogItem);
     }
 
     public String toJsonString() {

@@ -144,6 +144,8 @@ permissions:
     description: "Access to the /unmute command."
   nabsuite.command.vanish:
     description: "Access to the /vanish command."
+  nabsuite.command.punishmentlog:
+    description: "Access to the /punishmentlog command."
 
   # Admin module other permissions
   nabsuite.vanish:

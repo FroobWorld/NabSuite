@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.froobworld.nabsuite.util.DurationDisplayer;
 import com.google.gson.stream.JsonReader;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -63,39 +64,40 @@ public class PunishmentLogItem {
     }
 
     public Component toChatMessage() {
-        Component mediator = this.mediator.equals(ConsoleUtils.CONSOLE_UUID) ? Component.text("Console") : playerIdentityManager.getPlayerIdentity(this.mediator).displayName();
-        Component subject = playerIdentityManager.getPlayerIdentity(this.subject).displayName();
+        Component mediator = this.mediator.equals(ConsoleUtils.CONSOLE_UUID) ? Component.text("Console", NamedTextColor.BLUE) : Component.text(playerIdentityManager.getPlayerIdentity(this.mediator).getLastName(), NamedTextColor.BLUE);
+        Component subject = Component.text(playerIdentityManager.getPlayerIdentity(this.subject).getLastName(), NamedTextColor.RED);
         Component action = Component.empty();
         if (type == Type.BAN) {
-            action = Component.text(" was banned");
+            action = Component.text("banned", NamedTextColor.RED);
         } else if (type == Type.MUTE) {
-            action = Component.text(" was muted");
+            action = Component.text("muted", NamedTextColor.RED);
         } else if (type == Type.JAIL) {
-            action = Component.text(" was jailed");
+            action = Component.text("jailed", NamedTextColor.RED);
         } else if (type == Type.UNBAN_AUTOMATIC || type == Type.UNBAN_MANUAL) {
-            action = Component.text(" was unbanned");
+            action = Component.text("unbanned", NamedTextColor.RED);
         } else if (type == Type.UNMUTE_AUTOMATIC || type == Type.UNMUTE_MANUAL) {
-            action = Component.text(" was unmuted");
+            action = Component.text("unmuted", NamedTextColor.RED);
         } else if (type == Type.UNJAIL_AUTOMATIC || type == Type.UNJAIL_MANUAL) {
-            action = Component.text(" was unjailed");
+            action = Component.text("unjailed", NamedTextColor.RED);
         }
+        action = Component.text(" was ", NamedTextColor.WHITE).append(action);
         if (duration > 0) {
-            action = action.append(Component.text(" for "))
+            action = action.append(Component.text(" for ", NamedTextColor.WHITE))
                     .append(Component.text(DurationDisplayer.asDurationString(duration)));
         }
         if (type == Type.UNBAN_AUTOMATIC || type == Type.UNMUTE_AUTOMATIC || type == Type.UNJAIL_AUTOMATIC) {
-            action = action.append(Component.text(" automatically"));
+            action = action.append(Component.text(" automatically", NamedTextColor.WHITE));
         } else {
-            action = action.append(Component.text(" by ")).append(mediator);
+            action = action.append(Component.text(" by ", NamedTextColor.WHITE)).append(mediator);
         }
         if (reason != null) {
-            action = action.append(Component.text(" for \""))
+            action = action.append(Component.text(" for \"", NamedTextColor.WHITE))
                     .append(Component.text(reason))
-                    .append(Component.text("\""));
+                    .append(Component.text("\"", NamedTextColor.WHITE));
         }
         action = action.append(Component.space())
-                .append(Component.text(DurationDisplayer.asDurationString(System.currentTimeMillis() - time)))
-                .append(Component.text(" ago."));
+                .append(Component.text(DurationDisplayer.asDurationString(System.currentTimeMillis() - time), NamedTextColor.WHITE))
+                .append(Component.text(" ago.", NamedTextColor.WHITE));
         return subject.append(action);
     }
 

@@ -20,6 +20,7 @@ public class PunishmentManager {
     private final BanEnforcer banEnforcer;
     private final MuteEnforcer muteEnforcer;
     private final JailEnforcer jailEnforcer;
+    private final PunishmentLog punishmentLog;
 
     public PunishmentManager(AdminModule adminModule) {
         this.adminModule = adminModule;
@@ -36,10 +37,12 @@ public class PunishmentManager {
         banEnforcer = new BanEnforcer(adminModule, this);
         muteEnforcer = new MuteEnforcer(adminModule, this);
         jailEnforcer = new JailEnforcer(adminModule, this);
+        punishmentLog = new PunishmentLog(adminModule);
     }
 
     public void shutdown() {
         punishmentsSaver.stop();
+        punishmentLog.shutdown();
     }
 
     public Punishments getPunishments(UUID uuid) {
@@ -65,5 +68,9 @@ public class PunishmentManager {
 
     public JailEnforcer getJailEnforcer() {
         return jailEnforcer;
+    }
+
+    public PunishmentLog getPunishmentLog() {
+        return punishmentLog;
     }
 }
