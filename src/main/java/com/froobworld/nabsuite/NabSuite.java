@@ -2,6 +2,7 @@ package com.froobworld.nabsuite;
 
 import com.froobworld.nabsuite.command.NabCommandManager;
 import com.froobworld.nabsuite.data.identity.PlayerIdentityManager;
+import com.froobworld.nabsuite.hook.HookManager;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
@@ -15,6 +16,7 @@ public class NabSuite extends JavaPlugin {
     private final Map<Class<?>, NabModule> modules = new LinkedHashMap<>();
     private NabCommandManager commandManager;
     private PlayerIdentityManager playerIdentityManager;
+    private HookManager hookManager;
 
     @Override
     public void onEnable() {
@@ -25,6 +27,7 @@ public class NabSuite extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        hookManager = new HookManager();
         playerIdentityManager = new PlayerIdentityManager(this);
         if (modules.isEmpty()) {
             addModule(new BasicsModule(this));
@@ -51,6 +54,10 @@ public class NabSuite extends JavaPlugin {
 
     public PlayerIdentityManager getPlayerIdentityManager() {
         return playerIdentityManager;
+    }
+
+    public HookManager getHookManager() {
+        return hookManager;
     }
 
     private void addModule(NabModule module) {

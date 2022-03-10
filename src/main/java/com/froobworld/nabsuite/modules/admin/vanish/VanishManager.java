@@ -12,6 +12,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
+import org.dynmap.DynmapAPI;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -56,6 +57,10 @@ public class VanishManager {
             basicsModule.getBackManager().addBackExemption(player, vanishBackExemptionKey);
         } else {
             basicsModule.getBackManager().removeBackExemption(player, vanishBackExemptionKey);
+        }
+        DynmapAPI dynmapAPI = adminModule.getPlugin().getHookManager().getDynmapHook().getDynmapAPI();
+        if (dynmapAPI != null) {
+            dynmapAPI.assertPlayerInvisibility(player, isVanished(player), adminModule.getPlugin());
         }
     }
 
