@@ -27,6 +27,9 @@ public class NoFireSpreadFlagEnforcer implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onBlockIgnite(BlockIgniteEvent event) {
+        if (event.getCause() != BlockIgniteEvent.IgniteCause.SPREAD && event.getCause() != BlockIgniteEvent.IgniteCause.LAVA) {
+            return;
+        }
         if (!canFireSpread(event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
