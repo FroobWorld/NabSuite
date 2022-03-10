@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class NoExplodeFlagEnforcer implements Listener {
     private final AreaManager areaManager;
@@ -27,9 +28,12 @@ public class NoExplodeFlagEnforcer implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onBlockExplode(BlockExplodeEvent event) {
-        if (!canExplode(event.getBlock().getLocation())) {
-            event.setCancelled(true);
-        }
+        event.blockList().removeIf(block -> !canExplode(block.getLocation()));
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onEntityExplode(EntityExplodeEvent event) {
+        event.blockList().removeIf(block -> !canExplode(block.getLocation()));
     }
 
 }
