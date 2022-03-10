@@ -240,6 +240,48 @@ permissions:
     description: "Access to the /setarea command."
   nabsuite.command.unclaimhorse:
     description: "Access to the /unclaimhorse command."
+  nabsuite.command.globalarea:
+    description: "Access to the /globalarea command"
+  nabsuite.command.globalarea.addflag:
+    description: "Access to the /globalarea addflag command."
+    children:
+      - nabsuite.command.globalarea
+  nabsuite.command.globalarea.remflag:
+    description: "Access to the /globalarea remflag command."
+    children:
+      - nabsuite.command.globalarea
+  nabsuite.command.globalarea.info:
+    description: "Access to the /globalarea info command."
+    children:
+      - nabsuite.command.globalarea
+  nabsuite.command.globalarea.subarea:
+    description: "Access to the /globalarea subarea command."
+    children:
+      - nabsuite.command.globalarea
+  nabsuite.command.globalarea.subarea.create:
+    description: "Access to the /globalarea subarea create command."
+    children:
+      - nabsuite.command.globalarea.subarea
+  nabsuite.command.globalarea.subarea.delete:
+    description: "Access to the /globalarea subarea delete command."
+    children:
+      - nabsuite.command.globalarea.subarea
+  nabsuite.command.globalarea.subarea.redefine:
+    description: "Access to the /globalarea subarea redefine command."
+    children:
+      - nabsuite.command.globalarea.subarea
+  nabsuite.command.globalarea.subarea.addflag:
+    description: "Access to the /globalarea subarea addflag command."
+    children:
+      - nabsuite.command.globalarea.subarea
+  nabsuite.command.globalarea.subarea.remflag:
+    description: "Access to the /globalarea subarea remflag command."
+    children:
+      - nabsuite.command.globalarea.subarea
+  nabsuite.command.globalarea.subarea.info:
+    description: "Access to the /globalarea subarea info command."
+    children:
+      - nabsuite.command.globalarea.subarea
 
   # Protect module other permissions
   nabsuite.editallareas:

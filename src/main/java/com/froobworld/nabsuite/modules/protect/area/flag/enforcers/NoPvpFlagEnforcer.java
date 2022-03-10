@@ -1,6 +1,6 @@
 package com.froobworld.nabsuite.modules.protect.area.flag.enforcers;
 
-import com.froobworld.nabsuite.modules.protect.area.Area;
+import com.froobworld.nabsuite.modules.protect.area.AreaLike;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.util.PlayerCauser;
@@ -23,7 +23,7 @@ public class NoPvpFlagEnforcer implements Listener {
     }
 
     private boolean canPvp(Player victim, Player attacker, boolean informOnFail) {
-        for (Area area : Sets.union(areaManager.getTopMostAreasAtLocation(victim.getLocation()), areaManager.getTopMostAreasAtLocation(attacker.getLocation()))) {
+        for (AreaLike area : Sets.union(areaManager.getTopMostAreasAtLocation(victim.getLocation()), areaManager.getTopMostAreasAtLocation(attacker.getLocation()))) {
             if (area.hasFlag(Flags.NO_PVP)) {
                 if (informOnFail) {
                     attacker.sendMessage(PVP_DISABLED_MESSAGE);

@@ -2,7 +2,6 @@ package com.froobworld.nabsuite.data;
 
 import com.froobworld.nabsuite.util.CheckedBiConsumer;
 import com.froobworld.nabsuite.util.CheckedBiFunction;
-import com.froobworld.nabsuite.util.CheckedFunction;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.bukkit.Bukkit;
@@ -197,23 +196,27 @@ public final class SchemaEntries {
         return listEntry(fieldReference, fieldPopulator, (jsonReader, t) -> jsonReader.nextString(), (string, jsonWriter) -> jsonWriter.value(string));
     }
 
-    public static <T, V, M extends Map<String, V>> SimpleDataSchema.SchemaEntry<T> mapEntry(Function<T, M> fieldReference, BiConsumer<T, M> fieldPopulator, CheckedFunction<JsonReader, V> entryParser, CheckedBiConsumer<V, JsonWriter> entrySerialiser, Supplier<M> emptyMapSupplier) {
+    public static <T, K, V, M extends Map<K, V>> SimpleDataSchema.SchemaEntry<T> mapEntry(Function<T, M> fieldReference, BiConsumer<T, M> fieldPopulator, CheckedBiFunction<JsonReader, T, V> entryParser, CheckedBiConsumer<V, JsonWriter> entrySerialiser, Supplier<M> emptyMapSupplier, Function<K, String> keyToString, Function<String, K> stringToKey) {
         return new SimpleDataSchema.SchemaEntry<>(
                 t -> fieldReference.apply(t) != null,
                 (jsonReader, t) -> {
                     M map = emptyMapSupplier.get();
                     jsonReader.beginArray();
                     while (jsonReader.hasNext()) {
-                        map.put(jsonReader.nextName(), entryParser.apply(jsonReader));
+                        jsonReader.beginObject();
+                        map.put(stringToKey.apply(jsonReader.nextName()), entryParser.apply(jsonReader, t));
+                        jsonReader.endObject();
                     }
                     jsonReader.endArray();
                     fieldPopulator.accept(t, map);
                 },
                 (t, jsonWriter) -> {
                     jsonWriter.beginArray();
-                    for (Map.Entry<String, V> entry : fieldReference.apply(t).entrySet()) {
-                        jsonWriter.name(entry.getKey());
+                    for (Map.Entry<K, V> entry : fieldReference.apply(t).entrySet()) {
+                        jsonWriter.beginObject();
+                        jsonWriter.name(keyToString.apply(entry.getKey()));
                         entrySerialiser.accept(entry.getValue(), jsonWriter);
+                        jsonWriter.endObject();
                     }
                     jsonWriter.endArray();
                 }

@@ -1,6 +1,6 @@
 package com.froobworld.nabsuite.modules.protect.area.flag.enforcers;
 
-import com.froobworld.nabsuite.modules.protect.area.Area;
+import com.froobworld.nabsuite.modules.protect.area.AreaLike;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import org.bukkit.Location;
@@ -17,7 +17,7 @@ public class NoFireSpreadFlagEnforcer implements Listener {
     }
 
     private boolean canFireSpread(Location location) {
-        for (Area area : areaManager.getTopMostAreasAtLocation(location)) {
+        for (AreaLike area : areaManager.getTopMostAreasAtLocation(location)) {
             if (area.hasFlag(Flags.NO_FIRE_SPREAD)) {
                 return false;
             }

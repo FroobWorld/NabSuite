@@ -33,6 +33,7 @@ public class AreaManager {
     private final ProtectModule protectModule;
     private final BiMap<String, Area> areaMap = HashBiMap.create();
     private final File directory;
+    private final GlobalAreaManager globalAreaManager;
 
     public AreaManager(ProtectModule protectModule) {
         this.protectModule = protectModule;
@@ -47,6 +48,7 @@ public class AreaManager {
         areaSaver.start();
         areaSaver.addDataType(Area.class, area -> area.toJsonString().getBytes(), area -> new File(directory, area.getName() + ".json"));
         initiateFlagEnforcers();
+        globalAreaManager = new GlobalAreaManager(protectModule);
     }
 
     public void postStartup() {
@@ -72,6 +74,7 @@ public class AreaManager {
 
     public void shutdown() {
         areaSaver.stop();
+        globalAreaManager.shutdown();
     }
 
     public Area createArea(UUID creator, String name, World world, Vector corner1, Vector corner2, User owner, boolean approved) {
@@ -129,14 +132,21 @@ public class AreaManager {
         return areaMap.values();
     }
 
-    public Set<Area> getTopMostAreasAtLocation(Location location) {
-        Set<Area> areaSet = new HashSet<>();
+    public Set<AreaLike> getTopMostAreasAtLocation(Location location) {
+        Set<AreaLike> areaSet = new HashSet<>();
         for (Area area : areaMap.values()) {
             if (area.isApproved()) {
                 areaSet.addAll(area.getTopMostArea(location));
             }
         }
+        if (areaSet.isEmpty()) {
+            return globalAreaManager.getTopMostAreasAtLocation(location);
+        }
         return areaSet;
+    }
+
+    public GlobalAreaManager getGlobalAreaManager() {
+        return globalAreaManager;
     }
 
     private void initiateFlagEnforcers() {

@@ -5,6 +5,8 @@ import cloud.commandframework.context.CommandContext;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 
+import java.util.stream.Collectors;
+
 public abstract class NabParentCommand extends NabCommand {
 
     public NabParentCommand(String commandName, String description, String permission, Class<? extends CommandSender> senderType, String... aliases) {
@@ -24,5 +26,12 @@ public abstract class NabParentCommand extends NabCommand {
     @Override
     public final Command.Builder<CommandSender> populateBuilder(Command.Builder<CommandSender> builder) {
         return builder;
+    }
+
+    @Override
+    public String getUsage() {
+        return childCommands.stream()
+                .map(NabCommand::getUsage)
+                .collect(Collectors.joining("\n"));
     }
 }

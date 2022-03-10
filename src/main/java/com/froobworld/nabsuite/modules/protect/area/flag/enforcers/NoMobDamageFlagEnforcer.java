@@ -1,6 +1,6 @@
 package com.froobworld.nabsuite.modules.protect.area.flag.enforcers;
 
-import com.froobworld.nabsuite.modules.protect.area.Area;
+import com.froobworld.nabsuite.modules.protect.area.AreaLike;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.util.PlayerCauser;
@@ -19,7 +19,7 @@ public class NoMobDamageFlagEnforcer implements Listener {
     }
 
     private boolean canMobDamage(Location targetLocation, Location mobLocation) {
-        for (Area area : Sets.union(areaManager.getTopMostAreasAtLocation(targetLocation), areaManager.getTopMostAreasAtLocation(mobLocation))) {
+        for (AreaLike area : Sets.union(areaManager.getTopMostAreasAtLocation(targetLocation), areaManager.getTopMostAreasAtLocation(mobLocation))) {
             if (area.hasFlag(Flags.NO_MOB_DAMAGE)) {
                 return false;
             }

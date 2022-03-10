@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class Area {
+public class Area implements AreaLike {
     private static final SimpleDataSchema<Area> SCHEMA = new SimpleDataSchema.Builder<Area>()
             .addField("creator", SchemaEntries.uuidEntry(
                     area -> area.creator,
@@ -233,6 +233,7 @@ public class Area {
         scheduleSave();
     }
 
+    @Override
     public boolean hasUserRights(Player player) {
         return isUser(player) || isManager(player) || isOwner(player);
     }
@@ -268,6 +269,7 @@ public class Area {
         return Set.copyOf(flags);
     }
 
+    @Override
     public boolean hasFlag(String flag) {
         return flags.contains(flag.toLowerCase());
     }
@@ -288,6 +290,7 @@ public class Area {
         scheduleSave();
     }
 
+    @Override
     public boolean containsLocation(Location location) {
         int minX = Math.min(corner1.getBlockX(), corner2.getBlockX());
         int maxX = Math.max(corner1.getBlockX(), corner2.getBlockX());

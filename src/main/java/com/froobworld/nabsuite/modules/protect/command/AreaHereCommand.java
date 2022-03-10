@@ -32,7 +32,10 @@ public class AreaHereCommand extends NabCommand {
     @Override
     public void execute(CommandContext<CommandSender> context) {
         Player sender = (Player) context.getSender();
-        Set<Area> areas = protectModule.getAreaManager().getTopMostAreasAtLocation(sender.getLocation());
+        Set<Area> areas = protectModule.getAreaManager().getTopMostAreasAtLocation(sender.getLocation()).stream()
+                .filter(area -> area instanceof Area)
+                .map(area -> (Area) area)
+                .collect(Collectors.toSet());
         if (areas.isEmpty()) {
             sender.sendMessage(
                     Component.text("There are no areas at this location.").color(NamedTextColor.YELLOW)

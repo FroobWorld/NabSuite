@@ -1,6 +1,6 @@
 package com.froobworld.nabsuite.modules.protect.area.flag.enforcers;
 
-import com.froobworld.nabsuite.modules.protect.area.Area;
+import com.froobworld.nabsuite.modules.protect.area.AreaLike;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.util.PlayerCauser;
@@ -29,7 +29,7 @@ public class NoBuildFlagEnforcer implements Listener {
     }
 
     private boolean canBuild(Location location, Player player, boolean informOnFail) {
-        for (Area area : areaManager.getTopMostAreasAtLocation(location)) {
+        for (AreaLike area : areaManager.getTopMostAreasAtLocation(location)) {
             if (area.hasFlag(Flags.NO_BUILD) && !area.hasUserRights(player)) {
                 if (informOnFail) {
                     player.sendMessage(AreaManager.AREA_PROTECTED_MESSAGE);
