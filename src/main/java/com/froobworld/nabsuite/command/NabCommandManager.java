@@ -10,6 +10,7 @@ import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.froobworld.nabsuite.command.suggestion.CaseInsensitiveFilteringCommandSuggestionProcessor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -31,8 +32,8 @@ public class NabCommandManager extends PaperCommandManager<CommandSender> {
         setCommandSuggestionProcessor(new CaseInsensitiveFilteringCommandSuggestionProcessor<>());
         new MinecraftExceptionHandler<CommandSender>()
                 .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX, exception -> Component.text("/" + ((InvalidSyntaxException) exception).getCorrectSyntax()))
+                .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, exception -> Component.text("You do not have permission to use this command.", NamedTextColor.RED))
                 .withInvalidSenderHandler()
-                .withNoPermissionHandler()
                 .withArgumentParsingHandler()
                 .withCommandExecutionHandler()
                 .withDecorator(Function.identity())
