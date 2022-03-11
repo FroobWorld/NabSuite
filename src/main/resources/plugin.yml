@@ -147,6 +147,26 @@ permissions:
     description: "Access to the /vanish command."
   nabsuite.command.punishmentlog:
     description: "Access to the /punishmentlog command."
+  nabsuite.command.modreq:
+    description: "Access to the /modreq command."
+  nabsuite.command.ticket:
+    description: "Access to the /ticket command."
+  nabsuite.command.ticket.read:
+    description: "Access to the /ticket read command."
+    children:
+      - nabsuite.command.ticket
+  nabsuite.command.ticket.teleport:
+    description: "Access to the /ticket teleport command."
+    children:
+      - nabsuite.command.ticket
+  nabsuite.command.ticket.addnote:
+    description: "Access to the /ticket addnote command."
+    children:
+      - nabsuite.command.ticket
+  nabsuite.command.ticket.close:
+    description: "Access to the /ticket close command."
+    children:
+      - nabsuite.command.ticket
 
   # Admin module other permissions
   nabsuite.vanish:
