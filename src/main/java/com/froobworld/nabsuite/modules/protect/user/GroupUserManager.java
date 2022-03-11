@@ -1,9 +1,7 @@
 package com.froobworld.nabsuite.modules.protect.user;
 
-import com.froobworld.nabsuite.modules.basics.permissions.LuckPermsHook;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.query.QueryMode;
@@ -13,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.Collections;
 import java.util.Map;
@@ -31,9 +28,8 @@ public class GroupUserManager implements Listener {
 
     public GroupUserManager(ProtectModule protectModule) {
         this.executorService = Executors.newSingleThreadExecutor();
-        RegisteredServiceProvider<LuckPerms> luckPermsProvider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
-        if (luckPermsProvider != null) {
-            this.luckPerms = luckPermsProvider.getProvider();
+        luckPerms = protectModule.getPlugin().getHookManager().getLuckPermsHook().getLuckPerms();
+        if (luckPerms != null) {
             luckPerms.getEventBus().subscribe(UserDataRecalculateEvent.class, this::onUserDataRecalculate);
             Bukkit.getPluginManager().registerEvents(this, protectModule.getPlugin());
             this.allowableGroups = luckPerms.getGroupManager().getLoadedGroups().stream()
@@ -41,7 +37,6 @@ public class GroupUserManager implements Listener {
                     .collect(Collectors.toSet());
             Bukkit.getOnlinePlayers().forEach(this::updatePlayer);
         } else {
-            this.luckPerms = null;
             this.allowableGroups = Collections.emptySet();
         }
     }

@@ -19,17 +19,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-public class LuckPermsHook implements Listener {
+public class GroupManager implements Listener {
     private final BasicsModule basicsModule;
     private final AdminModule adminModule;
-    private LuckPerms luckPerms;
+    private final LuckPerms luckPerms;
 
-    public LuckPermsHook(BasicsModule basicsModule) {
+    public GroupManager(BasicsModule basicsModule) {
         this.basicsModule = basicsModule;
         this.adminModule = basicsModule.getPlugin().getModule(AdminModule.class);
-        RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
-        if (provider != null) {
-            luckPerms = provider.getProvider();
+        luckPerms = basicsModule.getPlugin().getHookManager().getLuckPermsHook().getLuckPerms();
+        if (luckPerms != null) {
             Bukkit.getPluginManager().registerEvents(this, basicsModule.getPlugin());
             for (Player player : Bukkit.getOnlinePlayers()) {
                 updateDisplayName(player);

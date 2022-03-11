@@ -8,7 +8,7 @@ import com.froobworld.nabsuite.modules.basics.config.BasicsConfig;
 import com.froobworld.nabsuite.modules.basics.help.HelpManager;
 import com.froobworld.nabsuite.modules.basics.message.MessageCentre;
 import com.froobworld.nabsuite.modules.basics.motd.MotdManager;
-import com.froobworld.nabsuite.modules.basics.permissions.LuckPermsHook;
+import com.froobworld.nabsuite.modules.basics.permissions.GroupManager;
 import com.froobworld.nabsuite.modules.basics.player.PlayerDataManager;
 import com.froobworld.nabsuite.modules.basics.player.mail.MailCentre;
 import com.froobworld.nabsuite.modules.basics.teleport.BackManager;
@@ -34,7 +34,7 @@ public class BasicsModule extends NabModule {
     private MotdManager motdManager;
     private MailCentre mailCentre;
     private HelpManager helpManager;
-    private LuckPermsHook luckPermsHook;
+    private GroupManager groupManager;
     private AfkManager afkManager;
     private SpawnManager spawnManager;
 
@@ -63,7 +63,7 @@ public class BasicsModule extends NabModule {
         motdManager = new MotdManager(this);
         mailCentre = new MailCentre(this);
         helpManager = new HelpManager();
-        luckPermsHook = new LuckPermsHook(this);
+        groupManager = new GroupManager(this);
         afkManager = new AfkManager(this);
         spawnManager = new SpawnManager(this);
 
@@ -113,7 +113,7 @@ public class BasicsModule extends NabModule {
 
     @Override
     public void postModulesEnable() {
-        luckPermsHook.postStartup();
+        groupManager.postStartup();
     }
 
     @Override
