@@ -29,6 +29,16 @@ messages:
     - "<red>#7</red> Have fun!"
     - "<yellow>Type <click:run_command:/apply>/apply</click> to request removal from the greylist."
 
+  # Messages that are broadcasted to the server on a regular basis.
+  announcements:
+    # How frequently should announcements occur (in ticks)?
+    frequency: 24000
+
+    messages:
+      - "Need staff assistance? Use <red>/modreq</red> for help."
+      - "Join us on discord: <red><click:open_url:'https://discord.gg/mMu7xaX'>https://discord.gg/mMu7xaX/</click></red>"
+      - "Check out our website: <red><click:open_url:'https://froobworld.com/'>https://froobworld.com/</click></red>"
+
 # Display name format for each group.
 display-name-formats:
   default: <gray><name></gray>

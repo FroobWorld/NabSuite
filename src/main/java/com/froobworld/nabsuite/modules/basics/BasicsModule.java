@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.modules.basics.command.*;
 import com.froobworld.nabsuite.modules.basics.config.BasicsConfig;
 import com.froobworld.nabsuite.modules.basics.help.HelpManager;
 import com.froobworld.nabsuite.modules.basics.message.MessageCentre;
+import com.froobworld.nabsuite.modules.basics.motd.AnnouncementCentre;
 import com.froobworld.nabsuite.modules.basics.motd.MotdManager;
 import com.froobworld.nabsuite.modules.basics.permissions.GroupManager;
 import com.froobworld.nabsuite.modules.basics.player.PlayerDataManager;
@@ -66,6 +67,7 @@ public class BasicsModule extends NabModule {
         groupManager = new GroupManager(this);
         afkManager = new AfkManager(this);
         spawnManager = new SpawnManager(this);
+        new AnnouncementCentre(this);
 
         Lists.newArrayList(
                 new MessageCommand(this),

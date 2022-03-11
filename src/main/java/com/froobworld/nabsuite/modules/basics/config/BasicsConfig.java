@@ -50,6 +50,19 @@ public class BasicsConfig extends NabConfiguration {
         @Entry(key = "rules")
         public final ConfigEntry<List<String>> rules = ConfigEntries.stringListEntry();
 
+        @Section(key = "announcements")
+        public final Announcements announcements = new Announcements();
+
+        public static class Announcements extends ConfigSection {
+
+            @Entry(key = "frequency")
+            public final ConfigEntry<Long> frequency = ConfigEntries.longEntry();
+
+            @Entry(key = "messages")
+            public final ConfigEntry<List<String>> messages = ConfigEntries.stringListEntry();
+
+        }
+
     }
 
     @EntryMap(key = "display-name-formats", defaultKey = "default")
