@@ -1,6 +1,6 @@
 name: NabSuite
 main: com.froobworld.nabsuite.NabSuite
-version: 1.0.0
+version: ${version}
 api-version: 1.16
 description: "Provides essential systems for the FroobWorld server."
 author: froobynooby

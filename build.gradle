@@ -20,6 +20,10 @@ repositories {
     }
 }
 
+processResources {
+    filter { String line -> line.replace('${version}', project.version.toString()) }
+}
+
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
@@ -31,6 +35,15 @@ dependencies {
     implementation 'cloud.commandframework:cloud-minecraft-extras:1.6.2'
     implementation 'com.froobworld:nab-configuration:1.0.2'
     implementation 'org.jooq:joor-java-8:0.9.14'
+}
+
+shadowJar {
+    archiveFileName = 'NabSuite-' + project.version.toString() + '.jar';
+
+    relocate 'com.froobworld.nabconfiguration', 'com.froobworld.nabsuite.lib.nabconfiguration'
+    relocate 'org.joor', 'com.froobworld.nabsuite.lib.joor'
+    relocate 'cloud.commandframework', 'com.froobworld.nabsuite.lib.cloud'
+    relocate 'io.leangen.geantyref', 'com.froobworld.nabsuite.lib.typetoken'
 }
 
 test {
