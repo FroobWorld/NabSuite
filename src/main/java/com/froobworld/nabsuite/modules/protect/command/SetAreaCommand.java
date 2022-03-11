@@ -1,6 +1,7 @@
 package com.froobworld.nabsuite.modules.protect.command;
 
 import cloud.commandframework.Command;
+import cloud.commandframework.arguments.flags.CommandFlag;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.command.argument.arguments.StringArgument;
@@ -46,12 +47,13 @@ public class SetAreaCommand extends NabCommand {
         }
         String name = context.get("name");
         boolean autoApproved = sender.hasPermission(AreaManager.EDIT_ALL_AREAS_PERMISSION) || name.contains(":");
+        boolean useSelectedVerticalBounds = context.flags().isPresent("no-extend-vertical");
         Area area = protectModule.getAreaManager().createArea(
                 sender.getUniqueId(),
                 name,
                 corner1.getWorld(),
-                corner1.toVector().setY(-64),
-                corner2.toVector().setY(320),
+                corner1.toVector().setY(useSelectedVerticalBounds ? corner1.getY() : -64),
+                corner2.toVector().setY(useSelectedVerticalBounds ? corner2.getY() : 320),
                 new PlayerUser(protectModule, sender.getUniqueId()),
                 autoApproved
         );
@@ -111,6 +113,9 @@ public class SetAreaCommand extends NabCommand {
                                 (context, name) -> protectModule.getAreaManager().getArea(name) == null,
                                 "An area by that name already exists."
                         )
-                ));
+                ))
+                .flag(
+                        CommandFlag.newBuilder("no-extend-vertical").build()
+                );
     }
 }
