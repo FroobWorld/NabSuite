@@ -5,6 +5,7 @@ import com.froobworld.nabsuite.data.DataSaver;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.tasks.StaffTask;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
+import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.area.flag.enforcers.*;
 import com.froobworld.nabsuite.modules.protect.user.User;
 import com.google.common.collect.BiMap;
@@ -26,7 +27,7 @@ import java.util.regex.Pattern;
 public class AreaManager {
     public static final String EDIT_ALL_AREAS_PERMISSION = "nabsuite.editallareas";
     public static final Component AREA_PROTECTED_MESSAGE = Component.text("This area is protected.").color(NamedTextColor.RED);
-    private static final Set<String> defaultFlags = Set.of("no-build", "no-interact", "no-explode");
+    private static final Set<String> defaultFlags = Set.of(Flags.NO_BUILD, Flags.NO_INTERACT, Flags.NO_EXPLODE, Flags.NO_FIRE_SPREAD, Flags.NO_FIRE_DESTROY);
     public static final Pattern areaNamePattern = Pattern.compile("^[a-zA-z0-9-_]+$");
     private static final Pattern fileNamePattern = Pattern.compile("^[a-zA-z0-9-_]+\\.json$");
     protected final DataSaver areaSaver;
