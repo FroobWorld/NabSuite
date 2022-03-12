@@ -21,6 +21,7 @@ public class SpawnManager implements Listener {
         this.basicsModule = basicsModule;
         this.spawnFile = new File(basicsModule.getDataFolder(), "spawn.json");
         Bukkit.getPluginManager().registerEvents(this, basicsModule.getPlugin());
+        readSpawn();
     }
 
     public Location getSpawnLocation() {
