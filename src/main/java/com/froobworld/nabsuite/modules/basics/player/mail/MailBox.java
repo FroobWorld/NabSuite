@@ -52,7 +52,7 @@ public class MailBox {
     }
 
     public boolean hasUnread() {
-        return unread;
+        return unread && !mail.isEmpty();
     }
 
     void addMail(Mail mail) {
