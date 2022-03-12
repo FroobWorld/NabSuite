@@ -2,7 +2,9 @@ package com.froobworld.nabsuite.modules.basics.teleport.portal;
 
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +43,14 @@ public class PortalEnforcer {
 
     private void handleInPortal(Player player, Portal portal) {
         if (!immunePlayers.contains(player.getUniqueId())) {
-            player.teleport(portal.getLink().getLocation());
+            Location destination = portal.getLink().getLocation().clone();
+            if (portal.useRelativePosition()) {
+                Vector locationDifference = player.getLocation().subtract(portal.getLocation()).toVector();
+                destination.add(locationDifference);
+                destination.setPitch(player.getLocation().getPitch());
+                destination.setYaw(player.getLocation().getYaw());
+            }
+            player.teleport(destination);
             setPortalImmune(player);
         }
     }

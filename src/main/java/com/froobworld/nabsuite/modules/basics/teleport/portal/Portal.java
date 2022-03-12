@@ -34,6 +34,10 @@ public class Portal {
                     portal -> portal.created,
                     (portal, created) -> portal.created = created
             ))
+            .addField("use-relative-positioning", SchemaEntries.booleanEntry(
+                    portal -> portal.useRelativePositioning,
+                    (portal, useRelativePositioning) -> portal.useRelativePositioning = useRelativePositioning
+            ))
             .build();
 
     private final PortalManager portalManager;
@@ -43,6 +47,7 @@ public class Portal {
     private String link;
     private UUID creator;
     private long created;
+    private boolean useRelativePositioning;
 
     private Portal(PortalManager portalManager) {
         this.portalManager = portalManager;
@@ -98,6 +103,10 @@ public class Portal {
 
     public long getTimeCreated() {
         return created;
+    }
+
+    public boolean useRelativePosition() {
+        return useRelativePositioning;
     }
 
     public String toJsonString() {
