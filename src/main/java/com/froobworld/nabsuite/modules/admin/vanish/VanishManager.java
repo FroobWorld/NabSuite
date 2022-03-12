@@ -47,9 +47,9 @@ public class VanishManager {
                 continue;
             }
             if (isVanished(player) && !otherPlayer.hasPermission(VANISH_SEE_PERMISSION)) {
-                otherPlayer.showPlayer(adminModule.getPlugin(), player);
-            } else {
                 otherPlayer.hidePlayer(adminModule.getPlugin(), player);
+            } else {
+                otherPlayer.showPlayer(adminModule.getPlugin(), player);
             }
         }
         BasicsModule basicsModule = adminModule.getPlugin().getModule(BasicsModule.class);
