@@ -86,6 +86,7 @@ public class Portal {
         if (portal != null) {
             portal.setLinkOneWay(this);
         }
+        portalManager.portalSaver.scheduleSave(this);
     }
 
     private void setLinkOneWay(Portal portal) {
