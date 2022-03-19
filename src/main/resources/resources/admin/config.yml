@@ -9,3 +9,7 @@ jail-command-whitelist:
   - /rules
   - /message
   - /mail
+
+# Filter words in chat and on signs. Format "<word>:<replacement word>"
+word-filters:
+  - "hell:heck"

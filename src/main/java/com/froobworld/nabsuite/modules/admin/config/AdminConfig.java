@@ -27,5 +27,8 @@ public class AdminConfig extends NabConfiguration {
     @Entry(key = "jail-command-whitelist")
     public final ConfigEntry<List<String>> jailCommandWhitelist = ConfigEntries.stringListEntry();
 
+    @Entry(key = "word-filters")
+    public final ConfigEntry<List<String>> wordFilters = ConfigEntries.stringListEntry();
+
 
 }

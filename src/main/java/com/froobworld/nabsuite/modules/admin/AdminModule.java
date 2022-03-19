@@ -2,6 +2,7 @@ package com.froobworld.nabsuite.modules.admin;
 
 import com.froobworld.nabsuite.NabModule;
 import com.froobworld.nabsuite.NabSuite;
+import com.froobworld.nabsuite.modules.admin.chat.ProfanityFilter;
 import com.froobworld.nabsuite.modules.admin.command.*;
 import com.froobworld.nabsuite.modules.admin.config.AdminConfig;
 import com.froobworld.nabsuite.modules.admin.greylist.GreylistManager;
@@ -48,6 +49,7 @@ public class AdminModule extends NabModule {
         oreStatsManager = new OreStatsManager(this);
         staffTaskManager = new StaffTaskManager(this);
         ticketManager = new TicketManager(this);
+        new ProfanityFilter(this);
 
         Lists.newArrayList(
                 new BanCommand(this),
