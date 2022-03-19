@@ -95,6 +95,8 @@ permissions:
     description: "Access to the /spawn command."
   nabsuite.command.setspawn:
     description: "Access to the /setspawn command."
+  nabsuite.command.rtp:
+    description: "Access to the /rtp command."
 
   # Basics module other permissions
   nabsuite.teleport.all:

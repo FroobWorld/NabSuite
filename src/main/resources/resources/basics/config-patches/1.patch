@@ -1,0 +1,54 @@
+[add-section]
+key=random-teleport
+comment=# Random teleport settings.
+
+[add-field]
+key=random-teleport.max-random-teleports
+value=3
+comment=# At most how many random teleports should a player be allowed to accrue?
+
+[add-field]
+key=random-teleport.regeneration-frequency
+value=240
+comment=# How often (in minutes) should a player accrue a random teleport?
+
+[add-field]
+key=random-teleport.enabled-worlds
+value=\n  - "froobworld"
+comment=# In which worlds should random teleporting be enabled?
+
+[add-section]
+key=random-teleport.world-settings
+
+[add-section]
+key=random-teleport.world-settings.default
+
+[add-field]
+key=random-teleport.world-settings.default.centre-x
+value=0
+comment=# What is x coordinate of the centre around which to base random teleports?
+
+[add-field]
+key=random-teleport.world-settings.default.centre-z
+value=0
+comment=# What is z coordinate of the centre around which to base random teleports?
+
+[add-field]
+key=random-teleport.world-settings.default.major-radius-x
+value=7000
+comment=# At most how far away on the x-axis should the random teleport be from the centre?
+
+[add-field]
+key=random-teleport.world-settings.default.minor-radius-x
+value=1500
+comment=# At least how far away on the x-axis should the random teleport be from the centre?
+
+[add-field]
+key=random-teleport.world-settings.default.major-radius-z
+value=7000
+comment=# At most how far away on the z-axis should the random teleport be from the centre?
+
+[add-field]
+key=random-teleport.world-settings.default.minor-radius-z
+value=1500
+comment=# At least how far away on the z-axis should the random teleport be from the centre?

@@ -1,5 +1,5 @@
 # Don't edit this.
-version: 1
+version: 2
 
 # The highest number to check when testing a player's permissions for the maximum number of homes they can set.
 max-home-permission-check: 3
@@ -58,3 +58,35 @@ auto-promote:
     other: -1
     default: 7
     loyalist: 30
+
+# Random teleport settings.
+random-teleport:
+  # At most how many random teleports should a player be allowed to accrue?
+  max-random-teleports: 3
+
+  # How often (in minutes) should a player accrue a random teleport?
+  regeneration-frequency: 240
+
+  # In which worlds should random teleporting be enabled?
+  enabled-worlds:
+    - "froobworld"
+
+  world-settings:
+    default:
+      # What is x coordinate of the centre around which to base random teleports?
+      centre-x: 0
+
+      # What is z coordinate of the centre around which to base random teleports?
+      centre-z: 0
+
+      # At most how far away on the x-axis should the random teleport be from the centre?
+      major-radius-x: 7000
+
+      # At most least far away on the x-axis should the random teleport be from the centre?
+      minor-radius-x: 1500
+
+      # At most how far away on the z-axis should the random teleport be from the centre?
+      major-radius-z: 7000
+
+      # At least how far away on the z-axis should the random teleport be from the centre?
+      minor-radius-z: 1500

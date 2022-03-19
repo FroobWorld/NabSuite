@@ -16,6 +16,7 @@ import com.froobworld.nabsuite.modules.basics.teleport.BackManager;
 import com.froobworld.nabsuite.modules.basics.teleport.PlayerTeleporter;
 import com.froobworld.nabsuite.modules.basics.teleport.home.HomeManager;
 import com.froobworld.nabsuite.modules.basics.teleport.portal.PortalManager;
+import com.froobworld.nabsuite.modules.basics.teleport.random.RandomTeleportManager;
 import com.froobworld.nabsuite.modules.basics.teleport.request.TeleportRequestHandler;
 import com.froobworld.nabsuite.modules.basics.teleport.spawn.SpawnManager;
 import com.froobworld.nabsuite.modules.basics.teleport.warp.WarpManager;
@@ -38,6 +39,7 @@ public class BasicsModule extends NabModule {
     private GroupManager groupManager;
     private AfkManager afkManager;
     private SpawnManager spawnManager;
+    private RandomTeleportManager randomTeleportManager;
 
     public BasicsModule(NabSuite nabSuite) {
         super(nabSuite, "basics");
@@ -68,6 +70,7 @@ public class BasicsModule extends NabModule {
         afkManager = new AfkManager(this);
         spawnManager = new SpawnManager(this);
         new AnnouncementCentre(this);
+        randomTeleportManager = new RandomTeleportManager(this);
 
         Lists.newArrayList(
                 new MessageCommand(this),
@@ -109,7 +112,8 @@ public class BasicsModule extends NabModule {
                 new HelpCommand(this),
                 new AfkCommand(this),
                 new SpawnCommand(this),
-                new SetSpawnCommand(this)
+                new SetSpawnCommand(this),
+                new RandomTeleportCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -181,5 +185,9 @@ public class BasicsModule extends NabModule {
 
     public SpawnManager getSpawnManager() {
         return spawnManager;
+    }
+
+    public RandomTeleportManager getRandomTeleportManager() {
+        return randomTeleportManager;
     }
 }
