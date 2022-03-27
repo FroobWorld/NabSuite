@@ -37,6 +37,7 @@ public class AfkManager implements Listener {
             afkStatusMap.remove(player);
             message = player.displayName().append(Component.text(" is no longer AFK.", NamedTextColor.WHITE));
             player.setSleepingIgnored(false);
+            lastActivityMap.put(player, System.currentTimeMillis());
         }
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             onlinePlayer.sendMessage(message);
