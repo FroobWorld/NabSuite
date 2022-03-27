@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.modules.admin.command.*;
 import com.froobworld.nabsuite.modules.admin.config.AdminConfig;
 import com.froobworld.nabsuite.modules.admin.greylist.GreylistManager;
 import com.froobworld.nabsuite.modules.admin.jail.JailManager;
+import com.froobworld.nabsuite.modules.admin.notification.DiscordStaffLog;
 import com.froobworld.nabsuite.modules.admin.notification.NotificationCentre;
 import com.froobworld.nabsuite.modules.admin.punishment.PunishmentManager;
 import com.froobworld.nabsuite.modules.admin.tasks.StaffTaskManager;
@@ -26,6 +27,7 @@ public class AdminModule extends NabModule {
     private OreStatsManager oreStatsManager;
     private StaffTaskManager staffTaskManager;
     private TicketManager ticketManager;
+    private DiscordStaffLog discordStaffLog;
 
     public AdminModule(NabSuite nabSuite) {
         super(nabSuite, "admin");
@@ -50,6 +52,7 @@ public class AdminModule extends NabModule {
         staffTaskManager = new StaffTaskManager(this);
         ticketManager = new TicketManager(this);
         new ProfanityFilter(this);
+        discordStaffLog = new DiscordStaffLog(this);
 
         Lists.newArrayList(
                 new BanCommand(this),
@@ -126,5 +129,9 @@ public class AdminModule extends NabModule {
 
     public TicketManager getTicketManager() {
         return ticketManager;
+    }
+
+    public DiscordStaffLog getDiscordStaffLog() {
+        return discordStaffLog;
     }
 }

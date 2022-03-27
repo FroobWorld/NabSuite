@@ -4,6 +4,7 @@ import cloud.commandframework.Command;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
+import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.area.Area;
@@ -37,6 +38,10 @@ public class AreaApproveCommand extends NabCommand {
         UUID creator = area.getCreator();
         if (creator != null) {
             protectModule.getPlugin().getModule(BasicsModule.class).getMailCentre().sendSystemMail(creator, "Your area '" + area.getName() + "' was approved.");
+        }
+        AdminModule adminModule = protectModule.getPlugin().getModule(AdminModule.class);
+        if (adminModule != null) {
+            adminModule.getDiscordStaffLog().sendAreaRequestHandleNotification(context.getSender(), area, true, null);
         }
     }
 

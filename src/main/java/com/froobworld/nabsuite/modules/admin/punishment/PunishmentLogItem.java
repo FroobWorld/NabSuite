@@ -63,6 +63,30 @@ public class PunishmentLogItem {
         this.reason = reason;
     }
 
+    public UUID getSubject() {
+        return subject;
+    }
+
+    public UUID getMediator() {
+        return mediator;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
     public Component toChatMessage() {
         Component mediator = this.mediator.equals(ConsoleUtils.CONSOLE_UUID) ? Component.text("Console", NamedTextColor.BLUE) : Component.text(playerIdentityManager.getPlayerIdentity(this.mediator).getLastName(), NamedTextColor.BLUE);
         Component subject = Component.text(playerIdentityManager.getPlayerIdentity(this.subject).getLastName(), NamedTextColor.RED);

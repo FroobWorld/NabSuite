@@ -100,6 +100,10 @@ public class AreaManager {
         }
         if (!area.isApproved()) {
             protectModule.getPlugin().getModule(AdminModule.class).getStaffTaskManager().notifyNewTask("nabsuite.command.area.approve");
+            AdminModule adminModule = protectModule.getPlugin().getModule(AdminModule.class);
+            if (adminModule != null) {
+                adminModule.getDiscordStaffLog().sendAreaRequestNotification(area);
+            }
         }
         return area;
     }

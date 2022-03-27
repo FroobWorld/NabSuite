@@ -37,6 +37,7 @@ public class PunishmentLog {
     public void addPunishmentLogItem(PunishmentLogItem punishmentLogItem) {
         punishmentLogItems.add(punishmentLogItem);
         dataSaver.scheduleSave(this);
+        adminModule.getDiscordStaffLog().sendPunishmentLogItemNotification(punishmentLogItem);
     }
 
     public List<PunishmentLogItem> getPunishmentHistory() {

@@ -80,6 +80,7 @@ public class TicketManager {
         ticketMap.put(ticket.getId(), ticket);
         ticketSaver.scheduleSave(ticket);
         adminModule.getStaffTaskManager().notifyNewTask("nabsuite.command.ticket");
+        adminModule.getDiscordStaffLog().sendTicketCreationNotification(ticket);
         return ticket;
     }
 
