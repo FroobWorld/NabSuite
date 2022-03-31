@@ -7,6 +7,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.util.*;
@@ -33,6 +34,7 @@ public class HorseManager {
         ));
         horseSaver.start();
         horseSaver.addDataType(Horse.class, horse -> horse.toJsonString().getBytes(), horse -> new File(directory, horse.getUuid().toString() + ".json"));
+        Bukkit.getPluginManager().registerEvents(new HorseClaimEnforcer(this), protectModule.getPlugin());
     }
 
     public void shutdown() {

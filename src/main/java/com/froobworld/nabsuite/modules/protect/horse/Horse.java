@@ -4,6 +4,7 @@ import com.froobworld.nabsuite.data.SchemaEntries;
 import com.froobworld.nabsuite.data.SimpleDataSchema;
 import com.froobworld.nabsuite.modules.protect.user.User;
 import com.froobworld.nabsuite.modules.protect.user.UserManager;
+import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -67,6 +68,19 @@ public class Horse {
     public void removeUser(User user) {
         users.remove(user);
         horseManager.horseSaver.scheduleSave(this);
+    }
+
+    public boolean isOwner(Player player) {
+        return player.getUniqueId().equals(owner);
+    }
+
+    public boolean hasUserRights(Player player) {
+        for (User user : users) {
+            if (user.includesPlayer(player)) {
+                return true;
+            }
+        }
+        return isOwner(player);
     }
 
     public String toJsonString() {
