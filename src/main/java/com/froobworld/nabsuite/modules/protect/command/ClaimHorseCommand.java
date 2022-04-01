@@ -39,7 +39,7 @@ public class ClaimHorseCommand extends NabCommand {
             player.sendMessage(Component.text("This horse has already been claimed.", NamedTextColor.RED));
             return;
         }
-        horseManager.protectHorse(vehicle.getUniqueId(), player.getVehicle().getUniqueId());
+        horseManager.protectHorse(vehicle.getUniqueId(), player.getUniqueId());
         player.sendMessage(Component.text("Horse claimed.", NamedTextColor.YELLOW));
     }
 
