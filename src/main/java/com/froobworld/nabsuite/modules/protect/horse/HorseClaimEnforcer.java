@@ -48,51 +48,35 @@ public class HorseClaimEnforcer implements Listener {
         if (causer == null) {
             return;
         }
-        if (canInteract(causer, event.getEntity(), true)) {
+        if (!canInteract(causer, event.getEntity(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     private void onInteractAtEntity(PlayerInteractAtEntityEvent event) {
-        Player causer = PlayerCauser.getPlayerCauser(event.getPlayer());
-        if (causer == null) {
-            return;
-        }
-        if (canInteract(causer, event.getRightClicked(), true)) {
+        if (!canInteract(event.getPlayer(), event.getRightClicked(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     private void onInteractEntity(PlayerInteractEntityEvent event) {
-        Player causer = PlayerCauser.getPlayerCauser(event.getPlayer());
-        if (causer == null) {
-            return;
-        }
-        if (canInteract(causer, event.getRightClicked(), true)) {
+        if (!canInteract(event.getPlayer(), event.getRightClicked(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     private void onLeashEntity(PlayerLeashEntityEvent event) {
-        Player causer = PlayerCauser.getPlayerCauser(event.getPlayer());
-        if (causer == null) {
-            return;
-        }
-        if (canInteract(causer, event.getEntity(), true)) {
+        if (!canInteract(event.getPlayer(), event.getEntity(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     private void onUnleashEntity(PlayerUnleashEntityEvent event) {
-        Player causer = PlayerCauser.getPlayerCauser(event.getPlayer());
-        if (causer == null) {
-            return;
-        }
-        if (canInteract(causer, event.getEntity(), true)) {
+        if (!canInteract(event.getPlayer(), event.getEntity(), true)) {
             event.setCancelled(true);
         }
     }
