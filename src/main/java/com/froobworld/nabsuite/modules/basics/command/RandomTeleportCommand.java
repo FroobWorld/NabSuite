@@ -21,8 +21,7 @@ public class RandomTeleportCommand extends NabCommand {
                 "Teleport to a random location.",
                 "nabsuite.command.rtp",
                 Player.class,
-                "randomteleport",
-                "randomtp"
+                "randomteleport", "randomtp", "wild"
         );
         this.basicsModule = basicsModule;
     }
