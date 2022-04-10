@@ -25,7 +25,7 @@ public class HorseClaimEnforcer implements Listener {
         if (horse != null) {
             if (!horse.hasUserRights(player) && !player.hasPermission(HorseManager.EDIT_ALL_HORSES_PERMISSION)) {
                 if (informOnFail) {
-                    player.sendMessage(HorseManager.HORSE_PROTECTED_MESSAGE);
+                    horseManager.getHorseNotificationManager().notifyProtected(player);
                 }
                 return false;
             }

@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 
 public class AreaManager {
     public static final String EDIT_ALL_AREAS_PERMISSION = "nabsuite.editallareas";
-    public static final Component AREA_PROTECTED_MESSAGE = Component.text("This area is protected.").color(NamedTextColor.RED);
     private static final Set<String> defaultFlags = Set.of(Flags.NO_BUILD, Flags.NO_INTERACT, Flags.NO_EXPLODE, Flags.NO_FIRE_SPREAD, Flags.NO_FIRE_DESTROY);
     public static final Pattern areaNamePattern = Pattern.compile("^[a-zA-z0-9-_]+$");
     private static final Pattern fileNamePattern = Pattern.compile("^[a-zA-z0-9-_]+\\.json$");
@@ -35,6 +34,7 @@ public class AreaManager {
     private final BiMap<String, Area> areaMap = HashBiMap.create();
     private final File directory;
     private final GlobalAreaManager globalAreaManager;
+    private final AreaNotificationManager areaNotificationManager;
 
     public AreaManager(ProtectModule protectModule) {
         this.protectModule = protectModule;
@@ -50,6 +50,7 @@ public class AreaManager {
         areaSaver.addDataType(Area.class, area -> area.toJsonString().getBytes(), area -> new File(directory, area.getName() + ".json"));
         initiateFlagEnforcers();
         globalAreaManager = new GlobalAreaManager(protectModule);
+        areaNotificationManager = new AreaNotificationManager();
     }
 
     public void postStartup() {
@@ -170,4 +171,7 @@ public class AreaManager {
         ).forEach(enforcer -> Bukkit.getPluginManager().registerEvents(enforcer, protectModule.getPlugin()));
     }
 
+    public AreaNotificationManager getAreaNotificationManager() {
+        return areaNotificationManager;
+    }
 }

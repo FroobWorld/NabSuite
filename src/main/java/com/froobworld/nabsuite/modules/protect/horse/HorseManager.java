@@ -15,12 +15,12 @@ import java.util.regex.Pattern;
 
 public class HorseManager {
     public static final String EDIT_ALL_HORSES_PERMISSION = "nabsuite.editallhorses";
-    public static final Component HORSE_PROTECTED_MESSAGE = Component.text("This mount is protected.").color(NamedTextColor.RED);
     private static final Pattern fileNamePattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.json$");
     private final ProtectModule protectModule;
     protected final DataSaver horseSaver;
     private final BiMap<UUID, Horse> horseMap = HashBiMap.create();
     private final File directory;
+    private final HorseNotificationManager horseNotificationManager;
 
     public HorseManager(ProtectModule protectModule) {
         this.protectModule = protectModule;
@@ -35,6 +35,7 @@ public class HorseManager {
         horseSaver.start();
         horseSaver.addDataType(Horse.class, horse -> horse.toJsonString().getBytes(), horse -> new File(directory, horse.getUuid().toString() + ".json"));
         Bukkit.getPluginManager().registerEvents(new HorseClaimEnforcer(this), protectModule.getPlugin());
+        horseNotificationManager = new HorseNotificationManager();
     }
 
     public void shutdown() {
@@ -60,4 +61,7 @@ public class HorseManager {
         return null;
     }
 
+    public HorseNotificationManager getHorseNotificationManager() {
+        return horseNotificationManager;
+    }
 }

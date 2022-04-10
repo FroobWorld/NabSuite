@@ -29,7 +29,7 @@ public class NoInteractFlagEnforcer implements Listener {
         for (AreaLike area : areaManager.getTopMostAreasAtLocation(location)) {
             if (area.hasFlag(Flags.NO_INTERACT) && !area.hasUserRights(player)) {
                 if (informOnFail) {
-                    player.sendMessage(AreaManager.AREA_PROTECTED_MESSAGE);
+                    areaManager.getAreaNotificationManager().notifyProtected(player);
                 }
                 return false;
             }
