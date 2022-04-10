@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.teleport.random.RandomTeleportManager;
 import com.froobworld.nabsuite.util.DurationDisplayer;
+import com.froobworld.nabsuite.util.NumberDisplayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -42,7 +43,7 @@ public class RandomTeleportCommand extends NabCommand {
 
         if (randomTeleportManager.getRandomTeleportAllowance(player) <= 0) {
             player.sendMessage(
-                    Component.text("You don't have any random teleports left. You will accrue a random teleport in ", NamedTextColor.RED)
+                    Component.text("You don't have any random teleports left. You will gain another in ", NamedTextColor.RED)
                             .append(Component.text(DurationDisplayer.asDurationString(randomTeleportManager.getTimeUntilNextRandomTeleport(player)) + ".", NamedTextColor.RED))
             );
             return;
@@ -54,7 +55,15 @@ public class RandomTeleportCommand extends NabCommand {
                     if (location == null) {
                         player.sendMessage(Component.text("We couldn't find a suitable location. Try again.", NamedTextColor.RED));
                     } else {
-                        player.sendMessage(Component.text("Location found, teleporting...", NamedTextColor.YELLOW));
+                        int remainingTeleports = randomTeleportManager.getRandomTeleportAllowance(player);
+                        if (remainingTeleports <= 0) {
+                            player.sendMessage(
+                                    Component.text("You have used your last random teleport. You will gain another in ", NamedTextColor.YELLOW)
+                                            .append(Component.text(DurationDisplayer.asDurationString(randomTeleportManager.getTimeUntilNextRandomTeleport(player)) + ".", NamedTextColor.YELLOW))
+                            );
+                        } else {
+                            player.sendMessage(Component.text("You have " + NumberDisplayer.toStringWithModifier(remainingTeleports, " random teleport", " random teleports", false) + " remaining.", NamedTextColor.YELLOW));
+                        }
                     }
                 });
     }
