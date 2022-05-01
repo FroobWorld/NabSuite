@@ -15,6 +15,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 public class BanEnforcer implements Listener {
@@ -94,23 +97,27 @@ public class BanEnforcer implements Listener {
     }
 
     private Component getKickMessage(BanPunishment banPunishment) {
-        Component kickMessage = Component.text("You are banned from this server.");
+        String banDate = new SimpleDateFormat("dd MMMM yyyy").format(Date.from(Instant.ofEpochMilli(banPunishment.getTime())));
+        Component kickMessage = Component.text("You were banned on " + banDate + ".");
         if (banPunishment.getReason() != null) {
-            kickMessage = Component.text("Banned: " + banPunishment.getReason());
+            kickMessage = kickMessage
+                    .append(Component.newline())
+                    .append(Component.newline())
+                    .append(Component.text("The provided reason is \"" + banPunishment.getReason() + "\"."));
         }
         if (!banPunishment.isPermanent()) {
             kickMessage = kickMessage
                     .append(Component.newline())
                     .append(Component.newline())
                     .append(Component.text("You will be unbanned in "))
-                    .append(Component.text(DurationDisplayer.asDurationString(banPunishment.getTime() + banPunishment.getDuration() - System.currentTimeMillis())).color(NamedTextColor.RED))
+                    .append(Component.text(DurationDisplayer.asDurationString(banPunishment.getTime() + banPunishment.getDuration() - System.currentTimeMillis())).color(NamedTextColor.BLUE))
                     .append(Component.text("."));
         }
         kickMessage = kickMessage
                 .append(Component.newline())
                 .append(Component.newline())
                 .append(Component.text("Appeal at "))
-                .append(Component.text(adminModule.getAdminConfig().banAppealUrl.get()));
+                .append(Component.text(adminModule.getAdminConfig().banAppealUrl.get(), NamedTextColor.RED));
 
         return kickMessage;
     }
