@@ -19,7 +19,6 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.vehicle.VehicleDestroyEvent;
 
 public class NoBuildFlagEnforcer implements Listener {
     private final AreaManager areaManager;
@@ -99,17 +98,6 @@ public class NoBuildFlagEnforcer implements Listener {
             return;
         }
         if (!canBuild(event.getEntity().getLocation(), causer, true)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onVehicleDestroy(VehicleDestroyEvent event) {
-        Player causer = PlayerCauser.getPlayerCauser(event.getAttacker());
-        if (causer == null) {
-            return;
-        }
-        if (!canBuild(event.getVehicle().getLocation(), causer, true)) {
             event.setCancelled(true);
         }
     }

@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class NoInteractFlagEnforcer implements Listener {
@@ -115,6 +116,17 @@ public class NoInteractFlagEnforcer implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onVehicleDamage(VehicleDamageEvent event) {
+        Player causer = PlayerCauser.getPlayerCauser(event.getAttacker());
+        if (causer == null) {
+            return;
+        }
+        if (!canInteract(event.getVehicle().getLocation(), causer, true)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onVehicleDestroy(VehicleDestroyEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getAttacker());
         if (causer == null) {
             return;
