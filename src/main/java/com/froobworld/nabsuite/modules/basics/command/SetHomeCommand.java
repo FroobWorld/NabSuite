@@ -63,7 +63,7 @@ public class SetHomeCommand extends NabCommand {
                                 new ArgumentPredicate<>(
                                         true,
                                         (context, string) -> (basicsModule.getHomeManager().getHomes((Player) context.getSender()).getHome(string) == null),
-                                        "Home already exists"
+                                        "Home already exists. Use /delhome to delete the home first"
                                 )
                         ),
                         ArgumentDescription.of("name")
