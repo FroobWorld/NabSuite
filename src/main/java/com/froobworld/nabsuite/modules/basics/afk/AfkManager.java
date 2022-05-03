@@ -58,7 +58,12 @@ public class AfkManager implements Listener {
                     setAfk(player, false, true);
                 } else {
                     if (afkStatus.isAuto() && System.currentTimeMillis() - afkStatus.getTimestamp() > TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkKickTime.get())) {
-                        player.kick(Component.text("Kicked - AFK too long", NamedTextColor.WHITE));
+                        player.kick(
+                                Component.text("Kicked - AFK too long.", NamedTextColor.WHITE)
+                                        .append(Component.newline())
+                                        .append(Component.newline())
+                                        .append(Component.text("Use /afk to avoid being kicked.", NamedTextColor.WHITE))
+                        );
                         afkStatusMap.remove(player);
                     }
                 }
