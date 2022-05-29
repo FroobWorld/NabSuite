@@ -35,7 +35,7 @@ public class BanEnforcer implements Listener {
         BanPunishment banPunishment = new BanPunishment(reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration);
         punishments.setBanPunishment(banPunishment);
         Player onlinePlayer = player.asPlayer();
-        Component broadcastMessage = player.displayName().append(Component.text(" has been banned"));
+        Component broadcastMessage = Component.text(player.getLastName()).append(Component.text(" has been banned"));
         if (banPunishment.getReason() != null) {
             broadcastMessage = broadcastMessage.append(Component.text(" ("))
                     .append(Component.text(banPunishment.getReason()))
