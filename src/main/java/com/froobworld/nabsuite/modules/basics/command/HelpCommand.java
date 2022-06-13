@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 
 public class HelpCommand extends NabCommand {
-    private static final int ITEMS_PER_PAGE = 5;
+    private static final int ITEMS_PER_PAGE = 8;
     private final BasicsModule basicsModule;
 
     public HelpCommand(BasicsModule basicsModule) {
