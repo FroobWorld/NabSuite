@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.io.*;
@@ -38,6 +39,13 @@ public class SpawnManager implements Listener {
     private void onPlayerRespawn(PlayerRespawnEvent event) {
         if (!event.isAnchorSpawn() && !event.isBedSpawn()) {
             event.setRespawnLocation(getSpawnLocation());
+        }
+    }
+
+    @EventHandler
+    private void onPlayerJoin(PlayerJoinEvent event) {
+        if (!event.getPlayer().hasPlayedBefore()) {
+            event.getPlayer().teleport(getSpawnLocation());
         }
     }
 
