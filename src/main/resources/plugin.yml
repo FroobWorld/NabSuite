@@ -169,6 +169,8 @@ permissions:
     description: "Access to the /ticket close command."
     children:
       - nabsuite.command.ticket
+  nabsuite.command.nostealing:
+    description: "Confirm you understand the rules on stealing."
 
   # Admin module other permissions
   nabsuite.vanish:

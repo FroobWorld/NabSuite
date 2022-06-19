@@ -11,6 +11,7 @@ import com.froobworld.nabsuite.modules.admin.notification.DiscordStaffLog;
 import com.froobworld.nabsuite.modules.admin.notification.NotificationCentre;
 import com.froobworld.nabsuite.modules.admin.punishment.PunishmentManager;
 import com.froobworld.nabsuite.modules.admin.tasks.StaffTaskManager;
+import com.froobworld.nabsuite.modules.admin.theft.TheftPreventionManager;
 import com.froobworld.nabsuite.modules.admin.ticket.TicketManager;
 import com.froobworld.nabsuite.modules.admin.vanish.VanishManager;
 import com.froobworld.nabsuite.modules.admin.xray.OreStatsManager;
@@ -28,6 +29,7 @@ public class AdminModule extends NabModule {
     private StaffTaskManager staffTaskManager;
     private TicketManager ticketManager;
     private DiscordStaffLog discordStaffLog;
+    private TheftPreventionManager theftPreventionManager;
 
     public AdminModule(NabSuite nabSuite) {
         super(nabSuite, "admin");
@@ -53,6 +55,7 @@ public class AdminModule extends NabModule {
         ticketManager = new TicketManager(this);
         new ProfanityFilter(this);
         discordStaffLog = new DiscordStaffLog(this);
+        theftPreventionManager = new TheftPreventionManager(this);
 
         Lists.newArrayList(
                 new BanCommand(this),
@@ -78,7 +81,8 @@ public class AdminModule extends NabModule {
                 new StaffTasksCommand(this),
                 new PunishmentLogCommand(this),
                 new ModReqCommand(this),
-                new TicketCommand(this)
+                new TicketCommand(this),
+                new NoStealingCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -133,5 +137,9 @@ public class AdminModule extends NabModule {
 
     public DiscordStaffLog getDiscordStaffLog() {
         return discordStaffLog;
+    }
+
+    public TheftPreventionManager getTheftPreventionManager() {
+        return theftPreventionManager;
     }
 }
