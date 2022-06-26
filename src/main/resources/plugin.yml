@@ -247,6 +247,10 @@ permissions:
     description: "Access to the /area review command."
     children:
       - nabsuite.command.area
+  nabsuite.command.area.teleport:
+    description: "Access to the /area teleport command."
+    children:
+      - nabsuite.command.area
   nabsuite.command.redefinearea:
     description: "Access to the /redefinearea command."
   nabsuite.command.areas:

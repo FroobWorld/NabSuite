@@ -53,8 +53,9 @@ public class AreaReviewCommand extends NabCommand {
         sender.sendMessage(
                 Component.text("Centre: ", NamedTextColor.YELLOW)
                         .append(Component.text("(" + xCentre + ", " + zCentre + ")", NamedTextColor.WHITE))
-                        .append(Component.text(" [Click for Dynmap link]", NamedTextColor.GRAY, TextDecoration.ITALIC))
-                        .clickEvent(ClickEvent.openUrl(mapLink))
+                        .append(Component.text(" [Dynmap]", NamedTextColor.GRAY, TextDecoration.ITALIC).clickEvent(ClickEvent.openUrl(mapLink)))
+                        .append(Component.text(" [Teleport]", NamedTextColor.GRAY, TextDecoration.ITALIC).clickEvent(ClickEvent.runCommand("/area teleport " + area.getName())))
+
         );
         int xWidth = Math.abs(area.getCorner1().getBlockX() - area.getCorner2().getBlockX());
         int zWidth = Math.abs(area.getCorner1().getBlockZ() - area.getCorner2().getBlockZ());
