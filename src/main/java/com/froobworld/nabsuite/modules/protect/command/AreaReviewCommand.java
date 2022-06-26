@@ -92,4 +92,9 @@ public class AreaReviewCommand extends NabCommand {
                         )
                 ));
     }
+
+    @Override
+    public String getUsage() {
+        return "/area review <area>";
+    }
 }

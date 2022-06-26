@@ -56,4 +56,9 @@ public class AreaTeleportCommand extends NabCommand {
                         protectModule.getAreaManager()
                 ));
     }
+
+    @Override
+    public String getUsage() {
+        return "/area teleport <area>";
+    }
 }
