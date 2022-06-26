@@ -18,7 +18,7 @@ public class DelAreaCommand extends NabCommand {
     public DelAreaCommand(ProtectModule protectModule) {
         super(
                 "delarea",
-                "Delete an area.",
+                "Delete a claimed area.",
                 "nabsuite.command.delarea",
                 CommandSender.class
         );

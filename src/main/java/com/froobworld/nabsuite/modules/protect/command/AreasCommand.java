@@ -22,7 +22,7 @@ public class AreasCommand extends NabCommand {
 
     public AreasCommand(ProtectModule protectModule) {
         super("areas",
-                "Display a list of areas.",
+                "Display a list of claimed areas.",
                 "nabsuite.command.areas",
                 CommandSender.class
         );

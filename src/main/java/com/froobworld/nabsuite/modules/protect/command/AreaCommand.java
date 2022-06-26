@@ -11,7 +11,7 @@ public class AreaCommand extends NabParentCommand {
     public AreaCommand(ProtectModule protectModule) {
         super(
                 "area",
-                "Manage an area.",
+                "Manage a claimed area.",
                 "nabsuite.command.area",
                 CommandSender.class
         );

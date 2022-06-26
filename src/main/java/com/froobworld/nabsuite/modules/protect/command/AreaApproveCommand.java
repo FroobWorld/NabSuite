@@ -37,7 +37,7 @@ public class AreaApproveCommand extends NabCommand {
         );
         UUID creator = area.getCreator();
         if (creator != null) {
-            protectModule.getPlugin().getModule(BasicsModule.class).getMailCentre().sendSystemMail(creator, "Your area '" + area.getName() + "' was approved.");
+            protectModule.getPlugin().getModule(BasicsModule.class).getMailCentre().sendSystemMail(creator, "Your area '" + area.getName() + "' was approved. You can use the /area command to manage your area.");
         }
         AdminModule adminModule = protectModule.getPlugin().getModule(AdminModule.class);
         if (adminModule != null) {
