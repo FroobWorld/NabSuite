@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -77,6 +79,18 @@ public class NabDimensionManager implements Listener {
         if (event.getTo().getWorld().equals(nabWorld) && !hasFlagSet()) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(Component.text("Teleport failed. The world you tried to teleport to is currently disabled.", NamedTextColor.RED));
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    private void onInteract(PlayerInteractEvent event) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (event.getPlayer().getWorld().equals(nabWorld)) {
+                if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.ENDER_CHEST) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(Component.text("Ender chests are disabled in this world.", NamedTextColor.RED));
+                }
+            }
         }
     }
 
