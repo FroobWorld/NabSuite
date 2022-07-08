@@ -57,8 +57,8 @@ public class AreaReviewCommand extends NabCommand {
                         .append(Component.text(" [Teleport]", NamedTextColor.GRAY, TextDecoration.ITALIC).clickEvent(ClickEvent.runCommand("/area teleport " + area.getName())))
 
         );
-        int xWidth = Math.abs(area.getCorner1().getBlockX() - area.getCorner2().getBlockX());
-        int zWidth = Math.abs(area.getCorner1().getBlockZ() - area.getCorner2().getBlockZ());
+        int xWidth = Math.abs(area.getCorner1().getBlockX() - area.getCorner2().getBlockX()) + 1;
+        int zWidth = Math.abs(area.getCorner1().getBlockZ() - area.getCorner2().getBlockZ()) + 1;
         sender.sendMessage(
                 Component.text("Dimensions: ", NamedTextColor.YELLOW)
                         .append(Component.text(xWidth + "x" + zWidth, NamedTextColor.WHITE))
