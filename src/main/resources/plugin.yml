@@ -171,6 +171,8 @@ permissions:
       - nabsuite.command.ticket
   nabsuite.command.nostealing:
     description: "Confirm you understand the rules on stealing."
+  nabsuite.command.seeinv:
+    description: "Access to the /seeinv command."
 
   # Admin module other permissions
   nabsuite.vanish:

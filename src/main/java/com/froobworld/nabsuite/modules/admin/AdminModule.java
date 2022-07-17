@@ -82,7 +82,8 @@ public class AdminModule extends NabModule {
                 new PunishmentLogCommand(this),
                 new ModReqCommand(this),
                 new TicketCommand(this),
-                new NoStealingCommand(this)
+                new NoStealingCommand(this),
+                new SeeInventoryCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
