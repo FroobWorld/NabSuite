@@ -15,7 +15,7 @@ public class PvpManager {
 
     public PvpManager(MechsModule mechsModule) {
         this.pdcKey = new NamespacedKey(mechsModule.getPlugin(), "pvp-enabled");
-        Bukkit.getPluginManager().registerEvents(new PvpEnforcer(this), mechsModule.getPlugin());
+        Bukkit.getPluginManager().registerEvents(new PvpEnforcer(this, mechsModule), mechsModule.getPlugin());
     }
 
     public boolean pvpEnabled(Player player) {
