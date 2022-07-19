@@ -4,6 +4,7 @@ import cloud.commandframework.Command;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.froobworld.nabsuite.util.NumberDisplayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -36,6 +37,7 @@ public class HoldingCommand extends NabCommand {
         Component message = Component.text("* ")
                 .append(sender.displayName())
                 .append(Component.text(" is holding "))
+                .append(itemStack.getMaxStackSize() > 1 ? Component.text(NumberDisplayer.numberToString(itemStack.getAmount(), false) + " ") : Component.empty())
                 .append(itemStack.displayName());
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!basicsModule.getPlayerDataManager().getIgnoreManager().isIgnoring(player, sender)) {
