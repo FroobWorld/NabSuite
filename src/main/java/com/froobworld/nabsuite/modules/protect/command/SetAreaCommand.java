@@ -74,7 +74,7 @@ public class SetAreaCommand extends NabCommand {
                 .argument(new StringArgument<>(
                         true,
                         "name",
-                        false,
+                        true,
                         new ArgumentPredicate<>(
                                 true,
                                 (context, name) -> {
