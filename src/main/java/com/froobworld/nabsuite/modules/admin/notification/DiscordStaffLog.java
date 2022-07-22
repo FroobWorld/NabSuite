@@ -68,7 +68,7 @@ public class DiscordStaffLog {
 
         TextChannel channel = discordSRV.getDestinationTextChannelForGameChannelName("staff-log");
         if (channel != null) {
-            String creator = ConsoleUtils.CONSOLE_UUID.equals(ticket.getCreator()) ? "Console" : adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(ticket.getCreator()).getLastName();
+            String creator = ConsoleUtils.CONSOLE_UUID.equals(ticket.getCreator()) ? "System generated" : adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(ticket.getCreator()).getLastName();
 
             EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Ticket opened")
                     .setColor(Color.CYAN)

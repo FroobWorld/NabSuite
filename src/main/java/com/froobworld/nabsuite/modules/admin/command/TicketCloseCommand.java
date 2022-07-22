@@ -32,7 +32,9 @@ public class TicketCloseCommand extends NabCommand {
         Ticket ticket = context.get("ticket");
         String message = context.get("message");
         ticket.close(ConsoleUtils.getSenderUUID(context.getSender()), message);
-        adminModule.getPlugin().getModule(BasicsModule.class).getMailCentre().sendSystemMail(ticket.getCreator(), "Your ticket with id " + ticket.getId() + " was closed with the message '" + message + "'.");
+        if (!ticket.getCreator().equals(ConsoleUtils.CONSOLE_UUID)) {
+            adminModule.getPlugin().getModule(BasicsModule.class).getMailCentre().sendSystemMail(ticket.getCreator(), "Your ticket with id " + ticket.getId() + " was closed with the message '" + message + "'.");
+        }
         context.getSender().sendMessage(Component.text("Ticket closed.", NamedTextColor.YELLOW));
         adminModule.getDiscordStaffLog().sendTicketClosureNotification(ticket, context.getSender(), message);
     }

@@ -15,6 +15,7 @@ import com.froobworld.nabsuite.modules.admin.theft.TheftPreventionManager;
 import com.froobworld.nabsuite.modules.admin.ticket.TicketManager;
 import com.froobworld.nabsuite.modules.admin.vanish.VanishManager;
 import com.froobworld.nabsuite.modules.admin.xray.OreStatsManager;
+import com.froobworld.nabsuite.modules.admin.xray.XrayMonitor;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 
@@ -56,6 +57,7 @@ public class AdminModule extends NabModule {
         new ProfanityFilter(this);
         discordStaffLog = new DiscordStaffLog(this);
         theftPreventionManager = new TheftPreventionManager(this);
+        new XrayMonitor(this);
 
         Lists.newArrayList(
                 new BanCommand(this),

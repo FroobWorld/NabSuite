@@ -4,10 +4,12 @@ import com.froobworld.nabsuite.data.DataLoader;
 import com.froobworld.nabsuite.data.DataSaver;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.tasks.StaffTask;
+import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -77,6 +79,15 @@ public class TicketManager {
 
     public Ticket createTicket(Player player, String message) {
         Ticket ticket = new Ticket(this, idSupplier.getAndIncrement(), player.getUniqueId(), player.getLocation(), message);
+        ticketMap.put(ticket.getId(), ticket);
+        ticketSaver.scheduleSave(ticket);
+        adminModule.getStaffTaskManager().notifyNewTask("nabsuite.command.ticket");
+        adminModule.getDiscordStaffLog().sendTicketCreationNotification(ticket);
+        return ticket;
+    }
+
+    public Ticket createSystemTicket(Location location, String message) {
+        Ticket ticket = new Ticket(this, idSupplier.getAndIncrement(), ConsoleUtils.CONSOLE_UUID, location, message);
         ticketMap.put(ticket.getId(), ticket);
         ticketSaver.scheduleSave(ticket);
         adminModule.getStaffTaskManager().notifyNewTask("nabsuite.command.ticket");

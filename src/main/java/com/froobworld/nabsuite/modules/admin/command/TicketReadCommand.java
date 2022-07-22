@@ -35,7 +35,7 @@ public class TicketReadCommand extends NabCommand {
         );
         context.getSender().sendMessage(
                 Component.text("Creator: ", NamedTextColor.YELLOW)
-                        .append(Component.text(adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(ticket.getCreator()).getLastName(),NamedTextColor.WHITE))
+                        .append(Component.text(ticket.getCreator().equals(ConsoleUtils.CONSOLE_UUID) ? "System generated" : adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(ticket.getCreator()).getLastName(),NamedTextColor.WHITE))
         );
         context.getSender().sendMessage(
                 Component.text("Created: ", NamedTextColor.YELLOW)
