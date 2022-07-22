@@ -58,7 +58,10 @@ public class StaffTaskManager implements Listener {
     public void notifyNewTask(String permission) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(permission)) {
-                player.sendMessage(Component.text("There is a new staff task requiring action (/stafftasks).", NamedTextColor.YELLOW));
+                player.sendMessage(
+                        Component.text("There is a new staff task requiring action (/stafftasks).", NamedTextColor.YELLOW)
+                                .clickEvent(ClickEvent.runCommand("/stafftasks"))
+                );
             }
         }
     }
