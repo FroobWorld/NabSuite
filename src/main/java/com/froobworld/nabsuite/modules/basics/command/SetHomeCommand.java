@@ -55,7 +55,7 @@ public class SetHomeCommand extends NabCommand {
                                 false,
                                 "name",
                                 "default",
-                                false,
+                                true,
                                 new PatternArgumentPredicate<>(
                                         HomeManager.homeNamePattern,
                                         "Name must only contain letters, numbers, underscores and dashes"

@@ -45,7 +45,7 @@ public class SetWarpCommand extends NabCommand {
                         new StringArgument<>(
                                 true,
                                 "name",
-                                false,
+                                true,
                                 new PatternArgumentPredicate<>(
                                         WarpManager.warpNamePattern,
                                         "Name must only contain letters, numbers, underscores and dashes"
