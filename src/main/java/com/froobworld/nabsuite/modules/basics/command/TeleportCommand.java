@@ -6,6 +6,8 @@ import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.command.argument.arguments.PlayerArgument;
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
+import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.admin.vanish.VanishManager;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -64,6 +66,38 @@ public class TeleportCommand extends NabCommand {
                                                 return true;
                                             }
                                             return basicsModule.getPlayerDataManager().getPlayerData(player).teleportRequestsEnabled();
+                                        },
+                                        "Player has teleportation disabled"
+                                ),
+                                new ArgumentPredicate<>(
+                                        false,
+                                        (context, player) -> {
+                                            Player sender = (Player) context.getSender();
+                                            if (!sender.hasPermission(VanishManager.VANISH_SEE_PERMISSION)) {
+                                                return true;
+                                            }
+                                            AdminModule adminModule = basicsModule.getPlugin().getModule(AdminModule.class);
+                                            if (adminModule != null) {
+                                                if (adminModule.getVanishManager().isVanished(player)) {
+                                                    return adminModule.getVanishManager().isVanished(sender);
+                                                }
+                                            }
+                                            return true;
+                                        },
+                                        "Player is currently vanished - either vanish yourself or use /tpa"
+                                ),
+                                new ArgumentPredicate<>(
+                                        false,
+                                        (context, player) -> {
+                                            Player sender = (Player) context.getSender();
+                                            if (sender.hasPermission(VanishManager.VANISH_SEE_PERMISSION)) {
+                                                return true;
+                                            }
+                                            AdminModule adminModule = basicsModule.getPlugin().getModule(AdminModule.class);
+                                            if (adminModule != null) {
+                                                return !adminModule.getVanishManager().isVanished(player);
+                                            }
+                                            return true;
                                         },
                                         "Player has teleportation disabled"
                                 )
