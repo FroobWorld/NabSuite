@@ -24,7 +24,8 @@ public class SetAreaCommand extends NabCommand {
                 "setarea",
                 "Set an area.",
                 "nabsuite.command.setarea",
-                Player.class
+                Player.class,
+                "requestarea"
         );
         this.protectModule = protectModule;
     }
