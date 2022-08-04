@@ -28,6 +28,7 @@ public class NabDimensionManager implements Listener {
         nabWorld = Bukkit.getServer().createWorld(WorldCreator.name("nabworld"));
         mechsModule.getPlugin().getSLF4JLogger().info("Loaded nabworld with uid '" + nabWorld.getUID() + "'");
         Bukkit.getScheduler().scheduleSyncRepeatingTask(mechsModule.getPlugin(), this::loop, 0, 1);
+        Bukkit.getPluginManager().registerEvents(this, mechsModule.getPlugin());
     }
 
     private boolean hasFlagSet() {
