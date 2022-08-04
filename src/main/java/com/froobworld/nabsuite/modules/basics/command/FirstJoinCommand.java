@@ -9,8 +9,13 @@ import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.player.PlayerData;
 import com.froobworld.nabsuite.util.DurationDisplayer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
+
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 
 public class FirstJoinCommand extends NabCommand {
     private final BasicsModule basicsModule;
@@ -32,8 +37,11 @@ public class FirstJoinCommand extends NabCommand {
         PlayerData playerData = basicsModule.getPlayerDataManager().getPlayerData(playerIdentity.getUuid());
         long timeSinceFirstJoin = System.currentTimeMillis() - playerData.getFirstJoined();
 
+        String joinDate = new SimpleDateFormat("dd MMMM yyyy").format(Date.from(Instant.ofEpochMilli(playerData.getFirstJoined())));
+
         context.getSender().sendMessage(
                 Component.text(playerIdentity.getLastName() + " joined " + DurationDisplayer.asDurationString(timeSinceFirstJoin) + " ago.").color(NamedTextColor.YELLOW)
+                        .hoverEvent(HoverEvent.showText(Component.text(joinDate)))
         );
     }
 
