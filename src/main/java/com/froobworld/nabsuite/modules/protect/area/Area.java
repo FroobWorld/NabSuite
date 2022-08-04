@@ -299,9 +299,9 @@ public class Area implements AreaLike {
         int minZ = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
         int maxZ = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
         return location.getWorld().equals(this.world) &&
-                location.getX() >= minX && location.getX() <= maxX &&
-                location.getY() >= minY && location.getY() <= maxY &&
-                location.getZ() >= minZ && location.getZ() <= maxZ;
+                location.getBlockX() >= minX && location.getBlockX() <= maxX &&
+                location.getBlockY() >= minY && location.getBlockY() <= maxY &&
+                location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ;
     }
 
     public Set<Area> getTopMostArea(Location location) {
