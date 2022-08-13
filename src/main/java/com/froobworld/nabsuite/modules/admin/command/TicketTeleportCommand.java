@@ -41,12 +41,7 @@ public class TicketTeleportCommand extends NabCommand {
                 .argument(new TicketArgument<>(
                         true,
                         "ticket",
-                        adminModule.getTicketManager(),
-                        new ArgumentPredicate<>(
-                                false,
-                                (context, ticket) -> ticket.isOpen(),
-                                "You can't teleport to a closed ticket."
-                        )
+                        adminModule.getTicketManager()
                 ));
     }
 
