@@ -19,8 +19,10 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class BanEnforcer implements Listener {
+    private static final long AUTO_EXPIRY_TIME = TimeUnit.DAYS.toMillis(2 * 365); // two years
     private final AdminModule adminModule;
     private final PunishmentManager punishmentManager;
 
@@ -88,7 +90,7 @@ public class BanEnforcer implements Listener {
         if (banPunishment == null) {
             return;
         }
-        if (banPunishment.isPermanent() || banPunishment.getTime() + banPunishment.getDuration() > System.currentTimeMillis()) {
+        if ((banPunishment.isPermanent() && banPunishment.getTime() + AUTO_EXPIRY_TIME > System.currentTimeMillis()) || banPunishment.getTime() + banPunishment.getDuration() > System.currentTimeMillis()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.kickMessage(getKickMessage(banPunishment));
         } else {
