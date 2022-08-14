@@ -33,7 +33,7 @@ public class TheftPreventionEnforcer implements Listener {
                             .append(Component.newline())
                             .append(
                                     Component.text("Type ", NamedTextColor.RED)
-                                            .append(Component.text("/NoStealing", NamedTextColor.GOLD))
+                                            .append(Component.text("/nostealing", NamedTextColor.GOLD))
                                             .append(Component.text(" to gain access to chests.", NamedTextColor.RED))
                                             .clickEvent(ClickEvent.runCommand("/nostealing")))
                             .append(Component.newline())
