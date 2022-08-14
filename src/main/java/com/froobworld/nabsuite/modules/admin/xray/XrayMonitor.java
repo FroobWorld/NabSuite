@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 
 import java.util.ArrayDeque;
@@ -56,6 +57,13 @@ public class XrayMonitor implements Listener {
                     });
                 }
             }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onBlockPlace(BlockPlaceEvent event) {
+        if (OreUtils.isDiamondOre(event.getBlock().getType())) {
+            diamondVeinTracker.playerPlaced(event.getBlock().getLocation());
         }
     }
 
