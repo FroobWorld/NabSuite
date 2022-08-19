@@ -29,7 +29,9 @@ public class KeepInventoryFlagEnforcer implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (shouldKeepInventory(event.getEntity().getLocation())) {
             event.setKeepInventory(true);
+            event.getDrops().clear();
             event.setKeepLevel(true);
+            event.setShouldDropExperience(false);
         }
     }
 

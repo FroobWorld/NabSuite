@@ -161,7 +161,9 @@ public class VanishEnforcer implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         if (vanishManager.isVanished(event.getEntity())) {
             event.setKeepInventory(true);
+            event.getDrops().clear();
             event.setKeepLevel(true);
+            event.setShouldDropExperience(false);
             event.getEntity().sendMessage(
                     Component.text("As you are vanished, you have kept your items and experience.")
             );
