@@ -8,9 +8,11 @@ import org.bukkit.persistence.PersistentDataType;
 public class NabModeManager {
     private final NamespacedKey nabModePdcKey;
     private final String nabModePerm = "nabsuite.nabmode";
+    private final NabDimensionManager nabDimensionManager;
 
     public NabModeManager(MechsModule mechsModule) {
         this.nabModePdcKey = NamespacedKey.fromString("nab-mode", mechsModule.getPlugin());
+        this.nabDimensionManager = new NabDimensionManager(mechsModule);
     }
 
     public void setNabMode(Player player, boolean nabMode) {
@@ -25,4 +27,7 @@ public class NabModeManager {
         return player.getPersistentDataContainer().has(nabModePdcKey) && player.hasPermission(nabModePerm);
     }
 
+    public NabDimensionManager getNabDimensionManager() {
+        return nabDimensionManager;
+    }
 }

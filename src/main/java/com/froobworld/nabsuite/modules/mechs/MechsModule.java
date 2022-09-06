@@ -6,7 +6,6 @@ import com.froobworld.nabsuite.modules.mechs.command.NabModeCommand;
 import com.froobworld.nabsuite.modules.mechs.command.PvpCommand;
 import com.froobworld.nabsuite.modules.mechs.end.EndManager;
 import com.froobworld.nabsuite.modules.mechs.mobgriefing.MobGriefingManager;
-import com.froobworld.nabsuite.modules.mechs.nabdimension.NabDimensionManager;
 import com.froobworld.nabsuite.modules.mechs.nabdimension.NabModeManager;
 import com.froobworld.nabsuite.modules.mechs.pvp.PvpManager;
 import com.froobworld.nabsuite.modules.mechs.trees.TreeManager;
@@ -24,7 +23,6 @@ public class MechsModule extends NabModule {
     @Override
     public void preModulesEnable() {
         this.nabModeManager = new NabModeManager(this);
-        new NabDimensionManager(this);
     }
 
     @Override

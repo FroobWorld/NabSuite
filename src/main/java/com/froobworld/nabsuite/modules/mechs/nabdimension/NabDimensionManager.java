@@ -31,6 +31,10 @@ public class NabDimensionManager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, mechsModule.getPlugin());
     }
 
+    public World getNabWorld() {
+        return nabWorld;
+    }
+
     private boolean hasFlagSet() {
         try {
             return on(nabWorld)
