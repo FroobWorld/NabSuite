@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 
+@Deprecated // Mojang to remove API access to name history
 public class NameHistory {
     private final List<NameHistoryEntry> nameHistoryEntries;
 

@@ -44,10 +44,6 @@ public class PlayerIdentity {
         return new ArrayList<>(previousNames);
     }
 
-    public CompletableFuture<NameHistory> getFullNameHistory() {
-        return NameHistory.fromUuid(uuid);
-    }
-
     public Player asPlayer() {
         return Bukkit.getPlayer(uuid);
     }
