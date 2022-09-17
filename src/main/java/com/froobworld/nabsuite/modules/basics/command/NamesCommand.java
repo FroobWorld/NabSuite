@@ -31,6 +31,7 @@ public class NamesCommand extends NabCommand {
         final CommandSender sender = context.getSender();
         PlayerIdentity playerIdentity = context.get("player");
         Set<String> previousNames = Set.copyOf(playerIdentity.getPreviousNames());
+        previousNames.add(playerIdentity.getLastName());
         sender.sendMessage(
                 Component.text("We have seen " + playerIdentity.getLastName() + " with " + NumberDisplayer.toStringWithModifier(previousNames.size(), " name.", " names.", false)).color(NamedTextColor.YELLOW)
         );
