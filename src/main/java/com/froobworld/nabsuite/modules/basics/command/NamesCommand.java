@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class NamesCommand extends NabCommand {
@@ -30,7 +31,7 @@ public class NamesCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         final CommandSender sender = context.getSender();
         PlayerIdentity playerIdentity = context.get("player");
-        Set<String> previousNames = Set.copyOf(playerIdentity.getPreviousNames());
+        Set<String> previousNames = new HashSet<>(playerIdentity.getPreviousNames());
         previousNames.add(playerIdentity.getLastName());
         sender.sendMessage(
                 Component.text("We have seen " + playerIdentity.getLastName() + " with " + NumberDisplayer.toStringWithModifier(previousNames.size(), " name.", " names.", false)).color(NamedTextColor.YELLOW)
