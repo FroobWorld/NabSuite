@@ -66,9 +66,12 @@ public class PlayerIdentityManager implements Listener {
             playerIdentitySaver.scheduleSave(playerIdentity);
         } else {
             PlayerIdentity playerIdentity = playerIdentityMap.get(event.getUniqueId());
+            if (playerIdentity.getPreviousNames().size() == 0 || !playerIdentity.getPreviousNames().get(playerIdentity.getPreviousNames().size() - 1).equals(playerIdentity.getLastName())) {
+                playerIdentity.getPreviousNames().add(playerIdentity.getLastName());
+            }
             if (!playerIdentity.getLastName().equals(event.getName())) {
-                playerIdentity.addPreviousName(playerIdentity.getLastName());
                 playerIdentity.setLastName(event.getName());
+                playerIdentity.addPreviousName(event.getName());
                 playerIdentitySaver.scheduleSave(playerIdentity);
             }
         }
