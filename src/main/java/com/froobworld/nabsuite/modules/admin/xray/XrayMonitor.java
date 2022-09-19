@@ -78,7 +78,7 @@ public class XrayMonitor implements Listener {
                 if (user == null) {
                     return false;
                 }
-                InheritanceNode groupNode = InheritanceNode.builder().group(XRAYER_GROUP).build();
+                InheritanceNode groupNode = InheritanceNode.builder().group(XRAYER_GROUP).expiry(7, TimeUnit.DAYS).build();
                 user.data().add(groupNode);
                 luckPerms.getUserManager().saveUser(user).join();
                 return true;
