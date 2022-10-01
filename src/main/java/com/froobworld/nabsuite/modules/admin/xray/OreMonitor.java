@@ -78,7 +78,7 @@ public class OreMonitor implements Listener {
         } else if (OreUtils.isNetherQuartzOre(material)) {
             if (!usingSilkTouch) oreStatsData.incrementQuartz();
         } else if (OreUtils.isNetheriteOre(material)) {
-            if (!usingSilkTouch) oreStatsData.incrementNetherite();
+            oreStatsData.incrementNetherite();
             alertOre(event.getPlayer(), location, Component.text("ancient debris").color(NamedTextColor.DARK_PURPLE), OreUtils::isNetheriteOre);
         }
     }
