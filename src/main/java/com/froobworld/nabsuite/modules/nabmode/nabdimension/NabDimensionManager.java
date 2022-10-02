@@ -1,9 +1,9 @@
-package com.froobworld.nabsuite.modules.mechs.nabdimension;
+package com.froobworld.nabsuite.modules.nabmode.nabdimension;
 
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
-import com.froobworld.nabsuite.modules.mechs.MechsModule;
+import com.froobworld.nabsuite.modules.nabmode.NabModeModule;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -19,16 +19,16 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import static org.joor.Reflect.*;
 
 public class NabDimensionManager implements Listener {
-    private final MechsModule mechsModule;
+    private final NabModeModule nabModeModule;
     private boolean haveWarned = false;
     private final World nabWorld;
 
-    public NabDimensionManager(MechsModule mechsModule) {
-        this.mechsModule = mechsModule;
+    public NabDimensionManager(NabModeModule nabModeModule) {
+        this.nabModeModule = nabModeModule;
         nabWorld = Bukkit.getServer().createWorld(WorldCreator.name("nabworld"));
-        mechsModule.getPlugin().getSLF4JLogger().info("Loaded nabworld with uid '" + nabWorld.getUID() + "'");
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(mechsModule.getPlugin(), this::loop, 0, 1);
-        Bukkit.getPluginManager().registerEvents(this, mechsModule.getPlugin());
+        nabModeModule.getPlugin().getSLF4JLogger().info("Loaded nabworld with uid '" + nabWorld.getUID() + "'");
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(nabModeModule.getPlugin(), this::loop, 0, 1);
+        Bukkit.getPluginManager().registerEvents(this, nabModeModule.getPlugin());
     }
 
     public World getNabWorld() {
@@ -43,7 +43,7 @@ public class NabDimensionManager implements Listener {
                     .get("creativeLevel");
         } catch (Exception e) {
             if (!haveWarned) {
-                mechsModule.getPlugin().getSLF4JLogger().error("Mappings update required?", e);
+                nabModeModule.getPlugin().getSLF4JLogger().error("Mappings update required?", e);
                 haveWarned = true;
             }
             return false;
@@ -67,7 +67,7 @@ public class NabDimensionManager implements Listener {
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
         if (event.getPlayer().getLocation().getWorld().equals(nabWorld) && !hasFlagSet()) {
-            BasicsModule basicsModule = mechsModule.getPlugin().getModule(BasicsModule.class);
+            BasicsModule basicsModule = nabModeModule.getPlugin().getModule(BasicsModule.class);
             Location spawnLocation;
             if (basicsModule != null) {
                 spawnLocation = basicsModule.getSpawnManager().getSpawnLocation();
@@ -102,7 +102,7 @@ public class NabDimensionManager implements Listener {
     private void loop() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().equals(nabWorld) && !hasFlagSet()) {
-                BasicsModule basicsModule = mechsModule.getPlugin().getModule(BasicsModule.class);
+                BasicsModule basicsModule = nabModeModule.getPlugin().getModule(BasicsModule.class);
                 Location spawnLocation;
                 if (basicsModule != null) {
                     spawnLocation = basicsModule.getSpawnManager().getSpawnLocation();
@@ -112,7 +112,7 @@ public class NabDimensionManager implements Listener {
                 player.teleport(spawnLocation);
                 player.sendMessage(Component.text("You've been moved to spawn. The world you were previously in is currently disabled.", NamedTextColor.RED));
             }
-            if (mechsModule.getNabModeManager().isNabMode(player) && player.getWorld().equals(nabWorld)) {
+            if (nabModeModule.getNabModeManager().isNabMode(player) && player.getWorld().equals(nabWorld)) {
                 if (player.getGameMode() != GameMode.CREATIVE) {
                     player.setGameMode(GameMode.CREATIVE);
                 }

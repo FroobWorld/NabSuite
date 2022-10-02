@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.hook.HookManager;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
+import com.froobworld.nabsuite.modules.nabmode.NabModeModule;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,6 +35,7 @@ public class NabSuite extends JavaPlugin {
             addModule(new AdminModule(this));
             addModule(new ProtectModule(this));
             addModule(new MechsModule(this));
+            addModule(new NabModeModule(this));
         }
         modules.values().forEach(NabModule::preModulesEnable);
         modules.values().forEach(NabModule::onEnable);

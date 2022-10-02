@@ -1,6 +1,6 @@
-package com.froobworld.nabsuite.modules.mechs.nabdimension;
+package com.froobworld.nabsuite.modules.nabmode.nabdimension;
 
-import com.froobworld.nabsuite.modules.mechs.MechsModule;
+import com.froobworld.nabsuite.modules.nabmode.NabModeModule;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
@@ -10,9 +10,9 @@ public class NabModeManager {
     private final String nabModePerm = "nabsuite.nabmode";
     private final NabDimensionManager nabDimensionManager;
 
-    public NabModeManager(MechsModule mechsModule) {
-        this.nabModePdcKey = NamespacedKey.fromString("nab-mode", mechsModule.getPlugin());
-        this.nabDimensionManager = new NabDimensionManager(mechsModule);
+    public NabModeManager(NabModeModule nabModeModule) {
+        this.nabModePdcKey = NamespacedKey.fromString("nab-mode", nabModeModule.getPlugin());
+        this.nabDimensionManager = new NabDimensionManager(nabModeModule);
     }
 
     public void setNabMode(Player player, boolean nabMode) {

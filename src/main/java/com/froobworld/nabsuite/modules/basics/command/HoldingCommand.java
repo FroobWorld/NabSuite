@@ -4,7 +4,7 @@ import cloud.commandframework.Command;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
-import com.froobworld.nabsuite.modules.mechs.MechsModule;
+import com.froobworld.nabsuite.modules.nabmode.NabModeModule;
 import com.froobworld.nabsuite.util.NumberDisplayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,9 +40,9 @@ public class HoldingCommand extends NabCommand {
                 .append(Component.text(" is holding "))
                 .append(itemStack.getMaxStackSize() > 1 ? Component.text(NumberDisplayer.numberToString(itemStack.getAmount(), false) + " ") : Component.empty())
                 .append(itemStack.displayName());
-        MechsModule mechsModule = basicsModule.getPlugin().getModule(MechsModule.class);
-        if (mechsModule != null) {
-            if (sender.getWorld().equals(mechsModule.getNabModeManager().getNabDimensionManager().getNabWorld())) {
+        NabModeModule nabModeModule = basicsModule.getPlugin().getModule(NabModeModule.class);
+        if (nabModeModule != null) {
+            if (sender.getWorld().equals(nabModeModule.getNabModeManager().getNabDimensionManager().getNabWorld())) {
                 message = Component.text("* ")
                         .append(sender.displayName())
                         .append(Component.text(" is holding a bunch of nabby items."));
