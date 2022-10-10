@@ -38,7 +38,10 @@ public class MessageCentre {
         UUID fromUuid = from instanceof Player ? ((Player) from).getUniqueId() : CONSOLE_UUID;
         UUID toUuid = to instanceof Player ? ((Player) to).getUniqueId() : CONSOLE_UUID;
         if (from instanceof Player) {
-            if (basicsModule.getPlugin().getModule(AdminModule.class).getPunishmentManager().getMuteEnforcer().testMute((Player) from, true)) {
+            if (!basicsModule.getPlayerDataManager().getFriendManager().areFriends(fromUuid, toUuid) && basicsModule.getPlugin().getModule(AdminModule.class).getPunishmentManager().getMuteEnforcer().testMute((Player) from, false)) {
+                from.sendMessage(
+                        Component.text("While muted you may only message players on your /friend list.").color(NamedTextColor.RED)
+                );
                 return;
             }
         }
