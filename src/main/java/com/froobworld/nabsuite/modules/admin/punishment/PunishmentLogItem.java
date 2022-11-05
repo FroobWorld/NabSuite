@@ -97,19 +97,23 @@ public class PunishmentLogItem {
             action = Component.text("muted", NamedTextColor.RED);
         } else if (type == Type.JAIL) {
             action = Component.text("jailed", NamedTextColor.RED);
+        } else if (type == Type.RESTRICTED) {
+            action = Component.text("restricted", NamedTextColor.RED);
         } else if (type == Type.UNBAN_AUTOMATIC || type == Type.UNBAN_MANUAL) {
             action = Component.text("unbanned", NamedTextColor.RED);
         } else if (type == Type.UNMUTE_AUTOMATIC || type == Type.UNMUTE_MANUAL) {
             action = Component.text("unmuted", NamedTextColor.RED);
         } else if (type == Type.UNJAIL_AUTOMATIC || type == Type.UNJAIL_MANUAL) {
             action = Component.text("unjailed", NamedTextColor.RED);
+        } else if (type == Type.UNRESTRICTED_AUTOMATIC || type == Type.UNRESTRICTED_MANUAL) {
+            action = Component.text("unrestricted", NamedTextColor.RED);
         }
         action = Component.text(" was ", NamedTextColor.WHITE).append(action);
         if (duration > 0) {
             action = action.append(Component.text(" for ", NamedTextColor.WHITE))
                     .append(Component.text(DurationDisplayer.asDurationString(duration)));
         }
-        if (type == Type.UNBAN_AUTOMATIC || type == Type.UNMUTE_AUTOMATIC || type == Type.UNJAIL_AUTOMATIC) {
+        if (type == Type.UNBAN_AUTOMATIC || type == Type.UNMUTE_AUTOMATIC || type == Type.UNJAIL_AUTOMATIC || type == Type.UNRESTRICTED_AUTOMATIC) {
             action = action.append(Component.text(" automatically", NamedTextColor.WHITE));
         } else {
             action = action.append(Component.text(" by ", NamedTextColor.WHITE)).append(mediator);
@@ -129,12 +133,15 @@ public class PunishmentLogItem {
         BAN,
         MUTE,
         JAIL,
+        RESTRICTED,
         UNBAN_AUTOMATIC,
         UNBAN_MANUAL,
         UNMUTE_AUTOMATIC,
         UNMUTE_MANUAL,
         UNJAIL_AUTOMATIC,
-        UNJAIL_MANUAL
+        UNJAIL_MANUAL,
+        UNRESTRICTED_AUTOMATIC,
+        UNRESTRICTED_MANUAL
     }
 
     static PunishmentLogItem fromJsonReader(PlayerIdentityManager playerIdentityManager, JsonReader jsonReader) throws IOException {

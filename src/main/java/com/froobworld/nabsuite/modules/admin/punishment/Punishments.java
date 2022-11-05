@@ -34,6 +34,12 @@ public class Punishments {
                     (jsonReader, punishments) -> punishments.jailPunishment = JailPunishment.fromJsonReader(punishments.punishmentManager.getJailManager(), jsonReader),
                     (punishments, jsonWriter) -> JailPunishment.SCHEMA.write(punishments.jailPunishment, jsonWriter)
             )
+            .addField(
+                    "restriction",
+                    punishments -> punishments.restrictionPunishment != null,
+                    (jsonReader, punishments) -> punishments.restrictionPunishment = RestrictionPunishment.fromJsonReader(jsonReader),
+                    (punishments, jsonWriter) -> RestrictionPunishment.SCHEMA.write(punishments.restrictionPunishment, jsonWriter)
+            )
             .addField("punishment-history", SchemaEntries.listEntry(
                     punishments -> punishments.punishmentHistory,
                     (punishments, punishmentHistory) -> punishments.punishmentHistory = punishmentHistory,
@@ -48,6 +54,7 @@ public class Punishments {
     private BanPunishment banPunishment;
     private MutePunishment mutePunishment;
     private JailPunishment jailPunishment;
+    private RestrictionPunishment restrictionPunishment;
     private List<PunishmentLogItem> punishmentHistory;
 
     private Punishments(AdminModule adminModule, PunishmentManager punishmentManager) {
@@ -77,6 +84,10 @@ public class Punishments {
         return jailPunishment;
     }
 
+    public RestrictionPunishment getRestrictionPunishment() {
+        return restrictionPunishment;
+    }
+
     public List<PunishmentLogItem> getPunishmentHistory() {
         return punishmentHistory == null ? Lists.newArrayList() : List.copyOf(punishmentHistory);
     }
@@ -93,6 +104,11 @@ public class Punishments {
 
     void setJailPunishment(JailPunishment jailPunishment) {
         this.jailPunishment = jailPunishment;
+        punishmentManager.punishmentsSaver.scheduleSave(this);
+    }
+
+    void setRestrictionPunishment(RestrictionPunishment restrictionPunishment) {
+        this.restrictionPunishment = restrictionPunishment;
         punishmentManager.punishmentsSaver.scheduleSave(this);
     }
 

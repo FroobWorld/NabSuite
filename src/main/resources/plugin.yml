@@ -173,6 +173,10 @@ permissions:
     description: "Confirm you understand the rules on stealing."
   nabsuite.command.seeinv:
     description: "Access to the /seeinv command."
+  nabsuite.command.restrict:
+    description: "Access to the /restrict command."
+  nabsuite.command.unrestrict:
+    description: "Access to the /unrestrict command."
 
   # Admin module other permissions
   nabsuite.vanish:

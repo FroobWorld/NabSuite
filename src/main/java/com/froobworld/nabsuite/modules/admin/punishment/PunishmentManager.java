@@ -20,6 +20,7 @@ public class PunishmentManager {
     private final BanEnforcer banEnforcer;
     private final MuteEnforcer muteEnforcer;
     private final JailEnforcer jailEnforcer;
+    private final RestrictionEnforcer restrictionEnforcer;
     private final PunishmentLog punishmentLog;
 
     public PunishmentManager(AdminModule adminModule) {
@@ -37,6 +38,7 @@ public class PunishmentManager {
         banEnforcer = new BanEnforcer(adminModule, this);
         muteEnforcer = new MuteEnforcer(adminModule, this);
         jailEnforcer = new JailEnforcer(adminModule, this);
+        restrictionEnforcer = new RestrictionEnforcer(adminModule, this);
         punishmentLog = new PunishmentLog(adminModule);
     }
 
@@ -72,5 +74,9 @@ public class PunishmentManager {
 
     public PunishmentLog getPunishmentLog() {
         return punishmentLog;
+    }
+
+    public RestrictionEnforcer getRestrictionEnforcer() {
+        return restrictionEnforcer;
     }
 }
