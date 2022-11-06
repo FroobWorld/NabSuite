@@ -207,7 +207,7 @@ public class RestrictionEnforcer implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onBlockIgniteEvent(BlockIgniteEvent event) {
+    private void onBlockIgniteEvent(BlockIgniteEvent event) {
         if (event.getPlayer() == null) {
             return;
         }
@@ -217,21 +217,21 @@ public class RestrictionEnforcer implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onSignChange(SignChangeEvent event) {
+    private void onSignChange(SignChangeEvent event) {
         if (!canInteract(event.getPlayer(), event.getBlock().getLocation(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onHangingPlace(HangingPlaceEvent event) {
+    private void onHangingPlace(HangingPlaceEvent event) {
         if (!canInteract(event.getPlayer(), event.getBlock().getLocation(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onHangingBreak(HangingBreakByEntityEvent event) {
+    private void onHangingBreak(HangingBreakByEntityEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getRemover());
         if (causer == null) {
             return;
@@ -242,7 +242,7 @@ public class RestrictionEnforcer implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onHitArmourStand(EntityDamageByEntityEvent event) {
+    private void onHitArmourStand(EntityDamageByEntityEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getDamager());
         if (causer == null) {
             return;
@@ -257,42 +257,42 @@ public class RestrictionEnforcer implements Listener {
 
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onInteractEntity(PlayerInteractEntityEvent event) {
+    private void onInteractEntity(PlayerInteractEntityEvent event) {
         if (!canInteract(event.getPlayer(), event.getRightClicked().getLocation(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onInteractAtEntity(PlayerInteractAtEntityEvent event) {
+    private void onInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (!canInteract(event.getPlayer(), event.getRightClicked().getLocation(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerLeashEntity(PlayerLeashEntityEvent event) {
+    private void onPlayerLeashEntity(PlayerLeashEntityEvent event) {
         if (!canInteract(event.getPlayer(), event.getEntity().getLocation(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerUnleashEntity(PlayerUnleashEntityEvent event) {
+    private void onPlayerUnleashEntity(PlayerUnleashEntityEvent event) {
         if (!canInteract(event.getPlayer(), event.getEntity().getLocation(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerShearEntity(PlayerShearEntityEvent event) {
+    private void onPlayerShearEntity(PlayerShearEntityEvent event) {
         if (!canInteract(event.getPlayer(), event.getEntity().getLocation(), true)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onCombustEntity(EntityCombustByEntityEvent event) {
+    private void onCombustEntity(EntityCombustByEntityEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getCombuster());
         if (causer == null) {
             return;
@@ -303,7 +303,7 @@ public class RestrictionEnforcer implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
+    private void onEntityDamage(EntityDamageByEntityEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getDamager());
         if (causer == null) {
             return;
@@ -320,7 +320,7 @@ public class RestrictionEnforcer implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onVehicleDamage(VehicleDamageEvent event) {
+    private void onVehicleDamage(VehicleDamageEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getAttacker());
         if (causer == null) {
             return;
@@ -331,7 +331,7 @@ public class RestrictionEnforcer implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onVehicleDestroy(VehicleDestroyEvent event) {
+    private void onVehicleDestroy(VehicleDestroyEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getAttacker());
         if (causer == null) {
             return;
@@ -342,7 +342,7 @@ public class RestrictionEnforcer implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onVehicleEnter(VehicleEnterEvent event) {
+    private void onVehicleEnter(VehicleEnterEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getEntered());
         if (causer == null) {
             return;
@@ -353,7 +353,7 @@ public class RestrictionEnforcer implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onArmourStandManipulate(PlayerArmorStandManipulateEvent event) {
+    private void onArmourStandManipulate(PlayerArmorStandManipulateEvent event) {
         if (!canInteract(event.getPlayer(), event.getRightClicked().getLocation(), true)) {
             event.setCancelled(true);
         }
