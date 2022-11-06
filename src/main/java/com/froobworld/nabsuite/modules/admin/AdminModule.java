@@ -10,6 +10,7 @@ import com.froobworld.nabsuite.modules.admin.jail.JailManager;
 import com.froobworld.nabsuite.modules.admin.notification.DiscordStaffLog;
 import com.froobworld.nabsuite.modules.admin.notification.NotificationCentre;
 import com.froobworld.nabsuite.modules.admin.punishment.PunishmentManager;
+import com.froobworld.nabsuite.modules.admin.suspicious.SuspiciousActivityMonitor;
 import com.froobworld.nabsuite.modules.admin.tasks.StaffTaskManager;
 import com.froobworld.nabsuite.modules.admin.theft.TheftPreventionManager;
 import com.froobworld.nabsuite.modules.admin.ticket.TicketManager;
@@ -31,6 +32,7 @@ public class AdminModule extends NabModule {
     private TicketManager ticketManager;
     private DiscordStaffLog discordStaffLog;
     private TheftPreventionManager theftPreventionManager;
+    private SuspiciousActivityMonitor suspiciousActivityMonitor;
 
     public AdminModule(NabSuite nabSuite) {
         super(nabSuite, "admin");
@@ -58,6 +60,7 @@ public class AdminModule extends NabModule {
         discordStaffLog = new DiscordStaffLog(this);
         theftPreventionManager = new TheftPreventionManager(this);
         new XrayMonitor(this);
+        this.suspiciousActivityMonitor = new SuspiciousActivityMonitor(this);
 
         Lists.newArrayList(
                 new BanCommand(this),
@@ -146,5 +149,9 @@ public class AdminModule extends NabModule {
 
     public TheftPreventionManager getTheftPreventionManager() {
         return theftPreventionManager;
+    }
+
+    public SuspiciousActivityMonitor getSuspiciousActivityMonitor() {
+        return suspiciousActivityMonitor;
     }
 }
