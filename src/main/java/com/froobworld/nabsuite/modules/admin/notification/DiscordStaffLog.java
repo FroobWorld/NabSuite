@@ -30,9 +30,7 @@ public class DiscordStaffLog {
         }
 
         Color colour;
-        if (punishmentLogItem.getType() == PunishmentLogItem.Type.BAN) {
-            colour = Color.RED;
-        } else if (punishmentLogItem.getType() == PunishmentLogItem.Type.MUTE || punishmentLogItem.getType() == PunishmentLogItem.Type.JAIL) {
+        if (punishmentLogItem.getType() == PunishmentLogItem.Type.BAN || punishmentLogItem.getType() == PunishmentLogItem.Type.MUTE || punishmentLogItem.getType() == PunishmentLogItem.Type.JAIL || punishmentLogItem.getType() == PunishmentLogItem.Type.RESTRICTED) {
             colour = Color.RED;
         } else {
             colour = Color.MAGENTA;
