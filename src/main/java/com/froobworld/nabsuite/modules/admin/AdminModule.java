@@ -5,6 +5,7 @@ import com.froobworld.nabsuite.NabSuite;
 import com.froobworld.nabsuite.modules.admin.chat.ProfanityFilter;
 import com.froobworld.nabsuite.modules.admin.command.*;
 import com.froobworld.nabsuite.modules.admin.config.AdminConfig;
+import com.froobworld.nabsuite.modules.admin.contingency.ContingencyManager;
 import com.froobworld.nabsuite.modules.admin.greylist.GreylistManager;
 import com.froobworld.nabsuite.modules.admin.jail.JailManager;
 import com.froobworld.nabsuite.modules.admin.notification.DiscordStaffLog;
@@ -33,6 +34,7 @@ public class AdminModule extends NabModule {
     private DiscordStaffLog discordStaffLog;
     private TheftPreventionManager theftPreventionManager;
     private SuspiciousActivityMonitor suspiciousActivityMonitor;
+    private ContingencyManager contingencyManager;
 
     public AdminModule(NabSuite nabSuite) {
         super(nabSuite, "admin");
@@ -61,6 +63,7 @@ public class AdminModule extends NabModule {
         theftPreventionManager = new TheftPreventionManager(this);
         new XrayMonitor(this);
         this.suspiciousActivityMonitor = new SuspiciousActivityMonitor(this);
+        this.contingencyManager = new ContingencyManager(this);
 
         Lists.newArrayList(
                 new BanCommand(this),
@@ -90,7 +93,8 @@ public class AdminModule extends NabModule {
                 new NoStealingCommand(this),
                 new SeeInventoryCommand(this),
                 new RestrictCommand(this),
-                new UnrestrictCommand(this)
+                new UnrestrictCommand(this),
+                new LockdownCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -153,5 +157,9 @@ public class AdminModule extends NabModule {
 
     public SuspiciousActivityMonitor getSuspiciousActivityMonitor() {
         return suspiciousActivityMonitor;
+    }
+
+    public ContingencyManager getContingencyManager() {
+        return contingencyManager;
     }
 }

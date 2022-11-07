@@ -177,6 +177,8 @@ permissions:
     description: "Access to the /restrict command."
   nabsuite.command.unrestrict:
     description: "Access to the /unrestrict command."
+  nabsuite.command.lockdown:
+    description: "Access to the /lockdown command."
 
   # Admin module other permissions
   nabsuite.vanish:
@@ -185,6 +187,8 @@ permissions:
     description: "Allows players to see vanished players."
   nabsuite.orealert:
     description: "Allows players to receive ore alerts."
+  nabsuite.joinfull:
+    description: "Allows players to join a full server."
 
   # Mechs module commands
   nabsuite.command.pvp:
