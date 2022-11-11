@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.admin.suspicious;
 
+import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.suspicious.monitors.ActivityMonitor;
 import com.froobworld.nabsuite.modules.admin.suspicious.monitors.TheftMonitor;
@@ -33,9 +34,8 @@ public class SuspiciousActivityMonitor {
             if (player.getStatistic(Statistic.PLAY_ONE_MINUTE) < TIME_PLAYED_THRESHOLD && !player.getPersistentDataContainer().has(pdcKey)) {
                 if (isSuspicious(player)) {
                     if (adminModule.getPunishmentManager().getPunishments(player.getUniqueId()).getRestrictionPunishment() == null) {
-                        // Will automatically restrict players when we're more confident in this system
-                        //PlayerIdentity playerIdentity = adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player);
-                        //adminModule.getPunishmentManager().getRestrictionEnforcer().restrict(playerIdentity, Bukkit.getConsoleSender(), "Suspicious activity");
+                        PlayerIdentity playerIdentity = adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player);
+                        adminModule.getPunishmentManager().getRestrictionEnforcer().restrict(playerIdentity, Bukkit.getConsoleSender(), "Suspicious activity");
                     }
                     adminModule.getTicketManager().createSystemTicket(
                             player.getLocation(),
