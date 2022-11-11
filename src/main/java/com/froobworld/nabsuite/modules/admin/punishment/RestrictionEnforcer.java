@@ -38,7 +38,7 @@ public class RestrictionEnforcer implements Listener {
     private static final long RESTRICTION_DURATION = TimeUnit.HOURS.toMillis(24);
     private static final double SPAWN_NO_INTERACT_DISTANCE = 500;
     private static final double HOUSE_NO_INTERACT_DISTANCE = 100;
-    private static final long NOTIFICATION_RATE_LIMIT = TimeUnit.MILLISECONDS.toMillis(500);
+    private static final long NOTIFICATION_RATE_LIMIT = TimeUnit.MILLISECONDS.toMillis(3000);
     private final AdminModule adminModule;
     private final BasicsModule basicsModule;
     private final PunishmentManager punishmentManager;
