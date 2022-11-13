@@ -5,6 +5,8 @@ import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.EnderChest;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -73,6 +75,9 @@ public class TheftMonitor implements ActivityMonitor, Listener {
 
     @EventHandler(ignoreCancelled = true)
     private void onInventoryClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof EnderChest || event.getInventory().getHolder() instanceof ShulkerBox) {
+            return;
+        }
         Player player = (Player) event.getWhoClicked();
         Location containerLocation = event.getInventory().getLocation();
         Location spawnLocation = basicsModule.getSpawnManager().getSpawnLocation();
