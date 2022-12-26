@@ -65,7 +65,7 @@ public class TeleportCommand extends NabCommand {
                                             if (context.getSender().hasPermission(TELEPORT_ALL_PERM)) {
                                                 return true;
                                             }
-                                            return basicsModule.getPlayerDataManager().getPlayerData(player).teleportRequestsEnabled();
+                                            return basicsModule.getPlayerDataManager().getPlayerData(player).teleportFriendsEnabled();
                                         },
                                         "Player has teleportation disabled"
                                 ),
