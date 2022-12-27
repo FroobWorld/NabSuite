@@ -126,10 +126,12 @@ public class PlayerData {
 
     public void setTeleportFriends(boolean enabled) {
         this.teleportFriends = enabled;
+        playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
     public void setTeleportRequests(boolean enabled) {
         this.teleportRequests = enabled;
+        playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
     void updateLastPlayedTime() {
