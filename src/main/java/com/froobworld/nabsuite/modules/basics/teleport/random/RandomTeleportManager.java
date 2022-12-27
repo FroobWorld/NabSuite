@@ -48,6 +48,7 @@ public class RandomTeleportManager {
         inProgress.add(player.getUniqueId());
         return randomTeleporter.attemptFindLocation(player.getWorld())
                 .thenCompose(location -> {
+                    inProgress.remove(player.getUniqueId());
                     if (location == null) {
                         return CompletableFuture.completedFuture(null);
                     }
@@ -55,7 +56,6 @@ public class RandomTeleportManager {
                         player.getPersistentDataContainer().set(timestampPdcKey, PersistentDataType.LONG, System.currentTimeMillis());
                     }
                     player.getPersistentDataContainer().set(allowancePdcKey, PersistentDataType.INTEGER, getRandomTeleportAllowance(player) - 1);
-                    inProgress.remove(player.getUniqueId());
                     return basicsModule.getPlayerTeleporter().teleportAsync(player, location);
                 });
     }
