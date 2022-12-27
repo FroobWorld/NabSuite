@@ -151,6 +151,15 @@ public class AreaManager {
         return areaSet;
     }
 
+    public boolean isAreaAtLocation(Location location) {
+        for (Area area : areaMap.values()) {
+            if (area.isApproved() && area.containsLocation(location)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public GlobalAreaManager getGlobalAreaManager() {
         return globalAreaManager;
     }

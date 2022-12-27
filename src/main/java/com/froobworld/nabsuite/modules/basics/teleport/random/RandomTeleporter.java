@@ -2,6 +2,10 @@ package com.froobworld.nabsuite.modules.basics.teleport.random;
 
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.config.BasicsConfig;
+import com.froobworld.nabsuite.modules.basics.teleport.home.Home;
+import com.froobworld.nabsuite.modules.basics.teleport.home.Homes;
+import com.froobworld.nabsuite.modules.protect.ProtectModule;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -12,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class RandomTeleporter {
     private final Random random = new Random();
     private static final int MAX_ATTEMPTS = 15;
+    private static final double MIN_DISTANCE_FROM_HOME = 300;
     private final BasicsModule basicsModule;
 
     public RandomTeleporter(BasicsModule basicsModule) {
@@ -27,15 +32,28 @@ public class RandomTeleporter {
             return CompletableFuture.completedFuture(null);
         }
         return testLocation(generateRandomLocation(world))
-                .thenCompose(location -> {
+                .thenComposeAsync(location -> {
                     if (location != null) {
                         return CompletableFuture.completedFuture(location);
                     }
                     return attemptFindLocation(world, attemptNumber + 1);
-                });
+                }, Bukkit.getScheduler().getMainThreadExecutor(basicsModule.getPlugin()));
     }
 
     private CompletableFuture<Location> testLocation(Location location) {
+        ProtectModule protectModule = basicsModule.getPlugin().getModule(ProtectModule.class);
+        if (protectModule != null) {
+            if (protectModule.getAreaManager().isAreaAtLocation(location)) {
+                return CompletableFuture.completedFuture(null);
+            }
+        }
+        for (Homes homes : basicsModule.getHomeManager().getAllHomes()) {
+            for (Home home : homes.getHomes()) {
+                if (Math.max(Math.abs(home.getLocation().getBlockX() - location.getBlockX()), Math.abs(home.getLocation().getBlockZ() - location.getBlockZ())) < MIN_DISTANCE_FROM_HOME) {
+                    return CompletableFuture.completedFuture(null);
+                }
+            }
+        }
         return location.getWorld().getChunkAtAsync(location)
                 .thenCompose(chunk -> {
                     if (chunk != null) {
