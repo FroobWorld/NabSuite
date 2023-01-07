@@ -34,10 +34,10 @@ public class AreaVisualisation {
         edgeLines.clear();
         wallLines.clear();
         int minX = Math.min(area.getCorner1().getBlockX(), area.getCorner2().getBlockX());
-        int minY = Math.min(-64, Math.min(area.getCorner1().getBlockY(), area.getCorner2().getBlockY()));
+        int minY = Math.max(-64, Math.min(area.getCorner1().getBlockY(), area.getCorner2().getBlockY()));
         int minZ = Math.min(area.getCorner1().getBlockZ(), area.getCorner2().getBlockZ());
         int maxX = Math.max(area.getCorner1().getBlockX(), area.getCorner2().getBlockX()) + 1;
-        int maxY = Math.max(320, Math.max(area.getCorner1().getBlockY(), area.getCorner2().getBlockY()) + 1);
+        int maxY = Math.min(320, Math.max(area.getCorner1().getBlockY(), area.getCorner2().getBlockY()) + 1);
         int maxZ = Math.max(area.getCorner1().getBlockZ(), area.getCorner2().getBlockZ()) + 1;
 
         edgeLines.addAll(List.of(
