@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.modules.admin.tasks.StaffTask;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.area.flag.enforcers.*;
+import com.froobworld.nabsuite.modules.protect.area.visualiser.AreaVisualiser;
 import com.froobworld.nabsuite.modules.protect.user.User;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -35,6 +36,7 @@ public class AreaManager {
     private final File directory;
     private final GlobalAreaManager globalAreaManager;
     private final AreaNotificationManager areaNotificationManager;
+    private final AreaVisualiser areaVisualiser;
 
     public AreaManager(ProtectModule protectModule) {
         this.protectModule = protectModule;
@@ -51,6 +53,7 @@ public class AreaManager {
         initiateFlagEnforcers();
         globalAreaManager = new GlobalAreaManager(protectModule);
         areaNotificationManager = new AreaNotificationManager();
+        this.areaVisualiser = new AreaVisualiser(protectModule);
     }
 
     public void postStartup() {
@@ -182,5 +185,9 @@ public class AreaManager {
 
     public AreaNotificationManager getAreaNotificationManager() {
         return areaNotificationManager;
+    }
+
+    public AreaVisualiser getAreaVisualiser() {
+        return areaVisualiser;
     }
 }

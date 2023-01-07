@@ -30,7 +30,9 @@ public class AreaCommand extends NabParentCommand {
                 new AreaApproveCommand(protectModule),
                 new AreaDenyCommand(protectModule),
                 new AreaReviewCommand(protectModule),
-                new AreaTeleportCommand(protectModule)
+                new AreaTeleportCommand(protectModule),
+                new AreaVisualiseCommand(protectModule),
+                new AreaStopVisualisingCommand(protectModule)
         ));
     }
 
