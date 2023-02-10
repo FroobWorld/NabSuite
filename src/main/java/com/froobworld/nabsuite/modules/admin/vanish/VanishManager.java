@@ -14,6 +14,7 @@ import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
 import org.dynmap.DynmapAPI;
 import org.jetbrains.annotations.NotNull;
+import org.joor.Reflect;
 
 import java.io.IOException;
 import java.util.Map;
@@ -55,8 +56,10 @@ public class VanishManager {
         BasicsModule basicsModule = adminModule.getPlugin().getModule(BasicsModule.class);
         if (isVanished(player)) {
             basicsModule.getBackManager().addBackExemption(player, vanishBackExemptionKey);
+            setSilentChests(player, true);
         } else {
             basicsModule.getBackManager().removeBackExemption(player, vanishBackExemptionKey);
+            setSilentChests(player, false);
         }
         DynmapAPI dynmapAPI = adminModule.getPlugin().getHookManager().getDynmapHook().getDynmapAPI();
         if (dynmapAPI != null) {
@@ -147,6 +150,14 @@ public class VanishManager {
             this.location = location;
         }
 
+    }
+
+    private void setSilentChests(Player player, boolean silentChests) {
+        if (Reflect.on(player).call("getHandle").fields().containsKey("silentChests")) {
+            Reflect.on(player)
+                    .call("getHandle")
+                    .set("silentChests", silentChests);
+        }
     }
 
 }
