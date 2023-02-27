@@ -104,6 +104,7 @@ public class AdminModule extends NabModule {
         jailManager.shutdown();
         //greylistManager.shutdown();
         oreStatsManager.shutdown();
+        ticketManager.shutdown();
     }
 
     @Override
