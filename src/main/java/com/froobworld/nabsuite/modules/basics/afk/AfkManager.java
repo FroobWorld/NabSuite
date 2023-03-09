@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.basics.afk;
 
+import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -8,10 +9,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
@@ -94,6 +99,49 @@ public class AfkManager implements Listener {
     private void onPlayerJoin(PlayerJoinEvent event) {
         afkStatusMap.remove(event.getPlayer());
         lastActivityMap.put(event.getPlayer(), System.currentTimeMillis());
+    }
+
+    private List<Player> getFullJoinKickablePlayers() {
+        return Bukkit.getOnlinePlayers().stream()
+                .map(player -> (Player) player)
+                .filter(afkStatusMap::containsKey)
+                .filter(player -> System.currentTimeMillis() - afkStatusMap.get(player).getTimestamp() > TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkKickTime.get()))
+                .sorted(Comparator.comparingLong(player -> afkStatusMap.get(player).getTimestamp()))
+                .toList();
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    private void onPlayerLogin(PlayerLoginEvent event) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            List<Player> kickablePlayers = getFullJoinKickablePlayers();
+            int playersToKick = Bukkit.getOnlinePlayers().size() - Bukkit.getMaxPlayers() + 1;
+            if (playersToKick < 0) {
+                return;
+            }
+            if (playersToKick > kickablePlayers.size()) {
+                return;
+            }
+            for (int i = 0; i < playersToKick; i++) {
+                System.out.println(kickablePlayers.get(i).getName());
+                kickablePlayers.get(i).kick(
+                        Component.text("Kicked - server full.", NamedTextColor.WHITE)
+                                .append(Component.newline())
+                                .append(Component.newline())
+                                .append(Component.text("AFK players can be kicked when another player attempts to join.", NamedTextColor.WHITE))
+                );
+            }
+            event.setResult(PlayerLoginEvent.Result.ALLOWED);
+        }
+    }
+
+    @EventHandler
+    private void onServerListPing(PaperServerListPingEvent event) {
+        if (event.getNumPlayers() >= event.getMaxPlayers()) {
+            int kickablePlayers = getFullJoinKickablePlayers().size();
+            if (event.getNumPlayers() - kickablePlayers < event.getMaxPlayers()) {
+                event.setNumPlayers(event.getMaxPlayers() - 1); // Show one less than the max amount if there is room after kicking AFK players
+            }
+        }
     }
 
     public static class AfkStatus {
