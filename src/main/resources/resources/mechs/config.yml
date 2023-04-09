@@ -1,0 +1,10 @@
+# Don't edit this.
+version: 1
+
+# Settings for the view distance manager.
+view-distance:
+  # The capped (default) view distance.
+  capped-view-distance: 16
+
+  # The uncapped view distance.
+  uncapped-view-distance: 32

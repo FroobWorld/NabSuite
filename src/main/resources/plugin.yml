@@ -193,6 +193,8 @@ permissions:
   # Mechs module commands
   nabsuite.command.pvp:
     description: "Access to the /pvp command."
+  nabsuite.command.togglevd:
+    description: "Access to the /togglevd command."
   nabsuite.command.nabmode:
     description: "Access to the /nabmode command."
 
