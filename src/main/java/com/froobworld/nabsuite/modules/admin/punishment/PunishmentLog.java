@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class PunishmentLog {
     private static final SimpleDataSchema<PunishmentLog> SCHEMA = new SimpleDataSchema.Builder<PunishmentLog>()
@@ -20,6 +22,7 @@ public class PunishmentLog {
                     PunishmentLogItem.SCHEMA::write
             ))
             .build();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final AdminModule adminModule;
     private List<PunishmentLogItem> punishmentLogItems = new ArrayList<>();
     private final File file;
@@ -35,13 +38,23 @@ public class PunishmentLog {
     }
 
     public void addPunishmentLogItem(PunishmentLogItem punishmentLogItem) {
-        punishmentLogItems.add(punishmentLogItem);
+        lock.writeLock().lock();
+        try {
+            punishmentLogItems.add(punishmentLogItem);
+        } finally {
+            lock.writeLock().unlock();
+        }
         dataSaver.scheduleSave(this);
         adminModule.getDiscordStaffLog().sendPunishmentLogItemNotification(punishmentLogItem);
     }
 
     public List<PunishmentLogItem> getPunishmentHistory() {
-        return List.copyOf(punishmentLogItems);
+        lock.readLock().lock();
+        try {
+            return List.copyOf(punishmentLogItems);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     void shutdown() {
@@ -57,7 +70,12 @@ public class PunishmentLog {
 
     private String toJsonString() {
         try {
-            return SCHEMA.toJsonString(this);
+            lock.readLock().lock();
+            try {
+                return SCHEMA.toJsonString(this);
+            } finally {
+                lock.readLock().unlock();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

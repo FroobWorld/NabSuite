@@ -5,6 +5,8 @@ api-version: 1.16
 description: "Provides essential systems for the FroobWorld server."
 author: froobynooby
 softdepend: [LuckPerms, dynmap, DiscordSRV]
+folia-supported: true
+
 permissions:
   # Basics module commands
   nabsuite.command.back:

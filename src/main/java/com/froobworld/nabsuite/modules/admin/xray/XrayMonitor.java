@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.admin.xray;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.util.OreUtils;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.google.common.collect.MapMaker;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -35,7 +36,7 @@ public class XrayMonitor implements Listener {
     private final NamespacedKey firstDiamondWarningKey;
     private final AdminModule adminModule;
     private final VeinTracker diamondVeinTracker;
-    private final Map<Player, PlayerTracker> playerTrackers = new WeakHashMap<>();
+    private final Map<Player, PlayerTracker> playerTrackers = new MapMaker().weakKeys().makeMap();
 
     public XrayMonitor(AdminModule adminModule) {
         this.adminModule = adminModule;
@@ -62,11 +63,11 @@ public class XrayMonitor implements Listener {
                                     "Player " + event.getPlayer().getName() + " has suspicious mining activity. Please investigate if they have been x-raying." +
                                             " They may have just been cave mining or gotten lucky."
                                     );
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(adminModule.getPlugin(), () -> {
+                            adminModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskDelayed(() -> {
                                 event.getPlayer().kick(Component.text("Timed out"), PlayerKickEvent.Cause.TIMEOUT);
-                            }, 100);
+                            }, null, event.getPlayer(), 100);
                         }
-                    });
+                    }, adminModule.getPlugin().getHookManager().getSchedulerHook()::runTask);
                 }
             }
         }

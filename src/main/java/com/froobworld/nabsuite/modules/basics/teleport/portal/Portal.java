@@ -7,6 +7,8 @@ import org.bukkit.Location;
 import javax.sound.sampled.Port;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Portal {
     private static final SimpleDataSchema<Portal> SCHEMA = new SimpleDataSchema.Builder<Portal>()
@@ -40,6 +42,7 @@ public class Portal {
             ))
             .build();
 
+    public final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final PortalManager portalManager;
     private String name;
     private Location location;
@@ -71,26 +74,64 @@ public class Portal {
     }
 
     public Portal getLink() {
-        if (link == null) {
-            return null;
+        lock.readLock().lock();
+        try {
+            if (link == null) {
+                return null;
+            }
+            return portalManager.getPortal(link);
+        } finally {
+            lock.readLock().unlock();
         }
-        return portalManager.getPortal(link);
     }
 
     public void setLink(Portal portal) {
-        Portal currentLink = getLink();
-        if (currentLink != null) {
-            currentLink.setLink(null);
-        }
-        this.link = portal == null ? null : portal.getName();
-        if (portal != null) {
-            portal.setLinkOneWay(this);
+        lock.writeLock().lock();
+        try {
+            Portal currentLink = getLink();
+            if (currentLink != null) {
+                currentLink.lock.writeLock().lock();
+                try {
+                    if (currentLink.getLink().equals(this)) {
+                        currentLink.setLinkOneWay(null);
+                    }
+                } finally {
+                    currentLink.lock.writeLock().unlock();
+                }
+            }
+            this.link = portal == null ? null : portal.getName();
+            if (portal != null) {
+                portal.lock.writeLock().lock();
+                try {
+                    Portal otherPortalLink = portal.getLink();
+                    if (otherPortalLink != null) {
+                        otherPortalLink.lock.writeLock().lock();
+                        try {
+                            if (otherPortalLink.getLink().equals(portal)) {
+                                otherPortalLink.setLink(null);
+                            }
+                        } finally {
+                            otherPortalLink.lock.writeLock().unlock();
+                        }
+                    }
+                    portal.setLinkOneWay(this);
+                } finally {
+                    portal.lock.writeLock().unlock();
+                }
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
         portalManager.portalSaver.scheduleSave(this);
     }
 
     private void setLinkOneWay(Portal portal) {
-        link = portal.getName();
+        lock.writeLock().lock();
+        try {
+            link = portal == null ? null : portal.getName();
+        } finally {
+            lock.writeLock().unlock();
+        }
         portalManager.portalSaver.scheduleSave(this);
     }
 
@@ -112,7 +153,12 @@ public class Portal {
 
     public String toJsonString() {
         try {
-            return SCHEMA.toJsonString(this);
+            lock.readLock().lock();
+            try {
+                return SCHEMA.toJsonString(this);
+            } finally {
+                lock.readLock().unlock();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

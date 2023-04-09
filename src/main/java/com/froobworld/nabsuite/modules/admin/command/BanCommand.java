@@ -8,6 +8,9 @@ import com.froobworld.nabsuite.command.argument.arguments.PlayerIdentityArgument
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.admin.punishment.Punishments;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Optional;
@@ -29,12 +32,24 @@ public class BanCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         PlayerIdentity player = context.get("player");
         Optional<String> reason = context.getOptional("reason");
-        adminModule.getPunishmentManager().getBanEnforcer().ban(
-                player,
-                context.getSender(),
-                reason.orElse(null),
-                -1
-        );
+        Punishments punishments = adminModule.getPunishmentManager().getPunishments(player.getUuid());
+        punishments.lock.writeLock().lock();
+        try {
+            if (punishments.getBanPunishment() != null) { // protect against race condition
+                context.getSender().sendMessage(
+                        Component.text("That player is already banned.", NamedTextColor.RED)
+                );
+                return;
+            }
+            adminModule.getPunishmentManager().getBanEnforcer().ban(
+                    player,
+                    context.getSender(),
+                    reason.orElse(null),
+                    -1
+            );
+        } finally {
+            punishments.lock.writeLock().unlock();
+        }
     }
 
     @Override

@@ -110,7 +110,7 @@ public class GreylistEnforcer implements Listener {
     private void onJoin(PlayerJoinEvent event) {
         PlayerGreylistData data = greylistManager.getGreylistData(event.getPlayer().getUniqueId());
         if (!data.isInformedOfRemoval()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(adminModule.getPlugin(), () -> {
+            adminModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskDelayed(() -> {
                 if (event.getPlayer().isOnline()) {
                     data.setInformedOfRemoval(false);
                     if (data.isGreylisted()) {
@@ -119,7 +119,7 @@ public class GreylistEnforcer implements Listener {
                         informOfRemoval(event.getPlayer());
                     }
                 }
-            }, 20);
+            }, null, event.getPlayer(), 20);
         }
     }
 

@@ -5,6 +5,7 @@ import com.froobworld.nabsuite.data.DataSaver;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -15,7 +16,7 @@ public class JailManager {
     public static final Pattern jailNamePattern = Pattern.compile("^[a-zA-z0-9-_]+$");
     private static final Pattern fileNamePattern = Pattern.compile("^[a-zA-z0-9-_]+\\.json$");
     protected final DataSaver jailSaver;
-    private final BiMap<String, Jail> jailMap = HashBiMap.create();
+    private final BiMap<String, Jail> jailMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final File directory;
 
     public JailManager(AdminModule adminModule) {
@@ -39,18 +40,22 @@ public class JailManager {
         if (!jailNamePattern.matcher(name).matches()) {
             throw new IllegalArgumentException("Name does not match pattern: " + jailNamePattern);
         }
-        if (jailMap.containsKey(name.toLowerCase())) {
-            throw new IllegalStateException("Jail with that name already exists");
+        synchronized (jailMap) {
+            if (jailMap.containsKey(name.toLowerCase())) {
+                throw new IllegalStateException("Jail with that name already exists");
+            }
+            Jail jail = new Jail(name, creator.getLocation(), radius, creator.getUniqueId());
+            jailMap.put(name.toLowerCase(), jail);
+            jailSaver.scheduleSave(jail);
+            return jail;
         }
-        Jail jail = new Jail(name, creator.getLocation(), radius, creator.getUniqueId());
-        jailMap.put(name.toLowerCase(), jail);
-        jailSaver.scheduleSave(jail);
-        return jail;
     }
 
     public void deleteJail(Jail jail) {
-        jailMap.remove(jail.getName().toLowerCase());
-        jailSaver.scheduleDeletion(jail);
+        synchronized (jailMap) {
+            jailMap.remove(jail.getName().toLowerCase());
+            jailSaver.scheduleDeletion(jail);
+        }
     }
 
     public Jail getJail(String name) {
@@ -58,7 +63,7 @@ public class JailManager {
     }
 
     public Set<Jail> getJails() {
-        return jailMap.values();
+        return Set.copyOf(jailMap.values());
     }
 
 }

@@ -26,26 +26,28 @@ public class SuspiciousActivityMonitor {
                 new TheftMonitor(adminModule)
         );
         this.adminModule = adminModule;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), this::checkAllPlayers, 1200, 1200);
+        adminModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(this::checkAllPlayers, 1200, 1200);
     }
 
     private void checkAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getStatistic(Statistic.PLAY_ONE_MINUTE) < TIME_PLAYED_THRESHOLD && !player.getPersistentDataContainer().has(pdcKey)) {
-                if (isSuspicious(player)) {
-                    if (adminModule.getPunishmentManager().getPunishments(player.getUniqueId()).getRestrictionPunishment() == null) {
-                        PlayerIdentity playerIdentity = adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player);
-                        adminModule.getPunishmentManager().getRestrictionEnforcer().restrict(playerIdentity, Bukkit.getConsoleSender(), "Suspicious activity");
-                    }
-                    adminModule.getTicketManager().createSystemTicket(
-                            player.getLocation(),
-                            "Player " + player.getName() + " has suspicious activity that could indicate they are breaking the rules. Please investigate.\n\n" +
-                                    getSuspicionSummary(player)
-                    );
-                    player.getPersistentDataContainer().set(pdcKey, PersistentDataType.BYTE, (byte) 1);
+            adminModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskAsap(() -> {
+                if (player.getStatistic(Statistic.PLAY_ONE_MINUTE) < TIME_PLAYED_THRESHOLD && !player.getPersistentDataContainer().has(pdcKey)) {
+                    if (isSuspicious(player)) {
+                        if (adminModule.getPunishmentManager().getPunishments(player.getUniqueId()).getRestrictionPunishment() == null) {
+                            PlayerIdentity playerIdentity = adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player);
+                            adminModule.getPunishmentManager().getRestrictionEnforcer().restrict(playerIdentity, Bukkit.getConsoleSender(), "Suspicious activity");
+                        }
+                        adminModule.getTicketManager().createSystemTicket(
+                                player.getLocation(),
+                                "Player " + player.getName() + " has suspicious activity that could indicate they are breaking the rules. Please investigate.\n\n" +
+                                        getSuspicionSummary(player)
+                        );
+                        player.getPersistentDataContainer().set(pdcKey, PersistentDataType.BYTE, (byte) 1);
 
+                    }
                 }
-            }
+            }, null, player);
         }
     }
 

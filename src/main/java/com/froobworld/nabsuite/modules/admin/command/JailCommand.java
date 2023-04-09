@@ -11,6 +11,7 @@ import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.command.argument.JailArgument;
 import com.froobworld.nabsuite.modules.admin.jail.Jail;
+import com.froobworld.nabsuite.modules.admin.punishment.Punishments;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -36,16 +37,28 @@ public class JailCommand extends NabCommand {
         Jail jail = context.get("jail");
         long duration = context.get("duration");
         Optional<String> reason = context.getOptional("reason");
-        adminModule.getPunishmentManager().getJailEnforcer().jail(
-                player,
-                context.getSender(),
-                jail,
-                reason.orElse(null),
-                duration
-        );
-        context.getSender().sendMessage(
-                Component.text("Player jailed.").color(NamedTextColor.YELLOW)
-        );
+        Punishments punishments = adminModule.getPunishmentManager().getPunishments(player.getUuid());
+        punishments.lock.writeLock().lock();
+        try {
+            if (punishments.getBanPunishment() != null) { // protect against race condition
+                context.getSender().sendMessage(
+                        Component.text("That player is already jailed.", NamedTextColor.RED)
+                );
+                return;
+            }
+            adminModule.getPunishmentManager().getJailEnforcer().jail(
+                    player,
+                    context.getSender(),
+                    jail,
+                    reason.orElse(null),
+                    duration
+            );
+            context.getSender().sendMessage(
+                    Component.text("Player jailed.").color(NamedTextColor.YELLOW)
+            );
+        } finally {
+            punishments.lock.writeLock().unlock();
+        }
     }
 
     @Override

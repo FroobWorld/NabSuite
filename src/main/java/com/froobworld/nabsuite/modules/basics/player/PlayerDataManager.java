@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +25,7 @@ public class PlayerDataManager implements Listener {
     private static final Pattern fileNamePattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.json$");
     private final BasicsModule basicsModule;
     protected final DataSaver playerDataSaver;
-    private final BiMap<UUID, PlayerData> playerDataMap = HashBiMap.create();
+    private final BiMap<UUID, PlayerData> playerDataMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final File directory;
     private final IgnoreManager ignoreManager;
     private final FriendManager friendManager;
@@ -80,12 +81,11 @@ public class PlayerDataManager implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     private void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (!playerDataMap.containsKey(player.getUniqueId())) {
+        playerDataMap.computeIfAbsent(player.getUniqueId(), k -> {
             PlayerData playerData = new PlayerData(this, player);
-            playerDataMap.put(player.getUniqueId(), playerData);
             playerDataSaver.scheduleSave(playerData);
-        }
-        getPlayerData(player).updateLastPlayedTime();
+            return playerData;
+        }).updateLastPlayedTime();
     }
 
     @EventHandler

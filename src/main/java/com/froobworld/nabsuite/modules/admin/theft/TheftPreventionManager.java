@@ -1,6 +1,7 @@
 package com.froobworld.nabsuite.modules.admin.theft;
 
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.google.common.collect.MapMaker;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -8,11 +9,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Map;
-import java.util.WeakHashMap;
 
 public class TheftPreventionManager implements Listener {
     private final NamespacedKey pdcKey;
-    private final Map<Player, Boolean> understandsCache = new WeakHashMap<>();
+    private final Map<Player, Boolean> understandsCache = new MapMaker().weakKeys().makeMap();
 
     public TheftPreventionManager(AdminModule adminModule) {
         this.pdcKey = NamespacedKey.fromString("theft-rule-accepted", adminModule.getPlugin());

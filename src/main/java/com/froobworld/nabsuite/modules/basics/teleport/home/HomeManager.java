@@ -5,6 +5,7 @@ import com.froobworld.nabsuite.data.DataSaver;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -17,7 +18,7 @@ public class HomeManager {
     private static final Pattern fileNamePattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.json$");
     private final BasicsModule basicsModule;
     protected final DataSaver homesSaver;
-    private final BiMap<UUID, Homes> homesMap = HashBiMap.create();
+    private final BiMap<UUID, Homes> homesMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final File directory;
 
     public HomeManager(BasicsModule basicsModule) {
@@ -39,16 +40,15 @@ public class HomeManager {
     }
 
     public Set<Homes> getAllHomes() {
-        return homesMap.values();
+        return Set.copyOf(homesMap.values());
     }
 
     public Homes getHomes(Player player) {
-        if (!homesMap.containsKey(player.getUniqueId())) {
+        return homesMap.computeIfAbsent(player.getUniqueId(), k -> {
             Homes homes = new Homes(this, player.getUniqueId());
-            homesMap.put(player.getUniqueId(), homes);
             homesSaver.scheduleSave(homes);
-        }
-        return homesMap.get(player.getUniqueId());
+            return homes;
+        });
     }
 
     public Home createHome(Player player, String name) {

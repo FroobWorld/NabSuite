@@ -57,6 +57,12 @@ public class FriendListCommand extends NabCommand {
         } else {
             int pageNumber = context.get("page");
             List<Component>[] pages = ListPaginator.paginate(friends, ITEMS_PER_PAGE);
+            if (pageNumber > pages.length) {
+                context.getSender().sendMessage(
+                        Component.text("Page number exceeds maximum.", NamedTextColor.RED)
+                );
+                return;
+            }
             List<Component> page = pages[pageNumber - 1];
             player.sendMessage(
                     Component.text("You have " + NumberDisplayer.toStringWithModifier(friends.size(), " friend.", " friends.", false))

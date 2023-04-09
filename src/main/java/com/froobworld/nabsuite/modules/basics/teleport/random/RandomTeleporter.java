@@ -37,7 +37,7 @@ public class RandomTeleporter {
                         return CompletableFuture.completedFuture(location);
                     }
                     return attemptFindLocation(world, attemptNumber + 1);
-                }, Bukkit.getScheduler().getMainThreadExecutor(basicsModule.getPlugin()));
+                }, basicsModule.getPlugin().getHookManager().getSchedulerHook()::runTask);
     }
 
     private CompletableFuture<Location> testLocation(Location location) {

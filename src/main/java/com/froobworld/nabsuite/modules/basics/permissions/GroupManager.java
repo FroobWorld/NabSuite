@@ -82,11 +82,7 @@ public class GroupManager implements Listener {
     }
 
     private void updateDisplayName(Player player) {
-        if (Bukkit.isPrimaryThread()) {
-            Bukkit.getScheduler().runTaskAsynchronously(basicsModule.getPlugin(), () -> updateDisplayName(player));
-            return;
-        }
-        updateDisplayName(player, luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup());
+        basicsModule.getPlugin().getHookManager().getSchedulerHook().runTaskAsync(() -> updateDisplayName(player, luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup()));
     }
 
     private void updateDisplayName(Player player, String group) {

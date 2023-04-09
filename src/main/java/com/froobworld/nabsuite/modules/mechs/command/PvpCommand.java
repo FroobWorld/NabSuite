@@ -27,7 +27,7 @@ public class PvpCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         Player sender = (Player) context.getSender();
         PvpManager pvpManager = mechsModule.getPvpManager();
-        pvpManager.setPvpEanbled(sender, !pvpManager.pvpEnabled(sender));
+        pvpManager.setPvpEnabled(sender, !pvpManager.pvpEnabled(sender));
         if (pvpManager.pvpEnabled(sender)) {
             sender.sendMessage(Component.text("PvP enabled. You may now fight other players.", NamedTextColor.YELLOW));
         } else {

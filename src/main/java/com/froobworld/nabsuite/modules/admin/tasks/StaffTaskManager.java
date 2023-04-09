@@ -29,12 +29,12 @@ public class StaffTaskManager implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onPlayerJoin(PlayerJoinEvent event) {
         if (!getStaffTasks(event.getPlayer()).isEmpty()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(adminModule.getPlugin(), () -> {
+            adminModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskDelayed(() -> {
                 event.getPlayer().sendMessage(
                         Component.text("There are staff tasks that require action (/stafftasks).").color(NamedTextColor.YELLOW)
                                 .clickEvent(ClickEvent.runCommand("/stafftasks"))
                 );
-            }, 20);
+            }, null, event.getPlayer(), 20);
         }
     }
 

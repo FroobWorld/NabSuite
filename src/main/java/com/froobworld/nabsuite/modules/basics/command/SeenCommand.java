@@ -34,13 +34,14 @@ public class SeenCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         PlayerIdentity playerIdentity = context.get("player");
         PlayerData playerData = basicsModule.getPlayerDataManager().getPlayerData(playerIdentity.getUuid());
-        long timeSinceLastPlay = System.currentTimeMillis() - playerData.getLastPlayed();
+        long lastPlayed = playerData.getLastPlayed();
+        long timeSinceLastPlay = System.currentTimeMillis() - lastPlayed;
         if (playerIdentity.asPlayer() != null) {
             context.getSender().sendMessage(
                     Component.text("That player is online right now, silly.").color(NamedTextColor.YELLOW)
             );
         } else {
-            String lastSeenDate = new SimpleDateFormat("dd MMMM yyyy").format(Date.from(Instant.ofEpochMilli(playerData.getLastPlayed())));
+            String lastSeenDate = new SimpleDateFormat("dd MMMM yyyy").format(Date.from(Instant.ofEpochMilli(lastPlayed)));
 
             context.getSender().sendMessage(
                     Component.text(playerIdentity.getLastName() + " last played " + DurationDisplayer.asDurationString(timeSinceLastPlay) + " ago.").color(NamedTextColor.YELLOW)

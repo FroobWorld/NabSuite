@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.jail.JailManager;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.util.UUID;
@@ -15,7 +16,7 @@ public class PunishmentManager {
     private static final Pattern fileNamePattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.json$");
     final AdminModule adminModule;
     protected final DataSaver punishmentsSaver;
-    private final BiMap<UUID, Punishments> punishmentsMap = HashBiMap.create();
+    private final BiMap<UUID, Punishments> punishmentsMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final File directory;
     private final BanEnforcer banEnforcer;
     private final MuteEnforcer muteEnforcer;
@@ -48,12 +49,11 @@ public class PunishmentManager {
     }
 
     public Punishments getPunishments(UUID uuid) {
-        if (!punishmentsMap.containsKey(uuid)) {
+        return punishmentsMap.computeIfAbsent(uuid, k -> {
             Punishments punishments = new Punishments(adminModule, this, uuid);
-            punishmentsMap.put(uuid, punishments);
             punishmentsSaver.scheduleSave(punishments);
-        }
-        return punishmentsMap.get(uuid);
+            return punishments;
+        });
     }
 
     public JailManager getJailManager() {

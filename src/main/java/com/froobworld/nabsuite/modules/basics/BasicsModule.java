@@ -78,7 +78,7 @@ public class BasicsModule extends NabModule {
                 new PingCommand(),
                 new MeCommand(this),
                 new HoldingCommand(this),
-                new WeatherCommand(),
+                new WeatherCommand(this),
                 new IgnoreCommand(this),
                 new NamesCommand(this),
                 new SetWarpCommand(this),

@@ -4,6 +4,7 @@ import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -16,7 +17,7 @@ public class PlayerTeleporter {
 
     public void teleport(Player player, Location location) {
         basicsModule.getBackManager().setBackLocation(player, player.getLocation());
-        player.teleport(location);
+        player.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
     public void teleport(Player player, Entity entity) {
@@ -24,10 +25,14 @@ public class PlayerTeleporter {
     }
 
     public CompletableFuture<Location> teleportAsync(Player player, Location location) {
-        return location.getWorld().getChunkAtAsync(location).thenApply(chunk -> {
-            teleport(player, location);
-            return location;
-        });
+        basicsModule.getBackManager().setBackLocation(player, player.getLocation());
+        return player.teleportAsync(location).thenApply(result -> location);
+    }
+
+    public CompletableFuture<Location> teleportAsync(Player player, Entity entity) {
+        basicsModule.getBackManager().setBackLocation(player, player.getLocation());
+        Location location = entity.getLocation();
+        return player.teleportAsync(location).thenApply(result -> location);
     }
 
 }

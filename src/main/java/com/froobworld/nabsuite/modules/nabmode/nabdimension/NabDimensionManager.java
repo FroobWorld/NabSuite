@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -27,7 +28,7 @@ public class NabDimensionManager implements Listener {
         this.nabModeModule = nabModeModule;
         nabWorld = Bukkit.getServer().createWorld(WorldCreator.name("nabworld"));
         nabModeModule.getPlugin().getSLF4JLogger().info("Loaded nabworld with uid '" + nabWorld.getUID() + "'");
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(nabModeModule.getPlugin(), this::loop, 0, 1);
+        nabModeModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(this::loop, 1, 1);
         Bukkit.getPluginManager().registerEvents(this, nabModeModule.getPlugin());
     }
 
@@ -99,28 +100,39 @@ public class NabDimensionManager implements Listener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    private void onWorldChange(PlayerChangedWorldEvent event) {
+        if (!nabModeModule.getNabModeManager().isNabMode(event.getPlayer()) || !event.getPlayer().getWorld().equals(nabWorld)) {
+            if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+                event.getPlayer().setGameMode(GameMode.SURVIVAL);
+            }
+        }
+    }
+
     private void loop() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getWorld().equals(nabWorld) && !hasFlagSet()) {
-                BasicsModule basicsModule = nabModeModule.getPlugin().getModule(BasicsModule.class);
-                Location spawnLocation;
-                if (basicsModule != null) {
-                    spawnLocation = basicsModule.getSpawnManager().getSpawnLocation();
+            nabModeModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskAsap(() -> {
+                if (player.getWorld().equals(nabWorld) && !hasFlagSet()) {
+                    BasicsModule basicsModule = nabModeModule.getPlugin().getModule(BasicsModule.class);
+                    Location spawnLocation;
+                    if (basicsModule != null) {
+                        spawnLocation = basicsModule.getSpawnManager().getSpawnLocation();
+                    } else {
+                        spawnLocation = Bukkit.getWorlds().get(0).getSpawnLocation();
+                    }
+                    player.teleport(spawnLocation);
+                    player.sendMessage(Component.text("You've been moved to spawn. The world you were previously in is currently disabled.", NamedTextColor.RED));
+                }
+                if (nabModeModule.getNabModeManager().isNabMode(player) && player.getWorld().equals(nabWorld)) {
+                    if (player.getGameMode() != GameMode.CREATIVE) {
+                        player.setGameMode(GameMode.CREATIVE);
+                    }
                 } else {
-                    spawnLocation = Bukkit.getWorlds().get(0).getSpawnLocation();
+                    if (player.getGameMode() == GameMode.CREATIVE) {
+                        player.setGameMode(GameMode.SURVIVAL);
+                    }
                 }
-                player.teleport(spawnLocation);
-                player.sendMessage(Component.text("You've been moved to spawn. The world you were previously in is currently disabled.", NamedTextColor.RED));
-            }
-            if (nabModeModule.getNabModeManager().isNabMode(player) && player.getWorld().equals(nabWorld)) {
-                if (player.getGameMode() != GameMode.CREATIVE) {
-                    player.setGameMode(GameMode.CREATIVE);
-                }
-            } else {
-                if (player.getGameMode() == GameMode.CREATIVE) {
-                    player.setGameMode(GameMode.SURVIVAL);
-                }
-            }
+            }, null, player);
         }
     }
 

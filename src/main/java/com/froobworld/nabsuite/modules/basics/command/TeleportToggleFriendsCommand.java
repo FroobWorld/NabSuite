@@ -27,15 +27,20 @@ public class TeleportToggleFriendsCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         Player sender = (Player) context.getSender();
         PlayerData playerData = basicsModule.getPlayerDataManager().getPlayerData(sender);
-        playerData.setTeleportFriends(!playerData.teleportFriendsEnabled());
-        if (playerData.teleportFriendsEnabled()) {
-            sender.sendMessage(
-                    Component.text("Your friends will now be able to teleport to you.").color(NamedTextColor.YELLOW)
-            );
-        } else {
-            sender.sendMessage(
-                    Component.text("Your friends will no longer be able to teleport to you.").color(NamedTextColor.YELLOW)
-            );
+        playerData.lock.writeLock().lock();
+        try {
+            playerData.setTeleportFriends(!playerData.teleportFriendsEnabled());
+            if (playerData.teleportFriendsEnabled()) {
+                sender.sendMessage(
+                        Component.text("Your friends will now be able to teleport to you.").color(NamedTextColor.YELLOW)
+                );
+            } else {
+                sender.sendMessage(
+                        Component.text("Your friends will no longer be able to teleport to you.").color(NamedTextColor.YELLOW)
+                );
+            }
+        } finally {
+            playerData.lock.writeLock().unlock();
         }
     }
 

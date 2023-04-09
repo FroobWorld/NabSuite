@@ -19,13 +19,13 @@ public class AutoGroupChecker {
     public AutoGroupChecker(BasicsModule basicsModule, LuckPerms luckPerms) {
         this.basicsModule = basicsModule;
         this.luckPerms = luckPerms;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(basicsModule.getPlugin(), () -> {
+        basicsModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(() -> {
             Bukkit.getOnlinePlayers().forEach(this::updatePlayer);
         }, 20, 200);
     }
 
     private void updatePlayer(Player player) {
-        Bukkit.getScheduler().runTaskAsynchronously(basicsModule.getPlugin(), () -> {
+        basicsModule.getPlugin().getHookManager().getSchedulerHook().runTaskAsync(() -> {
             User user = luckPerms.getUserManager().getUser(player.getUniqueId());
             if (user == null) {
                 return;

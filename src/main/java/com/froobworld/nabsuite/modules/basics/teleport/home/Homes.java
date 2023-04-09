@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Homes {
     private static final SimpleDataSchema<Homes> SCHEMA = new SimpleDataSchema.Builder<Homes>()
@@ -21,6 +23,7 @@ public class Homes {
                     Home.SCHEMA::write
             ))
             .build();
+    public final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final HomeManager homeManager;
     private UUID uuid;
     private Set<Home> homes;
@@ -36,7 +39,12 @@ public class Homes {
     }
 
     public Set<Home> getHomes() {
-        return Set.copyOf(homes);
+        lock.readLock().lock();
+        try {
+            return Set.copyOf(homes);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public UUID getUuid() {
@@ -44,27 +52,47 @@ public class Homes {
     }
 
     public Home getHome(String name) {
-        for (Home home : homes) {
-            if (home.getName().equalsIgnoreCase(name)) {
-                return home;
+        lock.readLock().lock();
+        try {
+            for (Home home : homes) {
+                if (home.getName().equalsIgnoreCase(name)) {
+                    return home;
+                }
             }
+            return null;
+        } finally {
+            lock.readLock().unlock();
         }
-        return null;
     }
 
     void addHome(Home home) {
-        homes.add(home);
+        lock.writeLock().lock();
+        try {
+            homes.add(home);
+        } finally {
+            lock.writeLock().unlock();
+        }
         homeManager.homesSaver.scheduleSave(this);
     }
 
     void removeHome(Home home) {
-        homes.remove(home);
+        lock.writeLock().lock();
+        try {
+            homes.remove(home);
+        } finally {
+            lock.writeLock().unlock();
+        }
         homeManager.homesSaver.scheduleSave(this);
     }
 
     public String toJsonString() {
         try {
-            return SCHEMA.toJsonString(this);
+            lock.readLock().lock();
+            try {
+                return SCHEMA.toJsonString(this);
+            } finally {
+                lock.readLock().unlock();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

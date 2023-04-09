@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Ticket {
     static final SimpleDataSchema<Ticket> SCHEMA = new SimpleDataSchema.Builder<Ticket>()
@@ -43,6 +45,7 @@ public class Ticket {
                     TicketNote.SCHEMA::write
             ))
             .build();
+    public final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final TicketManager ticketManager;
     private int id;
     private long timestamp;
@@ -88,23 +91,43 @@ public class Ticket {
     }
 
     public boolean isOpen() {
-        return open;
+        lock.readLock().lock();
+        try {
+            return open;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public List<TicketNote> getNotes() {
-        return List.copyOf(notes);
+        lock.readLock().lock();
+        try {
+            return List.copyOf(notes);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void addNote(UUID creator, String message) {
-        notes.add(new TicketNote(System.currentTimeMillis(), creator, message));
+        lock.writeLock().lock();
+        try {
+            notes.add(new TicketNote(System.currentTimeMillis(), creator, message));
+        } finally {
+            lock.writeLock().unlock();
+        }
         ticketManager.ticketSaver.scheduleSave(this);
     }
 
     public void close(UUID closer, String message) {
-        if (open) {
-            open = false;
-            notes.add(new TicketNote(System.currentTimeMillis(), closer, "(Closed with response: '" + message + "')"));
-            ticketManager.ticketSaver.scheduleSave(this);
+        lock.writeLock().lock();
+        try {
+            if (open) {
+                open = false;
+                notes.add(new TicketNote(System.currentTimeMillis(), closer, "(Closed with response: '" + message + "')"));
+                ticketManager.ticketSaver.scheduleSave(this);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -121,7 +144,12 @@ public class Ticket {
 
     String toJsonString() {
         try {
-            return SCHEMA.toJsonString(this);
+            lock.readLock().lock();
+            try {
+                return SCHEMA.toJsonString(this);
+            } finally {
+                lock.readLock().unlock();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

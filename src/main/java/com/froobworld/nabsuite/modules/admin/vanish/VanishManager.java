@@ -77,14 +77,19 @@ public class VanishManager {
                     .color(NamedTextColor.YELLOW);
         } else {
             PreVanishLocation preVanishLocation = player.getPersistentDataContainer().get(vanishPdcKey, PreVanishLocation.DATA_TYPE);
-            player.getPersistentDataContainer().remove(vanishPdcKey);
-            vanishCache.put(player, false);
+            if (preVanishLocation != null) {
+                adminModule.getPlugin().getModule(BasicsModule.class).getPlayerTeleporter().teleportAsync(player, preVanishLocation.location).thenRun(() -> {
+                    player.getPersistentDataContainer().remove(vanishPdcKey);
+                    vanishCache.put(player, false);
+                    updateVanish(player);
+                });
+            } else {
+                player.getPersistentDataContainer().remove(vanishPdcKey);
+                vanishCache.put(player, false);
+            }
             notification = notification.append(player.displayName())
                     .append(Component.text(" is no longer vanished."))
                     .color(NamedTextColor.YELLOW);
-            if (preVanishLocation != null) {
-                adminModule.getPlugin().getModule(BasicsModule.class).getPlayerTeleporter().teleport(player, preVanishLocation.location);
-            }
         }
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (onlinePlayer.hasPermission(VANISH_SEE_PERMISSION) || onlinePlayer.equals(player)) {
@@ -93,6 +98,7 @@ public class VanishManager {
         }
         updateVanish(player);
     }
+
 
     public boolean isVanished(Player player) {
         return vanishCache.computeIfAbsent(player, p -> p.getPersistentDataContainer().get(vanishPdcKey, PreVanishLocation.DATA_TYPE) != null);

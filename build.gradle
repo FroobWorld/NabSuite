@@ -10,7 +10,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        url "https://papermc.io/repo/repository/maven-public/"
+        url "https://repo.papermc.io/repository/maven-public/"
     }
     maven {
         url = 'https://oss.sonatype.org/content/repositories/snapshots'
@@ -34,7 +34,7 @@ processResources {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+    //compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
     compileOnly 'net.luckperms:api:5.4'
     compileOnly 'us.dynmap:DynmapCoreAPI:3.3'
     compileOnly 'us.dynmap:dynmap-api:3.3'
@@ -43,6 +43,7 @@ dependencies {
     implementation 'cloud.commandframework:cloud-minecraft-extras:1.6.2'
     implementation 'com.froobworld:nab-configuration:1.0.2'
     implementation 'org.jooq:joor-java-8:0.9.14'
+    compileOnly 'dev.folia:folia-api:1.19.4-R0.1-SNAPSHOT'
 }
 
 shadowJar {

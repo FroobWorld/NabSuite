@@ -10,6 +10,7 @@ import com.froobworld.nabsuite.command.argument.predicate.predicates.PatternArgu
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.teleport.home.Home;
 import com.froobworld.nabsuite.modules.basics.teleport.home.HomeManager;
+import com.froobworld.nabsuite.modules.basics.teleport.home.Homes;
 import com.froobworld.nabsuite.util.NumberDisplayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -33,18 +34,30 @@ public class SetHomeCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         String homeName = context.get("name");
-        int maxHomes = basicsModule.getHomeManager().getMaxHomes(player);
-        if (basicsModule.getHomeManager().getHomes(player).getHomes().size() >= maxHomes) {
-            player.sendMessage(
-                    Component.text("You can only set " + NumberDisplayer.toStringWithModifier(maxHomes, " home", " homes", false) + ".").color(NamedTextColor.RED)
-            );
-            return;
-        }
+        Homes homes = basicsModule.getHomeManager().getHomes(player);
+        homes.lock.writeLock().lock();
+        try {
+            if (homes.getHome(homeName) != null) { // check if home name already exists due to race condition
+                player.sendMessage(
+                        Component.text("Home already exists. Use /delhome to delete the home first.", NamedTextColor.RED)
+                );
+                return;
+            }
+            int maxHomes = basicsModule.getHomeManager().getMaxHomes(player);
+            if (homes.getHomes().size() >= maxHomes) {
+                player.sendMessage(
+                        Component.text("You can only set " + NumberDisplayer.toStringWithModifier(maxHomes, " home", " homes", false) + ".").color(NamedTextColor.RED)
+                );
+                return;
+            }
 
-        Home home = basicsModule.getHomeManager().createHome(player, homeName);
-        player.sendMessage(
-                Component.text("Created home '" + home.getName() + "' at your location.").color(NamedTextColor.YELLOW)
-        );
+            Home home = basicsModule.getHomeManager().createHome(player, homeName);
+            player.sendMessage(
+                    Component.text("Created home '" + home.getName() + "' at your location.").color(NamedTextColor.YELLOW)
+            );
+        } finally {
+            homes.lock.writeLock().unlock();
+        }
     }
 
     @Override

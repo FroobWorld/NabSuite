@@ -9,6 +9,7 @@ import com.froobworld.nabsuite.command.argument.arguments.PlayerIdentityArgument
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.admin.punishment.Punishments;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -33,15 +34,27 @@ public class MuteCommand extends NabCommand {
         PlayerIdentity player = context.get("player");
         long duration = context.get("duration");
         Optional<String> reason = context.getOptional("reason");
-        adminModule.getPunishmentManager().getMuteEnforcer().mute(
-                player,
-                context.getSender(),
-                reason.orElse(null),
-                duration
-        );
-        context.getSender().sendMessage(
-                Component.text("Player muted.").color(NamedTextColor.YELLOW)
-        );
+        Punishments punishments = adminModule.getPunishmentManager().getPunishments(player.getUuid());
+        punishments.lock.writeLock().lock();
+        try {
+            if (punishments.getMutePunishment() != null) { // protect against race condition
+                context.getSender().sendMessage(
+                        Component.text("That player is already muted.", NamedTextColor.RED)
+                );
+                return;
+            }
+            adminModule.getPunishmentManager().getMuteEnforcer().mute(
+                    player,
+                    context.getSender(),
+                    reason.orElse(null),
+                    duration
+            );
+            context.getSender().sendMessage(
+                    Component.text("Player muted.").color(NamedTextColor.YELLOW)
+            );
+        } finally {
+            punishments.lock.writeLock().unlock();
+        }
     }
 
     @Override

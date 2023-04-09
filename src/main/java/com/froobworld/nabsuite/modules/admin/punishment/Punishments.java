@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Punishments {
     private static final SimpleDataSchema<Punishments> SCHEMA = new SimpleDataSchema.Builder<Punishments>()
@@ -48,6 +50,7 @@ public class Punishments {
             ))
             .build();
 
+    public final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final AdminModule adminModule;
     private final PunishmentManager punishmentManager;
     private UUID uuid;
@@ -73,57 +76,100 @@ public class Punishments {
     }
 
     public BanPunishment getBanPunishment() {
-        return banPunishment;
+        lock.readLock().lock();
+        try {
+            return banPunishment;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public MutePunishment getMutePunishment() {
-        return mutePunishment;
+        lock.readLock().lock();
+        try {
+            return mutePunishment;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public JailPunishment getJailPunishment() {
-        return jailPunishment;
+        lock.readLock().lock();
+        try {
+            return jailPunishment;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public RestrictionPunishment getRestrictionPunishment() {
-        return restrictionPunishment;
+        lock.readLock().lock();
+        try {
+            return restrictionPunishment;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public List<PunishmentLogItem> getPunishmentHistory() {
-        return punishmentHistory == null ? Lists.newArrayList() : List.copyOf(punishmentHistory);
+        lock.readLock().lock();
+        try {
+            return punishmentHistory == null ? Lists.newArrayList() : List.copyOf(punishmentHistory);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     void setBanPunishment(BanPunishment banPunishment) {
+        lock.writeLock().lock();
         this.banPunishment = banPunishment;
+        lock.writeLock().unlock();
         punishmentManager.punishmentsSaver.scheduleSave(this);
     }
 
     void setMutePunishment(MutePunishment mutePunishment) {
+        lock.writeLock().lock();
         this.mutePunishment = mutePunishment;
+        lock.writeLock().unlock();
         punishmentManager.punishmentsSaver.scheduleSave(this);
     }
 
     void setJailPunishment(JailPunishment jailPunishment) {
+        lock.writeLock().lock();
         this.jailPunishment = jailPunishment;
+        lock.writeLock().unlock();
         punishmentManager.punishmentsSaver.scheduleSave(this);
     }
 
     void setRestrictionPunishment(RestrictionPunishment restrictionPunishment) {
+        lock.writeLock().lock();
         this.restrictionPunishment = restrictionPunishment;
+        lock.writeLock().unlock();
         punishmentManager.punishmentsSaver.scheduleSave(this);
     }
 
     void addPunishmentLogItem(PunishmentLogItem punishmentLogItem) {
-        if (punishmentHistory == null) {
-            punishmentHistory = new ArrayList<>();
+        lock.writeLock().lock();
+        try {
+            if (punishmentHistory == null) {
+                punishmentHistory = new ArrayList<>();
+            }
+            punishmentHistory.add(punishmentLogItem);
+        } finally {
+            lock.writeLock().unlock();
         }
-        punishmentHistory.add(punishmentLogItem);
         punishmentManager.punishmentsSaver.scheduleSave(this);
         punishmentManager.getPunishmentLog().addPunishmentLogItem(punishmentLogItem);
     }
 
     public String toJsonString() {
         try {
-            return SCHEMA.toJsonString(this);
+            lock.readLock().lock();
+            try {
+                return SCHEMA.toJsonString(this);
+            } finally {
+                lock.readLock().unlock();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

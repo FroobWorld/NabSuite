@@ -27,15 +27,20 @@ public class TeleportToggleRequestsCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         Player sender = (Player) context.getSender();
         PlayerData playerData = basicsModule.getPlayerDataManager().getPlayerData(sender);
-        playerData.setTeleportRequests(!playerData.teleportRequestsEnabled());
-        if (playerData.teleportRequestsEnabled()) {
-            sender.sendMessage(
-                    Component.text("Players will now be able to send you teleport requests.").color(NamedTextColor.YELLOW)
-            );
-        } else {
-            sender.sendMessage(
-                    Component.text("Players will no longer be able to send you teleport requests.").color(NamedTextColor.YELLOW)
-            );
+        playerData.lock.writeLock().lock();
+        try {
+            playerData.setTeleportRequests(!playerData.teleportRequestsEnabled());
+            if (playerData.teleportRequestsEnabled()) {
+                sender.sendMessage(
+                        Component.text("Players will now be able to send you teleport requests.").color(NamedTextColor.YELLOW)
+                );
+            } else {
+                sender.sendMessage(
+                        Component.text("Players will no longer be able to send you teleport requests.").color(NamedTextColor.YELLOW)
+                );
+            }
+        } finally {
+            playerData.lock.writeLock().unlock();
         }
     }
 

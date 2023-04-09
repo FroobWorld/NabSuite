@@ -33,7 +33,7 @@ public class BackCommand extends NabCommand {
             );
             return;
         }
-        basicsModule.getPlayerTeleporter().teleportAsync(player, backLocation).thenAccept(location -> {
+        basicsModule.getPlayerTeleporter().teleportAsync(player, backLocation).thenRun(() -> {
             player.sendMessage(
                     Component.text("Teleported to your previous location.").color(NamedTextColor.YELLOW)
             );

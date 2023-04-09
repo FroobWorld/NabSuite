@@ -1,7 +1,6 @@
 package com.froobworld.nabsuite.modules.mechs.trees;
 
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -34,11 +33,11 @@ public class TreeReplanter implements Listener {
     }
 
     private void schedulePlantTask(Location location, Material saplingMaterial) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(mechsModule.getPlugin(), () -> {
+        mechsModule.getPlugin().getHookManager().getSchedulerHook().runLocTaskDelayed(() -> {
             if (canPlant(location)) {
                 location.getBlock().setType(saplingMaterial);
             }
-        }, 20);
+        }, location, 20);
     }
 
     private boolean canPlant(Location location) {

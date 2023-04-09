@@ -5,6 +5,7 @@ import com.froobworld.nabsuite.data.DataSaver;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -15,7 +16,7 @@ public class WarpManager {
     public static final Pattern warpNamePattern = Pattern.compile("^[a-zA-z0-9-_]+$");
     private static final Pattern fileNamePattern = Pattern.compile("^[a-zA-z0-9-_]+\\.json$");
     protected final DataSaver warpSaver;
-    private final BiMap<String, Warp> warpMap = HashBiMap.create();
+    private final BiMap<String, Warp> warpMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final File directory;
 
     public WarpManager(BasicsModule basicsModule) {
@@ -39,18 +40,23 @@ public class WarpManager {
         if (!warpNamePattern.matcher(name).matches()) {
             throw new IllegalArgumentException("Name does not match pattern: " + warpNamePattern);
         }
-        if (warpMap.containsKey(name.toLowerCase())) {
-            throw new IllegalStateException("Warp with that name already exists");
+        synchronized (warpMap) {
+            if (warpMap.containsKey(name.toLowerCase())) {
+                throw new IllegalStateException("Warp with that name already exists");
+            }
+            return warpMap.computeIfAbsent(name.toLowerCase(), k -> {
+                Warp warp = new Warp(this, name, creator.getLocation(), creator.getUniqueId());
+                warpSaver.scheduleSave(warp);
+                return warp;
+            });
         }
-        Warp warp = new Warp(this, name, creator.getLocation(), creator.getUniqueId());
-        warpMap.put(name.toLowerCase(), warp);
-        warpSaver.scheduleSave(warp);
-        return warp;
     }
 
     public void deleteWarp(Warp warp) {
-        warpMap.remove(warp.getName().toLowerCase());
-        warpSaver.scheduleDeletion(warp);
+        synchronized (warpMap) {
+            warpMap.remove(warp.getName().toLowerCase());
+            warpSaver.scheduleDeletion(warp);
+        }
     }
 
     public Warp getWarp(String name) {
@@ -58,7 +64,7 @@ public class WarpManager {
     }
 
     public Set<Warp> getWarps() {
-        return warpMap.values();
+        return Set.copyOf(warpMap.values());
     }
 
 }

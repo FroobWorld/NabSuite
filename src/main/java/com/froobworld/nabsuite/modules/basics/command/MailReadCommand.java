@@ -42,6 +42,12 @@ public class MailReadCommand extends NabCommand {
         } else {
             int pageNumber = context.get("page");
             List<Component>[] pages = ListPaginator.paginate(mailComponents, ITEMS_PER_PAGE, true);
+            if (pageNumber > pages.length) {
+                player.sendMessage(
+                        Component.text("Page number exceeds maximum.", NamedTextColor.RED)
+                );
+                return;
+            }
             List<Component> page = pages[pageNumber - 1];
             player.sendMessage(
                     Component.text("You have " + NumberDisplayer.toStringWithModifier(mailComponents.size(), " message.", " messages.", false))

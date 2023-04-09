@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Area implements AreaLike {
     private static final SimpleDataSchema<Area> SCHEMA = new SimpleDataSchema.Builder<Area>()
@@ -77,6 +79,7 @@ public class Area implements AreaLike {
             ))
             .build();
 
+    public final ReadWriteLock lock;
     private final UserManager userManager;
     private final AreaManager areaManager;
     private UUID creator;
@@ -107,214 +110,395 @@ public class Area implements AreaLike {
         this.flags = new HashSet<>(flags);
         this.parent = parent;
         this.children = new HashSet<>();
+        this.lock = parent == null ? new ReentrantReadWriteLock() : parent.lock;
     }
 
     private Area(AreaManager areaManager, UserManager userManager, Area parent) {
         this.userManager = userManager;
         this.areaManager = areaManager;
         this.parent = parent;
+        this.lock = parent == null ? new ReentrantReadWriteLock() : parent.lock;
     }
 
     public UUID getCreator() {
-        return creator;
+        lock.readLock().lock();
+        try {
+            return creator;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public String getName() {
-        return name;
+        lock.readLock().lock();
+        try {
+            return name;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean isApproved() {
-        return approved;
+        lock.readLock().lock();
+        try {
+            return approved;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public String getLongFormName() {
-        return parent != null ? parent.getLongFormName() + ":" + getName() : getName();
+        lock.readLock().lock();
+        try {
+            return parent != null ? parent.getLongFormName() + ":" + getName() : getName();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Area getParent() {
-        return parent;
+        lock.readLock().lock();
+        try {
+            return parent;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public World getWorld() {
-        return world;
+        lock.readLock().lock();
+        try {
+            return world;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Vector getCorner2() {
-        return corner2;
+        lock.readLock().lock();
+        try {
+            return corner2;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Vector getCorner1() {
-        return corner1;
+        lock.readLock().lock();
+        try {
+            return corner1;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Set<User> getUsers() {
-        return users;
+        lock.readLock().lock();
+        try {
+            return users;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Set<User> getManagers() {
-        return managers;
+        lock.readLock().lock();
+        try {
+            return managers;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Set<User> getOwners() {
-        return owners;
+        lock.readLock().lock();
+        try {
+            return owners;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean isUser(User user) {
-        return users.contains(user);
+        lock.readLock().lock();
+        try {
+            return users.contains(user);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean isManager(User user) {
-        return managers.contains(user);
+        lock.readLock().lock();
+        try {
+            return managers.contains(user);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean isOwner(User user) {
-        return owners.contains(user);
+        lock.readLock().lock();
+        try {
+            return owners.contains(user);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean isUser(Player player) {
-        for (User user : users) {
-            if (user.includesPlayer(player)) {
-                return true;
+        lock.readLock().lock();
+        try {
+            for (User user : users) {
+                if (user.includesPlayer(player)) {
+                    return true;
+                }
             }
+        } finally {
+            lock.readLock().unlock();
         }
         return false;
     }
 
     public boolean isManager(Player player) {
-        for (User manager : managers) {
-            if (manager.includesPlayer(player)) {
-                return true;
+        lock.readLock().lock();
+        try {
+            for (User manager : managers) {
+                if (manager.includesPlayer(player)) {
+                    return true;
+                }
             }
+        } finally {
+            lock.readLock().unlock();
         }
         return false;
     }
 
     public boolean isOwner(Player player) {
-        for (User owner : owners) {
-            if (owner.includesPlayer(player)) {
-                return true;
+        lock.readLock().lock();
+        try {
+            for (User owner : owners) {
+                if (owner.includesPlayer(player)) {
+                    return true;
+                }
             }
+        } finally {
+            lock.readLock().unlock();
         }
         return false;
     }
 
     public void addUser(User user) {
-        users.add(user);
+        lock.writeLock().lock();
+        try {
+            users.add(user);
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public void addManager(User user) {
-        managers.add(user);
+        lock.writeLock().lock();
+        try {
+            managers.add(user);
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public void addOwner(User user) {
-        owners.add(user);
+        lock.writeLock().lock();
+        try {
+            owners.add(user);
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public void removeUser(User user) {
-        users.remove(user);
+        lock.writeLock().lock();
+        try {
+            users.remove(user);
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public void removeManager(User user) {
-        managers.remove(user);
+        lock.writeLock().lock();
+        try {
+            managers.remove(user);
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public void removeOwner(User user) {
-        owners.remove(user);
+        lock.writeLock().lock();
+        try {
+            owners.remove(user);
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public void setApproved(boolean approved) {
+        lock.writeLock().lock();
         this.approved = approved;
+        lock.writeLock().unlock();
         scheduleSave();
     }
 
     @Override
     public boolean hasUserRights(Player player) {
-        return isUser(player) || isManager(player) || isOwner(player);
+        lock.readLock().lock();
+        try {
+            return isUser(player) || isManager(player) || isOwner(player);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean hasManagerRights(Player player) {
-        return isManager(player) || isOwner(player);
+        lock.readLock().lock();
+        try {
+            return isManager(player) || isOwner(player);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Set<Area> getChildren() {
-        return children;
+        lock.readLock().lock();
+        try {
+            return Set.copyOf(children);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Area getChild(String name) {
-        for (Area area : children) {
-            if (area.getName().equalsIgnoreCase(name)) {
-                return area;
+        lock.readLock().lock();
+        try {
+            for (Area area : children) {
+                if (area.getName().equalsIgnoreCase(name)) {
+                    return area;
+                }
             }
+        } finally {
+            lock.readLock().unlock();
         }
         return null;
     }
 
     public void addChild(Area child) {
-        children.add(child);
+        lock.writeLock().lock();
+        try {
+            children.add(child);
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public void deleteChild(Area child) {
-        children.remove(child);
+        lock.writeLock().lock();
+        try {
+            children.remove(child);
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public Set<String> getFlags() {
-        return Set.copyOf(flags);
+        lock.readLock().lock();
+        try {
+            return Set.copyOf(flags);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public boolean hasFlag(String flag) {
-        return flags.contains(flag.toLowerCase());
+        lock.readLock().lock();
+        try {
+            return flags.contains(flag.toLowerCase());
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void addFlag(String flag) {
-        flags.add(flag.toLowerCase());
+        lock.writeLock().lock();
+        try {
+            flags.add(flag.toLowerCase());
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public void removeFlag(String flag) {
-        flags.remove(flag);
+        lock.writeLock().lock();
+        try {
+            flags.remove(flag);
+        } finally {
+            lock.writeLock().unlock();
+        }
         scheduleSave();
     }
 
     public void setCorners(Vector corner1, Vector corner2) {
+        lock.writeLock().lock();
         this.corner1 = corner1;
         this.corner2 = corner2;
+        lock.writeLock().unlock();
         scheduleSave();
     }
 
     @Override
     public boolean containsLocation(Location location) {
-        int minX = Math.min(corner1.getBlockX(), corner2.getBlockX());
-        int maxX = Math.max(corner1.getBlockX(), corner2.getBlockX());
-        int minY = Math.min(corner1.getBlockY(), corner2.getBlockY());
-        int maxY = Math.max(corner1.getBlockY(), corner2.getBlockY());
-        int minZ = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
-        int maxZ = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
-        return location.getWorld().equals(this.world) &&
-                location.getBlockX() >= minX && location.getBlockX() <= maxX &&
-                location.getBlockY() >= minY && location.getBlockY() <= maxY &&
-                location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ;
+        lock.readLock().lock();
+        try {
+            int minX = Math.min(corner1.getBlockX(), corner2.getBlockX());
+            int maxX = Math.max(corner1.getBlockX(), corner2.getBlockX());
+            int minY = Math.min(corner1.getBlockY(), corner2.getBlockY());
+            int maxY = Math.max(corner1.getBlockY(), corner2.getBlockY());
+            int minZ = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
+            int maxZ = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
+            return location.getWorld().equals(this.world) &&
+                    location.getBlockX() >= minX && location.getBlockX() <= maxX &&
+                    location.getBlockY() >= minY && location.getBlockY() <= maxY &&
+                    location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Set<Area> getTopMostArea(Location location) {
-        if (!this.isApproved() || !this.containsLocation(location)) {
-            return Collections.emptySet();
-        }
-        Set<Area> subAreas = new HashSet<>();
-        for (Area area : children) {
-            if (area.isApproved() && area.containsLocation(location)) {
-                subAreas.addAll(area.getTopMostArea(location));
+        lock.readLock().lock();
+        try {
+            if (!this.isApproved() || !this.containsLocation(location)) {
+                return Collections.emptySet();
             }
+            Set<Area> subAreas = new HashSet<>();
+            for (Area area : children) {
+                if (area.isApproved() && area.containsLocation(location)) {
+                    subAreas.addAll(area.getTopMostArea(location));
+                }
+            }
+            return subAreas.isEmpty() ? Collections.singleton(this) : subAreas;
+        } finally {
+            lock.readLock().unlock();
         }
-        return subAreas.isEmpty() ? Collections.singleton(this) : subAreas;
     }
 
     private void scheduleSave() {
@@ -327,7 +511,12 @@ public class Area implements AreaLike {
 
     public String toJsonString() {
         try {
-            return Area.SCHEMA.toJsonString(this);
+            lock.readLock().lock();
+            try {
+                return Area.SCHEMA.toJsonString(this);
+            } finally {
+                lock.readLock().unlock();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

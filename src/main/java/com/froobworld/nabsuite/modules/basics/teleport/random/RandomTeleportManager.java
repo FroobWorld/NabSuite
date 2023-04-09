@@ -1,12 +1,12 @@
 package com.froobworld.nabsuite.modules.basics.teleport.random;
 
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.google.common.collect.Sets;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +19,7 @@ public class RandomTeleportManager {
     private final long regenerationFrequency;
     private final int maxRtps;
     private final RandomTeleporter randomTeleporter;
-    private final Set<UUID> inProgress = new HashSet<>();
+    private final Set<UUID> inProgress = Sets.newConcurrentHashSet();
 
     public RandomTeleportManager(BasicsModule basicsModule) {
         this.basicsModule = basicsModule;
@@ -47,16 +47,27 @@ public class RandomTeleportManager {
     public CompletableFuture<Location> randomTeleport(Player player) {
         inProgress.add(player.getUniqueId());
         return randomTeleporter.attemptFindLocation(player.getWorld())
-                .thenCompose(location -> {
+                .thenComposeAsync(location -> {
+                    try {
+                        if (location == null) {
+                            return CompletableFuture.completedFuture(null);
+                        }
+                        if (getRandomTeleportAllowance(player) == maxRtps) {
+                            player.getPersistentDataContainer().set(timestampPdcKey, PersistentDataType.LONG, System.currentTimeMillis());
+                        }
+                        player.getPersistentDataContainer().set(allowancePdcKey, PersistentDataType.INTEGER, getRandomTeleportAllowance(player) - 1);
+                        return basicsModule.getPlayerTeleporter().teleportAsync(player, location);
+                    } finally {
+                        inProgress.remove(player.getUniqueId());
+                    }
+                }, runnable -> {
+                    if (basicsModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskAsap(runnable, runnable, player) == null) {
+                        inProgress.remove(player.getUniqueId());
+                    }
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
                     inProgress.remove(player.getUniqueId());
-                    if (location == null) {
-                        return CompletableFuture.completedFuture(null);
-                    }
-                    if (getRandomTeleportAllowance(player) == maxRtps) {
-                        player.getPersistentDataContainer().set(timestampPdcKey, PersistentDataType.LONG, System.currentTimeMillis());
-                    }
-                    player.getPersistentDataContainer().set(allowancePdcKey, PersistentDataType.INTEGER, getRandomTeleportAllowance(player) - 1);
-                    return basicsModule.getPlayerTeleporter().teleportAsync(player, location);
+                    return null;
                 });
     }
 

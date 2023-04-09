@@ -6,6 +6,8 @@ import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.MapMaker;
+import com.google.common.collect.Maps;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -28,9 +30,9 @@ public class MailCentre implements Listener {
     private static final long reminderFrequency = TimeUnit.MINUTES.toMillis(30);
     private final BasicsModule basicsModule;
     protected final DataSaver mailBoxSaver;
-    private final BiMap<UUID, MailBox> mailBoxMap = HashBiMap.create();
+    private final BiMap<UUID, MailBox> mailBoxMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final File directory;
-    private final Map<Player, Long> lastReminderMap = new WeakHashMap<>();
+    private final Map<Player, Long> lastReminderMap = new MapMaker().weakKeys().makeMap();
 
     public MailCentre(BasicsModule basicsModule) {
         this.basicsModule = basicsModule;
@@ -45,7 +47,7 @@ public class MailCentre implements Listener {
         mailBoxSaver.start();
         mailBoxSaver.addDataType(MailBox.class, mailBox -> mailBox.toJsonString().getBytes(), mailBox -> new File(directory, mailBox.getUuid().toString() + ".json"));
         Bukkit.getPluginManager().registerEvents(this, basicsModule.getPlugin());
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(basicsModule.getPlugin(), this::doReminderCycle, 0, 300);
+        basicsModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(this::doReminderCycle, 1, 300);
     }
 
     public void shutdown() {
@@ -53,12 +55,11 @@ public class MailCentre implements Listener {
     }
 
     public MailBox getMailBox(UUID player) {
-        if (!mailBoxMap.containsKey(player)) {
+        return mailBoxMap.computeIfAbsent(player, k -> {
             MailBox mailBox = new MailBox(this, player);
-            mailBoxMap.put(player, mailBox);
             mailBoxSaver.scheduleSave(mailBox);
-        }
-        return mailBoxMap.get(player);
+            return mailBox;
+        });
     }
 
     public Mail sendSystemMail(UUID recipient, String message) {
@@ -82,7 +83,7 @@ public class MailCentre implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onPlayerJoin(PlayerJoinEvent event) {
         if (getMailBox(event.getPlayer().getUniqueId()).hasUnread()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(basicsModule.getPlugin(), () -> {
+            basicsModule.getPlugin().getHookManager().getSchedulerHook().runTaskDelayed(() -> {
                 event.getPlayer().sendMessage(
                         Component.text("You've got mail (/mail read).").color(NamedTextColor.YELLOW)
                                 .clickEvent(ClickEvent.runCommand("/mail read"))

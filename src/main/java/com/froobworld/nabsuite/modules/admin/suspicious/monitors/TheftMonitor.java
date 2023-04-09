@@ -19,13 +19,14 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TheftMonitor implements ActivityMonitor, Listener {
     private static final int SPAWN_DISTANCE_THRESHOLD = 300;
     private static final int DIAMOND_AMOUNT_THRESHOLD = 3;
     private static final double SUSPICION_LEVEL_PER_LOCATION = 0.5;
     private final BasicsModule basicsModule;
-    private final Map<UUID, PlayerTheftStats> theftStatsMap = new HashMap<>();
+    private final Map<UUID, PlayerTheftStats> theftStatsMap = new ConcurrentHashMap<>();
 
     public TheftMonitor(AdminModule adminModule) {
         this.basicsModule = adminModule.getPlugin().getModule(BasicsModule.class);

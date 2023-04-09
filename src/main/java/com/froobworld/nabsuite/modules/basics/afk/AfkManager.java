@@ -2,6 +2,7 @@ package com.froobworld.nabsuite.modules.basics.afk;
 
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.google.common.collect.MapMaker;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -23,13 +24,13 @@ import java.util.concurrent.TimeUnit;
 
 public class AfkManager implements Listener {
     private final BasicsModule basicsModule;
-    private final Map<Player, AfkStatus> afkStatusMap = new WeakHashMap<>();
-    private final Map<Player, Long> lastActivityMap = new WeakHashMap<>();
+    private final Map<Player, AfkStatus> afkStatusMap = new MapMaker().weakKeys().makeMap();
+    private final Map<Player, Long> lastActivityMap = new MapMaker().weakKeys().makeMap();
 
     public AfkManager(BasicsModule basicsModule) {
         this.basicsModule = basicsModule;
         Bukkit.getPluginManager().registerEvents(this, basicsModule.getPlugin());
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(basicsModule.getPlugin(), this::loop, 20, 20);
+        basicsModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(this::loop, 20, 20);
     }
 
     public void setAfk(Player player, boolean afk, boolean auto) {
@@ -56,27 +57,29 @@ public class AfkManager implements Listener {
 
     private void loop() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            lastActivityMap.putIfAbsent(player, System.currentTimeMillis());
-            if (isAfk(player)) {
-                AfkStatus afkStatus = afkStatusMap.get(player);
-                if (!player.getLocation().getWorld().equals(afkStatus.getAfkLocation().getWorld()) || player.getLocation().distance(afkStatus.getAfkLocation()) > 1) {
-                    setAfk(player, false, true);
+            basicsModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskAsap(() -> {
+                lastActivityMap.putIfAbsent(player, System.currentTimeMillis());
+                if (isAfk(player)) {
+                    AfkStatus afkStatus = afkStatusMap.get(player);
+                    if (!player.getLocation().getWorld().equals(afkStatus.getAfkLocation().getWorld()) || player.getLocation().distance(afkStatus.getAfkLocation()) > 1) {
+                        setAfk(player, false, true);
+                    } else {
+                        if (afkStatus.isAuto() && System.currentTimeMillis() - afkStatus.getTimestamp() > TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkKickTime.get())) {
+                            player.kick(
+                                    Component.text("Kicked - AFK too long.", NamedTextColor.WHITE)
+                                            .append(Component.newline())
+                                            .append(Component.newline())
+                                            .append(Component.text("Use /afk to avoid being kicked.", NamedTextColor.WHITE))
+                            );
+                            afkStatusMap.remove(player);
+                        }
+                    }
                 } else {
-                    if (afkStatus.isAuto() && System.currentTimeMillis() - afkStatus.getTimestamp() > TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkKickTime.get())) {
-                        player.kick(
-                                Component.text("Kicked - AFK too long.", NamedTextColor.WHITE)
-                                        .append(Component.newline())
-                                        .append(Component.newline())
-                                        .append(Component.text("Use /afk to avoid being kicked.", NamedTextColor.WHITE))
-                        );
-                        afkStatusMap.remove(player);
+                    if (System.currentTimeMillis() - lastActivityMap.get(player) > TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkTime.get())) {
+                        setAfk(player, true, true);
                     }
                 }
-            } else {
-                if (System.currentTimeMillis() - lastActivityMap.get(player) > TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkTime.get())) {
-                    setAfk(player, true, true);
-                }
-            }
+            }, null, player);
         }
     }
 
@@ -122,13 +125,15 @@ public class AfkManager implements Listener {
                 return;
             }
             for (int i = 0; i < playersToKick; i++) {
-                System.out.println(kickablePlayers.get(i).getName());
-                kickablePlayers.get(i).kick(
-                        Component.text("Kicked - server full.", NamedTextColor.WHITE)
-                                .append(Component.newline())
-                                .append(Component.newline())
-                                .append(Component.text("AFK players can be kicked when another player attempts to join.", NamedTextColor.WHITE))
-                );
+                Player player = kickablePlayers.get(i);
+                basicsModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskAsap(() -> {
+                    player.kick(
+                            Component.text("Kicked - server full.", NamedTextColor.WHITE)
+                                    .append(Component.newline())
+                                    .append(Component.newline())
+                                    .append(Component.text("AFK players can be kicked when another player attempts to join.", NamedTextColor.WHITE))
+                    );
+                }, null, player);
             }
             event.setResult(PlayerLoginEvent.Result.ALLOWED);
         }

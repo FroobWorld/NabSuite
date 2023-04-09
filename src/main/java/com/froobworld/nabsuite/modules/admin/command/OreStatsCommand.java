@@ -35,23 +35,28 @@ public class OreStatsCommand extends NabCommand {
         CommandSender sender = context.getSender();
         PlayerIdentity playerIdentity = context.get("player");
         PlayerOreStatsData oreStatsData = adminModule.getOreStatsManager().getOreStatsData(playerIdentity.getUuid());
-        Component hoverText = Component.empty()
-                .append(Component.text("--- Overworld stats ---", NamedTextColor.YELLOW)).append(Component.newline())
-                .append(Component.text("Stone: ", NamedTextColor.GRAY).append(quantityStringOverworld(oreStatsData.getStone(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Coal: ", NamedTextColor.DARK_GRAY).append(quantityStringOverworld(oreStatsData.getCoal(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Copper: ", NamedTextColor.DARK_RED).append(quantityStringOverworld(oreStatsData.getCopper(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Iron: ", NamedTextColor.DARK_GRAY).append(quantityStringOverworld(oreStatsData.getIron(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Lapis: ", NamedTextColor.BLUE).append(quantityStringOverworld(oreStatsData.getLapis(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Gold: ", NamedTextColor.GOLD).append(quantityStringOverworld(oreStatsData.getGold(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Redstone: ", NamedTextColor.RED).append(quantityStringOverworld(oreStatsData.getRedstone(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Emerald: ", NamedTextColor.GREEN).append(quantityStringOverworld(oreStatsData.getEmerald(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Diamond: ", NamedTextColor.AQUA).append(quantityStringOverworld(oreStatsData.getDiamond(), oreStatsData))).append(Component.newline()).append(Component.newline())
-                .append(Component.text("--- Nether stats ---", NamedTextColor.YELLOW)).append(Component.newline())
-                .append(Component.text("Netherrack: ", NamedTextColor.RED).append(quantityStringNether(oreStatsData.getNetherrack(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Quartz: ", NamedTextColor.GRAY).append(quantityStringNether(oreStatsData.getQuartz(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Nether gold: ", NamedTextColor.GOLD).append(quantityStringNether(oreStatsData.getNetherGold(), oreStatsData))).append(Component.newline())
-                .append(Component.text("Ancient debris: ", NamedTextColor.DARK_PURPLE).append(quantityStringNether(oreStatsData.getNetherite(), oreStatsData)));
-
+        Component hoverText = Component.empty();
+        oreStatsData.lock.readLock().lock();
+        try {
+            hoverText = hoverText
+                    .append(Component.text("--- Overworld stats ---", NamedTextColor.YELLOW)).append(Component.newline())
+                    .append(Component.text("Stone: ", NamedTextColor.GRAY).append(quantityStringOverworld(oreStatsData.getStone(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Coal: ", NamedTextColor.DARK_GRAY).append(quantityStringOverworld(oreStatsData.getCoal(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Copper: ", NamedTextColor.DARK_RED).append(quantityStringOverworld(oreStatsData.getCopper(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Iron: ", NamedTextColor.DARK_GRAY).append(quantityStringOverworld(oreStatsData.getIron(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Lapis: ", NamedTextColor.BLUE).append(quantityStringOverworld(oreStatsData.getLapis(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Gold: ", NamedTextColor.GOLD).append(quantityStringOverworld(oreStatsData.getGold(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Redstone: ", NamedTextColor.RED).append(quantityStringOverworld(oreStatsData.getRedstone(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Emerald: ", NamedTextColor.GREEN).append(quantityStringOverworld(oreStatsData.getEmerald(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Diamond: ", NamedTextColor.AQUA).append(quantityStringOverworld(oreStatsData.getDiamond(), oreStatsData))).append(Component.newline()).append(Component.newline())
+                    .append(Component.text("--- Nether stats ---", NamedTextColor.YELLOW)).append(Component.newline())
+                    .append(Component.text("Netherrack: ", NamedTextColor.RED).append(quantityStringNether(oreStatsData.getNetherrack(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Quartz: ", NamedTextColor.GRAY).append(quantityStringNether(oreStatsData.getQuartz(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Nether gold: ", NamedTextColor.GOLD).append(quantityStringNether(oreStatsData.getNetherGold(), oreStatsData))).append(Component.newline())
+                    .append(Component.text("Ancient debris: ", NamedTextColor.DARK_PURPLE).append(quantityStringNether(oreStatsData.getNetherite(), oreStatsData)));
+        } finally {
+            oreStatsData.lock.readLock().unlock();
+        }
         if (sender instanceof Player) {
             sender.sendMessage(
                     Component.text("[Hover for ore stats of ", NamedTextColor.YELLOW)

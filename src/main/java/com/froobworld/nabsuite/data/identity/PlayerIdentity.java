@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class PlayerIdentity {
     private static final SimpleDataSchema<PlayerIdentity> SCHEMA = new SimpleDataSchema.Builder<PlayerIdentity>()
@@ -20,6 +21,7 @@ public class PlayerIdentity {
             .addField("previous-names", SchemaEntries.stringListEntry(p -> p.previousNames, (p, l) -> p.previousNames = l))
             .build();
 
+    public final ReadWriteLock lock = new ReentrantReadWriteLock();
     private UUID uuid;
     private String lastName;
     private List<String> previousNames;
@@ -37,11 +39,21 @@ public class PlayerIdentity {
     }
 
     public String getLastName() {
-        return lastName;
+        lock.readLock().lock();
+        try {
+            return lastName;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public List<String> getPreviousNames() {
-        return new ArrayList<>(previousNames);
+        lock.readLock().lock();
+        try {
+            return new ArrayList<>(previousNames);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Player asPlayer() {
@@ -61,13 +73,23 @@ public class PlayerIdentity {
     }
 
     public Component displayName() {
-        Player onlinePlayer = asPlayer();
-        return onlinePlayer != null ? onlinePlayer.displayName() : Component.text(getLastName());
+        lock.readLock().lock();
+        try {
+            Player onlinePlayer = asPlayer();
+            return onlinePlayer != null ? onlinePlayer.displayName() : Component.text(getLastName());
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public String toJsonString() {
         try {
-            return SCHEMA.toJsonString(this);
+            lock.readLock().lock();
+            try {
+                return SCHEMA.toJsonString(this);
+            } finally {
+                lock.readLock().unlock();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

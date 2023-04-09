@@ -22,42 +22,47 @@ public class MuteEnforcer implements Listener {
     public MuteEnforcer(AdminModule adminModule, PunishmentManager punishmentManager) {
         this.adminModule = adminModule;
         this.punishmentManager = punishmentManager;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), () -> Bukkit.getOnlinePlayers().forEach(this::verifyMuteStatus), 100, 100);
+        adminModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(() -> Bukkit.getOnlinePlayers().forEach(this::verifyMuteStatus), 100, 100);
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
     public MutePunishment mute(PlayerIdentity player, CommandSender mediator, String reason, long duration) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
-        MutePunishment mutePunishment = new MutePunishment(reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration);
-        punishments.setMutePunishment(mutePunishment);
-        punishments.addPunishmentLogItem(new PunishmentLogItem(
-                punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                PunishmentLogItem.Type.MUTE,
-                player.getUuid(),
-                mutePunishment.getMediator(),
-                mutePunishment.getTime(),
-                mutePunishment.getDuration(),
-                mutePunishment.getReason()
-        ));
-        Player onlinePlayer = player.asPlayer();
-        if (onlinePlayer != null) {
-            Component message = Component.text("You have been muted");
-            if (reason != null) {
-                message = message.append(Component.text(" ("))
-                        .append(Component.text(reason))
-                        .append(Component.text(")"));
+        punishments.lock.writeLock().lock();
+        try {
+            MutePunishment mutePunishment = new MutePunishment(reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration);
+            punishments.setMutePunishment(mutePunishment);
+            punishments.addPunishmentLogItem(new PunishmentLogItem(
+                    punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
+                    PunishmentLogItem.Type.MUTE,
+                    player.getUuid(),
+                    mutePunishment.getMediator(),
+                    mutePunishment.getTime(),
+                    mutePunishment.getDuration(),
+                    mutePunishment.getReason()
+            ));
+            Player onlinePlayer = player.asPlayer();
+            if (onlinePlayer != null) {
+                Component message = Component.text("You have been muted");
+                if (reason != null) {
+                    message = message.append(Component.text(" ("))
+                            .append(Component.text(reason))
+                            .append(Component.text(")"));
+                }
+                message = message.append(Component.text(".")).color(NamedTextColor.YELLOW);
+                if (duration > 0) {
+                    message = message.append(Component.newline())
+                            .append(Component.text("You will be unmuted in "))
+                            .append(Component.text(DurationDisplayer.asDurationString(duration)))
+                            .append(Component.text("."))
+                            .color(NamedTextColor.YELLOW);
+                }
+                onlinePlayer.sendMessage(message);
             }
-            message = message.append(Component.text(".")).color(NamedTextColor.YELLOW);
-            if (duration > 0) {
-                message = message.append(Component.newline())
-                        .append(Component.text("You will be unmuted in "))
-                        .append(Component.text(DurationDisplayer.asDurationString(duration)))
-                        .append(Component.text("."))
-                        .color(NamedTextColor.YELLOW);
-            }
-            onlinePlayer.sendMessage(message);
+            return mutePunishment;
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
-        return mutePunishment;
     }
 
     public void unmute(PlayerIdentity player, CommandSender mediator) {
@@ -70,30 +75,41 @@ public class MuteEnforcer implements Listener {
 
     private void unmute(boolean automatic, PlayerIdentity player, UUID mediator) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
-        punishments.setMutePunishment(null);
-        punishments.addPunishmentLogItem(new PunishmentLogItem(
-                punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                automatic ? PunishmentLogItem.Type.UNMUTE_AUTOMATIC : PunishmentLogItem.Type.UNMUTE_MANUAL,
-                player.getUuid(),
-                mediator,
-                System.currentTimeMillis(),
-                -1,
-                null
-        ));
-        Player onlinePlayer = player.asPlayer();
-        if (onlinePlayer != null) {
-            onlinePlayer.sendMessage(
-                    Component.text("You have been unmuted.").color(NamedTextColor.YELLOW)
-            );
+        punishments.lock.writeLock().lock();
+        try {
+            punishments.setMutePunishment(null);
+            punishments.addPunishmentLogItem(new PunishmentLogItem(
+                    punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
+                    automatic ? PunishmentLogItem.Type.UNMUTE_AUTOMATIC : PunishmentLogItem.Type.UNMUTE_MANUAL,
+                    player.getUuid(),
+                    mediator,
+                    System.currentTimeMillis(),
+                    -1,
+                    null
+            ));
+            Player onlinePlayer = player.asPlayer();
+            if (onlinePlayer != null) {
+                onlinePlayer.sendMessage(
+                        Component.text("You have been unmuted.").color(NamedTextColor.YELLOW)
+                );
+            }
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
     }
 
     private void verifyMuteStatus(Player player) {
-        MutePunishment mutePunishment = punishmentManager.getPunishments(player.getUniqueId()).getMutePunishment();
-        if (mutePunishment != null && mutePunishment.getDuration() > 0) {
-            if (System.currentTimeMillis() >= mutePunishment.getTime() + mutePunishment.getDuration()) {
-                expireMute(adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player));
+        Punishments punishments = punishmentManager.getPunishments(player.getUniqueId());
+        punishments.lock.writeLock().lock();
+        try {
+            MutePunishment mutePunishment = punishments.getMutePunishment();
+            if (mutePunishment != null && mutePunishment.getDuration() > 0) {
+                if (System.currentTimeMillis() >= mutePunishment.getTime() + mutePunishment.getDuration()) {
+                    expireMute(adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player));
+                }
             }
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
     }
 

@@ -5,6 +5,8 @@ import com.froobworld.nabsuite.data.SimpleDataSchema;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class PlayerOreStatsData {
     static final SimpleDataSchema<PlayerOreStatsData> SCHEMA = new SimpleDataSchema.Builder<PlayerOreStatsData>()
@@ -66,6 +68,7 @@ public class PlayerOreStatsData {
             ))
             .build();
 
+    public final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final OreStatsManager oreStatsManager;
     private UUID uuid;
     private int stone, coal, iron, copper, gold, diamond, emerald, lapis, redstone;
@@ -137,73 +140,104 @@ public class PlayerOreStatsData {
     }
 
     void incrementStone() {
+        lock.writeLock().lock();
         stone++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementCoal() {
+        lock.writeLock().lock();
         coal++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementIron() {
+        lock.writeLock().lock();
         iron++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementCopper() {
+        lock.writeLock().lock();
         copper++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementGold() {
+        lock.writeLock().lock();
         gold++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementDiamond() {
+        lock.writeLock().lock();
         diamond++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementEmerald() {
+        lock.writeLock().lock();
         emerald++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementLapis() {
+        lock.writeLock().lock();
         lapis++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementRedstone() {
+        lock.writeLock().lock();
         redstone++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementNetherrack() {
+        lock.writeLock().lock();
         netherrack++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementNetherGold() {
+        lock.writeLock().lock();
         netherGold++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementQuartz() {
+        lock.writeLock().lock();
         quartz++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     void incrementNetherite() {
+        lock.writeLock().lock();
         netherite++;
+        lock.writeLock().unlock();
         oreStatsManager.dataSaver.scheduleSave(this);
     }
 
     public String toJsonString() {
         try {
-            return SCHEMA.toJsonString(this);
+            lock.readLock().lock();
+            try {
+                return SCHEMA.toJsonString(this);
+            } finally {
+                lock.readLock().unlock();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

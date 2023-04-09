@@ -11,12 +11,13 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MessageCentre {
     private static final Component CONSOLE_NAME = Component.text("Console").color(NamedTextColor.RED);
     private static final UUID CONSOLE_UUID = new UUID(0,0);
     private final BasicsModule basicsModule;
-    private final Map<UUID, UUID> lastMessenger = new HashMap<>();
+    private final Map<UUID, UUID> lastMessenger = new ConcurrentHashMap<>();
 
     public MessageCentre(BasicsModule basicsModule) {
         this.basicsModule = basicsModule;

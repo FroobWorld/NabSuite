@@ -23,7 +23,7 @@ public class SpawnCommand extends NabCommand {
     @Override
     public void execute(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
-        basicsModule.getPlayerTeleporter().teleport(player, basicsModule.getSpawnManager().getSpawnLocation());
+        basicsModule.getPlayerTeleporter().teleportAsync(player, basicsModule.getSpawnManager().getSpawnLocation());
     }
 
     @Override

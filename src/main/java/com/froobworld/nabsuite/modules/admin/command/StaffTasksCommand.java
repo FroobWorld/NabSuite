@@ -38,6 +38,12 @@ public class StaffTasksCommand extends NabCommand {
         } else {
             int pageNumber = context.get("page");
             List<StaffTask>[] pages = ListPaginator.paginate(staffTasks, ITEMS_PER_PAGE);
+            if (pageNumber > pages.length) {
+                context.getSender().sendMessage(
+                        Component.text("Page number exceeds maximum.", NamedTextColor.RED)
+                );
+                return;
+            }
             List<StaffTask> page = pages[pageNumber - 1];
             context.getSender().sendMessage(
                     Component.text("There " + NumberDisplayer.toStringWithModifierAndPrefix(staffTasks.size(), " task", " tasks", "is ", "are ") + " requiring action. ")

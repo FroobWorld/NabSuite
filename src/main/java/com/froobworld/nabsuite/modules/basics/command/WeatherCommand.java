@@ -5,6 +5,7 @@ import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.EnumArgument;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
+import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.WeatherType;
@@ -13,13 +14,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class WeatherCommand extends NabCommand {
+    private final BasicsModule basicsModule;
 
-    public WeatherCommand() {
+    public WeatherCommand(BasicsModule basicsModule) {
         super("weather",
                 "Set the weather in your world.",
                 "nabsuite.command.weather",
                 Player.class
         );
+        this.basicsModule = basicsModule;
     }
 
     @Override
@@ -29,10 +32,10 @@ public class WeatherCommand extends NabCommand {
 
         String weatherDescription;
         if (weatherType == WeatherType.CLEAR) {
-            world.setStorm(false);
+            basicsModule.getPlugin().getHookManager().getSchedulerHook().runTask(() -> world.setStorm(false));
             weatherDescription = "clear";
         } else {
-            world.setStorm(true);
+            basicsModule.getPlugin().getHookManager().getSchedulerHook().runTask(() -> world.setStorm(true));
             weatherDescription = "stormy";
         }
         context.getSender().sendMessage(

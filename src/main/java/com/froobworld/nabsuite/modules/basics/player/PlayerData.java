@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class PlayerData {
     private static final SimpleDataSchema<PlayerData> SCHEMA = new SimpleDataSchema.Builder<PlayerData>()
@@ -44,6 +46,7 @@ public class PlayerData {
                     (playerData, bool) -> playerData.teleportRequests = bool
             ))
             .build();
+    public final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final PlayerDataManager playerDataManager;
     private UUID uuid;
     private long lastPlayed;
@@ -77,71 +80,146 @@ public class PlayerData {
     }
 
     public long getLastPlayed() {
-        return lastPlayed;
+        lock.readLock().lock();
+        try {
+            return lastPlayed;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Set<UUID> getIgnored() {
-        return Set.copyOf(ignored);
+        lock.readLock().lock();
+        try {
+            return Set.copyOf(ignored);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean isIgnoring(UUID uuid) {
-        return ignored.contains(uuid);
+        lock.readLock().lock();
+        try {
+            return ignored.contains(uuid);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void ignore(UUID uuid) {
-        ignored.add(uuid);
+        lock.writeLock().lock();
+        try {
+            ignored.add(uuid);
+        } finally {
+            lock.writeLock().unlock();
+        }
         playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
     public void unignore(UUID uuid) {
-        ignored.remove(uuid);
+        lock.writeLock().lock();
+        try {
+            ignored.remove(uuid);
+        } finally {
+            lock.writeLock().unlock();
+        }
         playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
     public Set<UUID> getFriends() {
-        return Set.copyOf(friends);
+        lock.readLock().lock();
+        try {
+            return Set.copyOf(friends);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean isFriend(UUID uuid) {
-        return friends.contains(uuid);
+        lock.readLock().lock();
+        try {
+            return friends.contains(uuid);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void addFriend(UUID uuid) {
-        friends.add(uuid);
+        lock.writeLock().lock();
+        try {
+            friends.add(uuid);
+        } finally {
+            lock.writeLock().unlock();
+        }
         playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
     public void removeFriend(UUID uuid) {
-        friends.remove(uuid);
+        lock.writeLock().lock();
+        try {
+            friends.remove(uuid);
+        } finally {
+            lock.writeLock().unlock();
+        }
         playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
     public boolean teleportFriendsEnabled() {
-        return teleportFriends;
+        lock.readLock().lock();
+        try {
+            return teleportFriends;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean teleportRequestsEnabled() {
-        return teleportRequests;
+        lock.readLock().lock();
+        try {
+            return teleportRequests;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void setTeleportFriends(boolean enabled) {
-        this.teleportFriends = enabled;
+        lock.writeLock().lock();
+        try {
+            this.teleportFriends = enabled;
+        } finally {
+            lock.writeLock().unlock();
+        }
         playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
     public void setTeleportRequests(boolean enabled) {
-        this.teleportRequests = enabled;
+        lock.writeLock().lock();
+        try {
+            this.teleportRequests = enabled;
+        } finally {
+            lock.writeLock().unlock();
+        }
         playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
     void updateLastPlayedTime() {
-        lastPlayed = System.currentTimeMillis();
+        lock.writeLock().lock();
+        try {
+            lastPlayed = System.currentTimeMillis();
+        } finally {
+            lock.writeLock().unlock();
+        }
         playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
     public String toJsonString() {
         try {
-            return SCHEMA.toJsonString(this);
+            lock.readLock().lock();
+            try {
+                return SCHEMA.toJsonString(this);
+            } finally {
+                lock.readLock().unlock();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

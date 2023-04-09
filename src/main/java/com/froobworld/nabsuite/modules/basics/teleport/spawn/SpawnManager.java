@@ -12,8 +12,11 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.io.*;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class SpawnManager implements Listener {
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final BasicsModule basicsModule;
     private final File spawnFile;
     private Location spawnLocation;
@@ -26,13 +29,23 @@ public class SpawnManager implements Listener {
     }
 
     public Location getSpawnLocation() {
-        return spawnLocation == null ? Bukkit.getWorlds().get(0).getSpawnLocation() : spawnLocation;
+        lock.readLock().lock();
+        try {
+            return spawnLocation == null ? Bukkit.getWorlds().get(0).getSpawnLocation() : spawnLocation;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void setSpawnLocation(Location spawnLocation) {
-        this.spawnLocation = spawnLocation;
-        Bukkit.getWorlds().get(0).setSpawnLocation(spawnLocation);
-        Bukkit.getScheduler().runTaskAsynchronously(basicsModule.getPlugin(), () -> writeSpawn(spawnLocation, spawnFile));
+        lock.writeLock().lock();
+        try {
+            this.spawnLocation = spawnLocation;
+            Bukkit.getWorlds().get(0).setSpawnLocation(spawnLocation);
+            basicsModule.getPlugin().getHookManager().getSchedulerHook().runTaskAsync(() -> writeSpawn(spawnLocation, spawnFile));
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @EventHandler

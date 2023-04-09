@@ -34,31 +34,36 @@ public class BanEnforcer implements Listener {
 
     public BanPunishment ban(PlayerIdentity player, CommandSender mediator, String reason, long duration) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
-        BanPunishment banPunishment = new BanPunishment(reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration);
-        punishments.setBanPunishment(banPunishment);
-        Player onlinePlayer = player.asPlayer();
-        Component broadcastMessage = Component.text(player.getLastName()).append(Component.text(" has been banned"));
-        if (banPunishment.getReason() != null) {
-            broadcastMessage = broadcastMessage.append(Component.text(" ("))
-                    .append(Component.text(banPunishment.getReason()))
-                    .append(Component.text(")"));
+        punishments.lock.writeLock().lock();
+        try {
+            BanPunishment banPunishment = new BanPunishment(reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration);
+            punishments.setBanPunishment(banPunishment);
+            Player onlinePlayer = player.asPlayer();
+            Component broadcastMessage = Component.text(player.getLastName()).append(Component.text(" has been banned"));
+            if (banPunishment.getReason() != null) {
+                broadcastMessage = broadcastMessage.append(Component.text(" ("))
+                        .append(Component.text(banPunishment.getReason()))
+                        .append(Component.text(")"));
+            }
+            broadcastMessage = broadcastMessage.append(Component.text("."));
+            Bukkit.broadcast(broadcastMessage);
+            if (onlinePlayer != null) {
+                onlinePlayer.kick(getKickMessage(banPunishment), PlayerKickEvent.Cause.BANNED);
+            }
+            punishments.addPunishmentLogItem(new PunishmentLogItem(
+                    punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
+                    PunishmentLogItem.Type.BAN,
+                    player.getUuid(),
+                    banPunishment.getMediator(),
+                    banPunishment.getTime(),
+                    banPunishment.getDuration(),
+                    banPunishment.getReason()
+            ));
+            Bukkit.getBanList(BanList.Type.NAME).addBan(player.getUuid().toString(), banPunishment.getReason(), null, mediator.toString());
+            return banPunishment;
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
-        broadcastMessage = broadcastMessage.append(Component.text("."));
-        Bukkit.broadcast(broadcastMessage);
-        if (onlinePlayer != null) {
-            onlinePlayer.kick(getKickMessage(banPunishment), PlayerKickEvent.Cause.BANNED);
-        }
-        punishments.addPunishmentLogItem(new PunishmentLogItem(
-                punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                PunishmentLogItem.Type.BAN,
-                player.getUuid(),
-                banPunishment.getMediator(),
-                banPunishment.getTime(),
-                banPunishment.getDuration(),
-                banPunishment.getReason()
-        ));
-        Bukkit.getBanList(BanList.Type.NAME).addBan(player.getUuid().toString(), banPunishment.getReason(), null, mediator.toString());
-        return banPunishment;
     }
 
     public void unban(UUID player, CommandSender mediator) {
@@ -71,30 +76,41 @@ public class BanEnforcer implements Listener {
 
     private void unban(boolean automatic, UUID player, UUID mediator) {
         Punishments punishments = punishmentManager.getPunishments(player);
-        punishments.setBanPunishment(null);
-        Bukkit.getBanList(BanList.Type.NAME).pardon(player.toString());
-        punishments.addPunishmentLogItem(new PunishmentLogItem(
-                punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                automatic ? PunishmentLogItem.Type.UNBAN_AUTOMATIC : PunishmentLogItem.Type.UNBAN_MANUAL,
-                player,
-                mediator,
-                System.currentTimeMillis(),
-                -1,
-                null
-        ));
+        punishments.lock.writeLock().lock();
+        try {
+            punishments.setBanPunishment(null);
+            Bukkit.getBanList(BanList.Type.NAME).pardon(player.toString());
+            punishments.addPunishmentLogItem(new PunishmentLogItem(
+                    punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
+                    automatic ? PunishmentLogItem.Type.UNBAN_AUTOMATIC : PunishmentLogItem.Type.UNBAN_MANUAL,
+                    player,
+                    mediator,
+                    System.currentTimeMillis(),
+                    -1,
+                    null
+            ));
+        } finally {
+            punishments.lock.writeLock().unlock();
+        }
     }
 
     @EventHandler
     private void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
-        BanPunishment banPunishment = punishmentManager.getPunishments(event.getUniqueId()).getBanPunishment();
-        if (banPunishment == null) {
-            return;
-        }
-        if ((banPunishment.isPermanent() && banPunishment.getTime() + AUTO_EXPIRY_TIME > System.currentTimeMillis()) || banPunishment.getTime() + banPunishment.getDuration() > System.currentTimeMillis()) {
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-            event.kickMessage(getKickMessage(banPunishment));
-        } else {
-            expireBan(event.getUniqueId());
+        Punishments punishments = punishmentManager.getPunishments(event.getUniqueId());
+        punishments.lock.writeLock().lock();
+        try {
+            BanPunishment banPunishment = punishments.getBanPunishment();
+            if (banPunishment == null) {
+                return;
+            }
+            if ((banPunishment.isPermanent() && banPunishment.getTime() + AUTO_EXPIRY_TIME > System.currentTimeMillis()) || banPunishment.getTime() + banPunishment.getDuration() > System.currentTimeMillis()) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+                event.kickMessage(getKickMessage(banPunishment));
+            } else {
+                expireBan(event.getUniqueId());
+            }
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
     }
 

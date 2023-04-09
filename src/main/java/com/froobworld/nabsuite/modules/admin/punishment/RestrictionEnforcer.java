@@ -49,36 +49,41 @@ public class RestrictionEnforcer implements Listener {
         this.basicsModule = adminModule.getPlugin().getModule(BasicsModule.class);
         this.punishmentManager = punishmentManager;
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), () -> Bukkit.getOnlinePlayers().forEach(this::verifyRestrictedStatus), 100, 100);
+        adminModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(() -> Bukkit.getOnlinePlayers().forEach(this::verifyRestrictedStatus), 100, 100);
     }
 
     public RestrictionPunishment restrict(PlayerIdentity player, CommandSender mediator, String reason) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
-        RestrictionPunishment restrictionPunishment = new RestrictionPunishment(reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis());
-        punishments.setRestrictionPunishment(restrictionPunishment);
+        punishments.lock.writeLock().lock();
+        try {
+            RestrictionPunishment restrictionPunishment = new RestrictionPunishment(reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis());
+            punishments.setRestrictionPunishment(restrictionPunishment);
 
-        Player onlinePlayer = player.asPlayer();
-        if (onlinePlayer != null) {
-            onlinePlayer.sendMessage(
-                    Component.text("You have been restricted (" + reason + ").")
-                            .append(Component.newline())
-                            .append(Component.text("You are unable to build near spawn or other players' homes."))
-                            .append(Component.newline())
-                            .append(Component.text("You will be unrestricted pending staff review."))
-                            .color(NamedTextColor.RED)
-            );
+            Player onlinePlayer = player.asPlayer();
+            if (onlinePlayer != null) {
+                onlinePlayer.sendMessage(
+                        Component.text("You have been restricted (" + reason + ").")
+                                .append(Component.newline())
+                                .append(Component.text("You are unable to build near spawn or other players' homes."))
+                                .append(Component.newline())
+                                .append(Component.text("You will be unrestricted pending staff review."))
+                                .color(NamedTextColor.RED)
+                );
+            }
+
+            punishments.addPunishmentLogItem(new PunishmentLogItem(
+                    punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
+                    PunishmentLogItem.Type.RESTRICTED,
+                    player.getUuid(),
+                    restrictionPunishment.getMediator(),
+                    restrictionPunishment.getTime(),
+                    -1,
+                    restrictionPunishment.getReason()
+            ));
+            return restrictionPunishment;
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
-
-        punishments.addPunishmentLogItem(new PunishmentLogItem(
-                punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                PunishmentLogItem.Type.RESTRICTED,
-                player.getUuid(),
-                restrictionPunishment.getMediator(),
-                restrictionPunishment.getTime(),
-                -1,
-                restrictionPunishment.getReason()
-        ));
-        return restrictionPunishment;
     }
 
     public void unrestrict(PlayerIdentity player, UUID mediator) {
@@ -91,30 +96,41 @@ public class RestrictionEnforcer implements Listener {
 
     private void unrestrict(boolean automatic, PlayerIdentity player, UUID mediator) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
-        punishments.setRestrictionPunishment(null);
-        punishments.addPunishmentLogItem(new PunishmentLogItem(
-                punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                automatic ? PunishmentLogItem.Type.UNRESTRICTED_AUTOMATIC : PunishmentLogItem.Type.UNRESTRICTED_MANUAL,
-                player.getUuid(),
-                mediator,
-                System.currentTimeMillis(),
-                -1,
-                null
-        ));
-        Player onlinePlayer = player.asPlayer();
-        if (onlinePlayer != null) {
-            onlinePlayer.sendMessage(
-                    Component.text("You have been unrestricted.", NamedTextColor.YELLOW)
-            );
+        punishments.lock.writeLock().lock();
+        try {
+            punishments.setRestrictionPunishment(null);
+            punishments.addPunishmentLogItem(new PunishmentLogItem(
+                    punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
+                    automatic ? PunishmentLogItem.Type.UNRESTRICTED_AUTOMATIC : PunishmentLogItem.Type.UNRESTRICTED_MANUAL,
+                    player.getUuid(),
+                    mediator,
+                    System.currentTimeMillis(),
+                    -1,
+                    null
+            ));
+            Player onlinePlayer = player.asPlayer();
+            if (onlinePlayer != null) {
+                onlinePlayer.sendMessage(
+                        Component.text("You have been unrestricted.", NamedTextColor.YELLOW)
+                );
+            }
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
     }
 
     private void verifyRestrictedStatus(Player player) {
-        RestrictionPunishment restrictionPunishment = punishmentManager.getPunishments(player.getUniqueId()).getRestrictionPunishment();
-        if (restrictionPunishment != null) {
-            if (System.currentTimeMillis() >= restrictionPunishment.getTime() + RESTRICTION_DURATION) {
-                expireRestriction(adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player));
+        Punishments punishments = punishmentManager.getPunishments(player.getUniqueId());
+        punishments.lock.writeLock().lock();
+        try {
+            RestrictionPunishment restrictionPunishment = punishments.getRestrictionPunishment();
+            if (restrictionPunishment != null) {
+                if (System.currentTimeMillis() >= restrictionPunishment.getTime() + RESTRICTION_DURATION) {
+                    expireRestriction(adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player));
+                }
             }
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
     }
 

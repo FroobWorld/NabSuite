@@ -41,6 +41,12 @@ public class PortalsCommand extends NabCommand {
         } else {
             int pageNumber = context.get("page");
             List<String>[] pages = ListPaginator.paginate(portals, ITEMS_PER_PAGE);
+            if (pageNumber > pages.length) {
+                context.getSender().sendMessage(
+                        Component.text("Page number exceeds maximum.", NamedTextColor.RED)
+                );
+                return;
+            }
             List<String> page = pages[pageNumber - 1];
             context.getSender().sendMessage(
                     Component.text("There " + NumberDisplayer.toStringWithModifierAndPrefix(portals.size(), " portal", " portals", "is ", "are ") + ". ")

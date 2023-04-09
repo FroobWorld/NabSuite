@@ -36,6 +36,12 @@ public class HelpCommand extends NabCommand {
         } else {
             int pageNumber = context.get("page");
             List<HelpManager.HelpObject>[] pages = ListPaginator.paginate(helpObjects, ITEMS_PER_PAGE);
+            if (pageNumber > pages.length) {
+                context.getSender().sendMessage(
+                        Component.text("Page number exceeds maximum.", NamedTextColor.RED)
+                );
+                return;
+            }
             List<HelpManager.HelpObject> page = pages[pageNumber - 1];
             context.getSender().sendMessage(
                     Component.text("--------- ", NamedTextColor.RED)

@@ -42,8 +42,9 @@ public class AreaTeleportCommand extends NabCommand {
         area.getWorld().getChunkAtAsync(location, (Consumer<Chunk>)  chunk -> {
             Location newLocation = chunk.getWorld().getHighestBlockAt(location).getLocation();
             newLocation.setY(newLocation.getY() + 1);
-            protectModule.getPlugin().getModule(BasicsModule.class).getPlayerTeleporter().teleport(player, newLocation);
-            player.sendMessage(Component.text("Teleported to area '" + area.getName() + "'.", NamedTextColor.YELLOW));
+            protectModule.getPlugin().getModule(BasicsModule.class).getPlayerTeleporter().teleportAsync(player, newLocation).thenRun(() -> {
+                player.sendMessage(Component.text("Teleported to area '" + area.getName() + "'.", NamedTextColor.YELLOW));
+            });
         });
     }
 

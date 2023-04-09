@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.modules.admin.tasks.StaffTask;
 import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Location;
@@ -20,13 +21,12 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class TicketManager {
     private static final Pattern fileNamePattern = Pattern.compile("^[0-9]+\\.json$");
     private final AdminModule adminModule;
     protected final DataSaver ticketSaver;
-    private final BiMap<Integer, Ticket> ticketMap = HashBiMap.create();
+    private final BiMap<Integer, Ticket> ticketMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final File directory;
     private final AtomicInteger idSupplier;
 

@@ -33,13 +33,14 @@ public class TeleportCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         Player sender = (Player) context.getSender();
         Player subject = context.get("player");
-        basicsModule.getPlayerTeleporter().teleport(sender, subject);
-        sender.sendMessage(
-                Component.text("Teleported to ")
-                        .append(subject.displayName())
-                        .append(Component.text("."))
-                        .color(NamedTextColor.YELLOW)
-        );
+        basicsModule.getPlayerTeleporter().teleportAsync(sender, subject).thenRun(() -> {
+            sender.sendMessage(
+                    Component.text("Teleported to ")
+                            .append(subject.displayName())
+                            .append(Component.text("."))
+                            .color(NamedTextColor.YELLOW)
+            );
+        });
     }
 
     @Override

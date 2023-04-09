@@ -5,6 +5,7 @@ import com.froobworld.nabsuite.data.DataSaver;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Tag;
@@ -20,7 +21,7 @@ import java.util.regex.Pattern;
 public class TreeManager implements Listener {
     private static final Pattern fileNamePattern = Pattern.compile("^(([0-9]+)|(-[0-9]+))\\.(([0-9]+)|(-[0-9]+))\\.json$");
     protected final DataSaver regionDataSaver;
-    private final BiMap<UnnaturalLogRegion.Key, UnnaturalLogRegion> logRegionMap = HashBiMap.create();
+    private final BiMap<UnnaturalLogRegion.Key, UnnaturalLogRegion> logRegionMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final File directory;
 
     public TreeManager(MechsModule mechsModule) {
@@ -44,13 +45,11 @@ public class TreeManager implements Listener {
 
     private UnnaturalLogRegion getLogRegionData(Location location) {
         UnnaturalLogRegion.Key key = UnnaturalLogRegion.Key.fromLocation(location);
-        if (!logRegionMap.containsKey(key)) {
+        return logRegionMap.computeIfAbsent(key, k -> {
             UnnaturalLogRegion logRegion = new UnnaturalLogRegion(this, key);
-            logRegionMap.put(key, logRegion);
             regionDataSaver.scheduleSave(logRegion);
             return logRegion;
-        }
-        return logRegionMap.get(key);
+        });
     }
 
     public boolean isNaturalLog(Location location) {

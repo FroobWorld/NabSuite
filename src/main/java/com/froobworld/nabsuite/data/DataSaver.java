@@ -1,7 +1,7 @@
 package com.froobworld.nabsuite.data;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
+import com.froobworld.nabsuite.NabSuite;
+import com.froobworld.nabsuite.hook.scheduler.ScheduledTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,55 +15,57 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class DataSaver {
-    private final Plugin plugin;
+    private final NabSuite nabSuite;
     private ExecutorService ioService = null;
     private final long cyclePeriod;
-    private Integer taskId;
+    private ScheduledTask scheduledTask;
     private final Map<Class<?>, Function<?, byte[]>> dataSerialisers = new HashMap<>();
     private final Map<Class<?>, Function<?, File>> fileMappers = new HashMap<>();
     private final Map<Object, QueuedSave> saveQueue = new LinkedHashMap<>();
 
-    public DataSaver(Plugin plugin, long cyclePeriod) {
+    public DataSaver(NabSuite nabSuite, long cyclePeriod) {
         if (cyclePeriod < 1) {
             throw new IllegalArgumentException("Cycle period must be positive");
         }
-        this.plugin = plugin;
+        this.nabSuite = nabSuite;
         this.cyclePeriod = cyclePeriod;
     }
 
     public void start() {
-        if (taskId != null) {
+        if (scheduledTask != null && !scheduledTask.isCancelled()) {
             throw new IllegalStateException("Already running.");
         }
         ioService = Executors.newSingleThreadExecutor();
-        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::flush, cyclePeriod, cyclePeriod);
+        scheduledTask = nabSuite.getHookManager().getSchedulerHook().runRepeatingTask(this::flush, cyclePeriod, cyclePeriod);
     }
 
     public void stop() {
-        if (taskId == null) {
+        if (scheduledTask == null || scheduledTask.isCancelled()) {
             throw new IllegalStateException("Already stopped.");
         }
-        Bukkit.getScheduler().cancelTask(taskId);
+        scheduledTask.cancel();
         flush();
         ioService.shutdown();
         while (!ioService.isTerminated()) {}
-        taskId = null;
+        scheduledTask = null;
     }
 
     public void flush() {
-        for (QueuedSave queuedSave : saveQueue.values()) {
-            byte[] data = queuedSave.dataSupplier.get();
-            ioService.submit(() -> {
-                //noinspection ResultOfMethodCallIgnored
-                queuedSave.location.getParentFile().mkdirs();
-                try {
-                    Files.write(queuedSave.location.toPath(), data);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+        synchronized (saveQueue) {
+            for (QueuedSave queuedSave : saveQueue.values()) {
+                byte[] data = queuedSave.dataSupplier.get();
+                ioService.submit(() -> {
+                    //noinspection ResultOfMethodCallIgnored
+                    queuedSave.location.getParentFile().mkdirs();
+                    try {
+                        Files.write(queuedSave.location.toPath(), data);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+            saveQueue.clear();
         }
-        saveQueue.clear();
     }
 
     public <T> void addDataType(Class<T> dataType, Function<T, byte[]> serialiser, Function<T, File> fileMapper) {
@@ -77,7 +79,9 @@ public class DataSaver {
         if (serialiser == null || fileMapper == null) {
             throw new IllegalArgumentException("Unknown data type: " + data.getClass());
         }
-        saveQueue.put(data, new QueuedSave(() -> serialiser.apply(data), fileMapper.apply(data)));
+        synchronized (saveQueue) {
+            saveQueue.put(data, new QueuedSave(() -> serialiser.apply(data), fileMapper.apply(data)));
+        }
     }
 
     public <T> void scheduleDeletion(T data) {
@@ -85,9 +89,11 @@ public class DataSaver {
         if (fileMapper == null) {
             throw new IllegalArgumentException("Unknown data type: " + data.getClass());
         }
-        saveQueue.remove(data);
-        File file = fileMapper.apply(data);
-        ioService.submit(file::delete);
+        synchronized (saveQueue) {
+            saveQueue.remove(data);
+            File file = fileMapper.apply(data);
+            ioService.submit(file::delete);
+        }
     }
 
     private static class QueuedSave {

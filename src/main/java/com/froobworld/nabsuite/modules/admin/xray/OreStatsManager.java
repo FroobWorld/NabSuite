@@ -7,12 +7,13 @@ import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public class OreStatsManager {
     private static final Pattern fileNamePattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.json$");
     protected final DataSaver dataSaver;
-    private final Map<UUID, PlayerOreStatsData> dataMap = new HashMap<>();
+    private final Map<UUID, PlayerOreStatsData> dataMap = new ConcurrentHashMap<>();
     private final File directory;
 
     public OreStatsManager(AdminModule adminModule) {
@@ -30,16 +31,15 @@ public class OreStatsManager {
     }
 
     public PlayerOreStatsData getOreStatsData(UUID uuid) {
-        if (!dataMap.containsKey(uuid)) {
+        return dataMap.computeIfAbsent(uuid, k -> {
             PlayerOreStatsData data = new PlayerOreStatsData(this, uuid);
-            dataMap.put(uuid, data);
             dataSaver.scheduleSave(data);
-        }
-        return dataMap.get(uuid);
+            return data;
+        });
     }
 
     public Collection<PlayerOreStatsData> getOreStatsData() {
-        return dataMap.values();
+        return Set.copyOf(dataMap.values());
     }
 
     public void shutdown() {

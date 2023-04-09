@@ -44,6 +44,12 @@ public class HomesCommand extends NabCommand {
         } else {
             int pageNumber = context.get("page");
             List<String>[] pages = ListPaginator.paginate(homes, ITEMS_PER_PAGE);
+            if (pageNumber > pages.length) {
+                player.sendMessage(
+                        Component.text("Page number exceeds maximum.", NamedTextColor.RED)
+                );
+                return;
+            }
             List<String> page = pages[pageNumber - 1];
             context.getSender().sendMessage(
                     Component.text("You have " + NumberDisplayer.toStringWithModifier(homes.size(), " home", " homes", false) + ". ")

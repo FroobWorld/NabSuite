@@ -42,6 +42,12 @@ public class PunishmentHistoryCommand extends NabCommand {
             );
         } else {
             List<PunishmentLogItem>[] pages = ListPaginator.paginate(punishmentHistory, ITEMS_PER_PAGE);
+            if (pageNumber > pages.length) {
+                context.getSender().sendMessage(
+                        Component.text("Page number exceeds maximum.", NamedTextColor.RED)
+                );
+                return;
+            }
             List<PunishmentLogItem> page = pages[pageNumber - 1];
             context.getSender().sendMessage(
                     Component.text()

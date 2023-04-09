@@ -1,20 +1,20 @@
 package com.froobworld.nabsuite.modules.basics.teleport.request;
 
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class TeleportRequestHandler {
     private final BasicsModule basicsModule;
-    private final Map<Player, RequestedTeleport> teleportRequestMap = new HashMap<>();
+    private final Map<Player, RequestedTeleport> teleportRequestMap = new ConcurrentHashMap<>();
 
     public TeleportRequestHandler(BasicsModule basicsModule) {
         this.basicsModule = basicsModule;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(basicsModule.getPlugin(), this::cleanup, 100, 100);
+        basicsModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(this::cleanup, 100, 100);
     }
 
     public RequestedTeleport getRequestedTeleport(Player subject) {
@@ -52,9 +52,9 @@ public class TeleportRequestHandler {
                 return;
             }
             if (type == RequestType.TO) {
-                TeleportRequestHandler.this.basicsModule.getPlayerTeleporter().teleport(requester, subject);
+                TeleportRequestHandler.this.basicsModule.getPlayerTeleporter().teleportAsync(requester, subject);
             } else {
-                TeleportRequestHandler.this.basicsModule.getPlayerTeleporter().teleport(subject, requester);
+                TeleportRequestHandler.this.basicsModule.getPlayerTeleporter().teleportAsync(subject, requester);
             }
             invalidate();
         }

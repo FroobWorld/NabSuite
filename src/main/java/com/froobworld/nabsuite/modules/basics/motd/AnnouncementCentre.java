@@ -20,7 +20,7 @@ public class AnnouncementCentre {
         if (messages.isEmpty()) {
             return;
         }
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(basicsModule.getPlugin(), () -> {
+        basicsModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(() -> {
             listPosition = listPosition % messages.size();
             Component message = MiniMessage.miniMessage().deserialize(messages.get(listPosition));
             for (Player player : Bukkit.getOnlinePlayers()) {

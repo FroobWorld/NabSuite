@@ -11,6 +11,7 @@ import com.froobworld.nabsuite.modules.protect.area.visualiser.AreaVisualiser;
 import com.froobworld.nabsuite.modules.protect.user.User;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,6 +22,8 @@ import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -32,7 +35,8 @@ public class AreaManager {
     private static final Pattern fileNamePattern = Pattern.compile("^[a-zA-z0-9-_]+\\.json$");
     protected final DataSaver areaSaver;
     private final ProtectModule protectModule;
-    private final BiMap<String, Area> areaMap = HashBiMap.create();
+    private final ReadWriteLock areaMapLock = new ReentrantReadWriteLock();
+    private final BiMap<String, Area> areaMap = Maps.synchronizedBiMap(HashBiMap.create());
     private final File directory;
     private final GlobalAreaManager globalAreaManager;
     private final AreaNotificationManager areaNotificationManager;
@@ -95,28 +99,47 @@ public class AreaManager {
         if (!areaNamePattern.matcher(name).matches()) {
             throw new IllegalArgumentException("Name does not match pattern: " + areaNamePattern);
         }
-        Area area = new Area(this, protectModule.getUserManager(), parent, creator, name, world, corner1, corner2, owner, approved, defaultFlags);
         if (parent != null) {
-            parent.addChild(area);
-        } else {
-            areaMap.put(name.toLowerCase(), area);
-            areaSaver.scheduleSave(area);
+            parent.lock.writeLock().lock();
         }
-        if (!area.isApproved()) {
-            protectModule.getPlugin().getModule(AdminModule.class).getStaffTaskManager().notifyNewTask("nabsuite.command.area.approve");
-            AdminModule adminModule = protectModule.getPlugin().getModule(AdminModule.class);
-            if (adminModule != null) {
-                adminModule.getDiscordStaffLog().sendAreaRequestNotification(area);
+        try {
+            Area area = new Area(this, protectModule.getUserManager(), parent, creator, name, world, corner1, corner2, owner, approved, defaultFlags);
+            if (parent != null) {
+                parent.addChild(area);
+            } else {
+                areaMapLock.writeLock().lock();
+                try {
+                    areaMap.put(name.toLowerCase(), area);
+                } finally {
+                    areaMapLock.writeLock().unlock();
+                }
+                areaSaver.scheduleSave(area);
+            }
+            if (!area.isApproved()) {
+                protectModule.getPlugin().getModule(AdminModule.class).getStaffTaskManager().notifyNewTask("nabsuite.command.area.approve");
+                AdminModule adminModule = protectModule.getPlugin().getModule(AdminModule.class);
+                if (adminModule != null) {
+                    adminModule.getDiscordStaffLog().sendAreaRequestNotification(area);
+                }
+            }
+            return area;
+        } finally {
+            if (parent != null) {
+                parent.lock.writeLock().unlock();
             }
         }
-        return area;
     }
 
     public void deleteArea(Area area) {
         if (area.getParent() != null) {
             area.getParent().deleteChild(area);
         } else {
-            areaMap.remove(area.getName().toLowerCase());
+            areaMapLock.writeLock().lock();
+            try {
+                areaMap.remove(area.getName().toLowerCase());
+            } finally {
+                areaMapLock.writeLock().unlock();
+            }
             areaSaver.scheduleDeletion(area);
         }
     }
@@ -138,15 +161,25 @@ public class AreaManager {
     }
 
     public Set<Area> getAreas() {
-        return areaMap.values();
+        areaMapLock.readLock().lock();
+        try {
+            return Set.copyOf(areaMap.values());
+        } finally {
+            areaMapLock.readLock().unlock();
+        }
     }
 
     public Set<AreaLike> getTopMostAreasAtLocation(Location location) {
         Set<AreaLike> areaSet = new HashSet<>();
-        for (Area area : areaMap.values()) {
-            if (area.isApproved()) {
-                areaSet.addAll(area.getTopMostArea(location));
+        areaMapLock.readLock().lock();
+        try {
+            for (Area area : areaMap.values()) {
+                if (area.isApproved()) {
+                    areaSet.addAll(area.getTopMostArea(location));
+                }
             }
+        } finally {
+            areaMapLock.readLock().unlock();
         }
         if (areaSet.isEmpty()) {
             return globalAreaManager.getTopMostAreasAtLocation(location);
@@ -155,10 +188,15 @@ public class AreaManager {
     }
 
     public boolean isAreaAtLocation(Location location) {
-        for (Area area : areaMap.values()) {
-            if (area.isApproved() && area.containsLocation(location)) {
-                return true;
+        areaMapLock.readLock().lock();
+        try {
+            for (Area area : areaMap.values()) {
+                if (area.isApproved() && area.containsLocation(location)) {
+                    return true;
+                }
             }
+        } finally {
+            areaMapLock.readLock().unlock();
         }
         return false;
     }

@@ -36,13 +36,13 @@ public class MotdManager implements Listener {
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
         if (!event.getPlayer().hasPlayedBefore()) {
-            Bukkit.getScheduler().runTaskLater(basicsModule.getPlugin(), () -> {
+            basicsModule.getPlugin().getHookManager().getSchedulerHook().runTaskDelayed(() -> {
                 Bukkit.broadcast(event.getPlayer().displayName()
                         .append(Component.text(" just joined for the first time.", NamedTextColor.LIGHT_PURPLE))
                 );
             }, 5);
         }
-        Bukkit.getScheduler().runTaskLater(basicsModule.getPlugin(), () -> getMotd().forEach(event.getPlayer()::sendMessage), 10);
+        basicsModule.getPlugin().getHookManager().getSchedulerHook().runTaskDelayed(() -> getMotd().forEach(event.getPlayer()::sendMessage), 10);
     }
 
 }

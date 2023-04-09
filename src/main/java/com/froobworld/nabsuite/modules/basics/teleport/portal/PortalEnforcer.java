@@ -6,38 +6,48 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PortalEnforcer {
+    private final BasicsModule basicsModule;
     private final PortalManager portalManager;
-    private final Set<UUID> immunePlayers = new HashSet<>();
+    private final Set<UUID> immunePlayers = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public PortalEnforcer(BasicsModule basicsModule, PortalManager portalManager) {
+        this.basicsModule = basicsModule;
         this.portalManager = portalManager;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(basicsModule.getPlugin(), this::loop, 10, 10);
+        basicsModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(this::loop, 10, 10);
     }
 
     private void loop() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            boolean inPortal = false;
-            for (Portal portal : portalManager.getPortals()) {
-                if (portal.getLink() == null) {
-                    continue;
+            basicsModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskAsap(() -> {
+                boolean inPortal = false;
+                for (Portal portal : portalManager.getPortals()) {
+                    portal.lock.readLock().lock();
+                    try {
+                        if (portal.getLink() == null) {
+                            continue;
+                        }
+                        if (!portal.getLocation().getWorld().equals(player.getWorld())) {
+                            continue;
+                        }
+                        if (player.getLocation().distanceSquared(portal.getLocation()) <= portal.getRadius() * portal.getRadius()) {
+                            inPortal = true;
+                            handleInPortal(player, portal);
+                            break;
+                        }
+                    } finally {
+                        portal.lock.readLock().unlock();
+                    }
                 }
-                if (!portal.getLocation().getWorld().equals(player.getWorld())) {
-                    continue;
+                if (!inPortal) {
+                    immunePlayers.remove(player.getUniqueId());
                 }
-                if (player.getLocation().distanceSquared(portal.getLocation()) <= portal.getRadius() * portal.getRadius()) {
-                    inPortal = true;
-                    handleInPortal(player, portal);
-                    break;
-                }
-            }
-            if (!inPortal) {
-                immunePlayers.remove(player.getUniqueId());
-            }
+            }, null, player);
         }
     }
 
@@ -50,8 +60,8 @@ public class PortalEnforcer {
                 destination.setPitch(player.getLocation().getPitch());
                 destination.setYaw(player.getLocation().getYaw());
             }
-            player.teleport(destination);
-            setPortalImmune(player);
+            setPortalImmune(player); // Set the player immune before teleporting so they are only teleported once (noting async teleport can take multiple ticks)
+            player.teleportAsync(destination).thenRun(() -> setPortalImmune(player));
         }
     }
 

@@ -27,46 +27,55 @@ public class JailEnforcer implements Listener {
     public JailEnforcer(AdminModule adminModule, PunishmentManager punishmentManager) {
         this.adminModule = adminModule;
         this.punishmentManager = punishmentManager;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), () -> Bukkit.getOnlinePlayers().forEach(this::containToJail), 20, 20);
+        adminModule.getPlugin().getHookManager().getSchedulerHook().runRepeatingTask(() -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                adminModule.getPlugin().getHookManager().getSchedulerHook().runEntityTaskAsap(() -> containToJail(player), null, player);
+            }
+        }, 20, 20);
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
     public JailPunishment jail(PlayerIdentity player, CommandSender mediator, Jail jail, String reason, long duration) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
-        JailPunishment jailPunishment = new JailPunishment(adminModule.getJailManager(), jail.getName(), reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration);
-        punishments.setJailPunishment(jailPunishment);
-        punishments.addPunishmentLogItem(new PunishmentLogItem(
-                punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                PunishmentLogItem.Type.JAIL,
-                player.getUuid(),
-                jailPunishment.getMediator(),
-                jailPunishment.getTime(),
-                jailPunishment.getDuration(),
-                jailPunishment.getReason()
-        ));
-        Player onlinePlayer = player.asPlayer();
-        if (onlinePlayer != null) {
-            Component message = Component.text("You have been jailed");
-            if (reason != null) {
-                message = message.append(Component.text(" ("))
-                        .append(Component.text(reason))
-                        .append(Component.text(")"));
+        punishments.lock.writeLock().lock();
+        try {
+            JailPunishment jailPunishment = new JailPunishment(adminModule.getJailManager(), jail.getName(), reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration);
+            punishments.setJailPunishment(jailPunishment);
+            punishments.addPunishmentLogItem(new PunishmentLogItem(
+                    punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
+                    PunishmentLogItem.Type.JAIL,
+                    player.getUuid(),
+                    jailPunishment.getMediator(),
+                    jailPunishment.getTime(),
+                    jailPunishment.getDuration(),
+                    jailPunishment.getReason()
+            ));
+            Player onlinePlayer = player.asPlayer();
+            if (onlinePlayer != null) {
+                Component message = Component.text("You have been jailed");
+                if (reason != null) {
+                    message = message.append(Component.text(" ("))
+                            .append(Component.text(reason))
+                            .append(Component.text(")"));
+                }
+                message = message.append(Component.text(".")).color(NamedTextColor.YELLOW);
+                if (duration > 0) {
+                    message = message.append(Component.newline())
+                            .append(Component.text("You will be released in "))
+                            .append(Component.text(DurationDisplayer.asDurationString(duration)))
+                            .append(Component.text("."))
+                            .color(NamedTextColor.YELLOW);
+                }
+                Component finalMessage = message;
+                onlinePlayer.teleportAsync(jail.getLocation())
+                        .thenAccept(b -> {
+                            onlinePlayer.sendMessage(finalMessage);
+                        });
             }
-            message = message.append(Component.text(".")).color(NamedTextColor.YELLOW);
-            if (duration > 0) {
-                message = message.append(Component.newline())
-                        .append(Component.text("You will be released in "))
-                        .append(Component.text(DurationDisplayer.asDurationString(duration)))
-                        .append(Component.text("."))
-                        .color(NamedTextColor.YELLOW);
-            }
-            Component finalMessage = message;
-            onlinePlayer.teleportAsync(jail.getLocation())
-                    .thenAccept(b -> {
-                        onlinePlayer.sendMessage(finalMessage);
-                    });
+            return jailPunishment;
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
-        return jailPunishment;
     }
 
     public void unjail(PlayerIdentity player, CommandSender mediator) {
@@ -79,30 +88,41 @@ public class JailEnforcer implements Listener {
 
     private void unjail(boolean automatic, PlayerIdentity player, UUID mediator) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
-        punishments.setJailPunishment(null);
-        punishments.addPunishmentLogItem(new PunishmentLogItem(
-                punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                automatic ? PunishmentLogItem.Type.UNJAIL_AUTOMATIC : PunishmentLogItem.Type.UNJAIL_MANUAL,
-                player.getUuid(),
-                mediator,
-                System.currentTimeMillis(),
-                -1,
-                null
-        ));
-        Player onlinePlayer = player.asPlayer();
-        if (onlinePlayer != null) {
-            onlinePlayer.sendMessage(
-                    Component.text("You have been unjailed.").color(NamedTextColor.YELLOW)
-            );
+        punishments.lock.writeLock().lock();
+        try {
+            punishments.setJailPunishment(null);
+            punishments.addPunishmentLogItem(new PunishmentLogItem(
+                    punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
+                    automatic ? PunishmentLogItem.Type.UNJAIL_AUTOMATIC : PunishmentLogItem.Type.UNJAIL_MANUAL,
+                    player.getUuid(),
+                    mediator,
+                    System.currentTimeMillis(),
+                    -1,
+                    null
+            ));
+            Player onlinePlayer = player.asPlayer();
+            if (onlinePlayer != null) {
+                onlinePlayer.sendMessage(
+                        Component.text("You have been unjailed.").color(NamedTextColor.YELLOW)
+                );
+            }
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
     }
 
     private void verifyJailStatus(Player player) {
-        JailPunishment jailPunishment = punishmentManager.getPunishments(player.getUniqueId()).getJailPunishment();
-        if (jailPunishment != null && jailPunishment.getDuration() > 0) {
-            if (System.currentTimeMillis() >= jailPunishment.getTime() + jailPunishment.getDuration()) {
-                expireJail(adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player));
+        Punishments punishments = punishmentManager.getPunishments(player.getUniqueId());
+        punishments.lock.writeLock().lock();
+        try {
+            JailPunishment jailPunishment = punishments.getJailPunishment();
+            if (jailPunishment != null && jailPunishment.getDuration() > 0) {
+                if (System.currentTimeMillis() >= jailPunishment.getTime() + jailPunishment.getDuration()) {
+                    expireJail(adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player));
+                }
             }
+        } finally {
+            punishments.lock.writeLock().unlock();
         }
     }
 

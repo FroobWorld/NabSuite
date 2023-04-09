@@ -28,14 +28,14 @@ public class NabSuite extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        hookManager = new HookManager();
+        hookManager = new HookManager(this);
         playerIdentityManager = new PlayerIdentityManager(this);
         if (modules.isEmpty()) {
             addModule(new BasicsModule(this));
             addModule(new AdminModule(this));
             addModule(new ProtectModule(this));
             addModule(new MechsModule(this));
-            addModule(new NabModeModule(this));
+            //addModule(new NabModeModule(this));
         }
         modules.values().forEach(NabModule::preModulesEnable);
         modules.values().forEach(NabModule::onEnable);
