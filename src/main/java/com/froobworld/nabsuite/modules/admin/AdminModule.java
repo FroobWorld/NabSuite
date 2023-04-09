@@ -24,8 +24,8 @@ import org.bukkit.Bukkit;
 public class AdminModule extends NabModule {
     private AdminConfig adminConfig;
     private NotificationCentre notificationCentre;
-    private PunishmentManager punishmentManager;
     private JailManager jailManager;
+    private PunishmentManager punishmentManager;
     private VanishManager vanishManager;
     private GreylistManager greylistManager;
     private OreStatsManager oreStatsManager;
@@ -51,9 +51,9 @@ public class AdminModule extends NabModule {
             return;
         }
         notificationCentre = new NotificationCentre();
+        jailManager = new JailManager(this);
         punishmentManager = new PunishmentManager(this);
         vanishManager = new VanishManager(this);
-        jailManager = new JailManager(this);
         //greylistManager = new GreylistManager(this);
         oreStatsManager = new OreStatsManager(this);
         staffTaskManager = new StaffTaskManager(this);
@@ -116,12 +116,12 @@ public class AdminModule extends NabModule {
         return adminConfig;
     }
 
-    public PunishmentManager getPunishmentManager() {
-        return punishmentManager;
-    }
-
     public JailManager getJailManager() {
         return jailManager;
+    }
+
+    public PunishmentManager getPunishmentManager() {
+        return punishmentManager;
     }
 
     public VanishManager getVanishManager() {
