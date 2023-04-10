@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.mechs.viewdistance;
 
+import com.destroystokyo.paper.ClientOption;
 import com.destroystokyo.paper.event.player.PlayerClientOptionsChangeEvent;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import net.kyori.adventure.text.Component;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ViewDistanceEnforcer implements Listener {
     private final MechsModule mechsModule;
@@ -61,7 +63,26 @@ public class ViewDistanceEnforcer implements Listener {
                 }, 30 * 20);
                 reminderTasks.put(event.getPlayer().getUniqueId(), taskId);
             }
-            viewDistanceManager.recalcPlayerViewDistance(event.getPlayer(), event.getViewDistance());
+            try {
+                viewDistanceManager.recalcPlayerViewDistance(event.getPlayer(), event.getViewDistance());
+            } catch (IllegalStateException e) { // Ugly solution to player sometimes not being attached to a world yet
+                AtomicInteger attempts = new AtomicInteger(1);
+                Runnable reattemptRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (attempts.getAndIncrement() >= 5 || !event.getPlayer().isOnline()) {
+                            return;
+                        }
+                        try {
+                            viewDistanceManager.recalcPlayerViewDistance(event.getPlayer(), event.getPlayer().getClientOption(ClientOption.VIEW_DISTANCE));
+                        } catch (IllegalStateException exception) {
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(mechsModule.getPlugin(), this, 3);
+                        }
+                    }
+                };
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(mechsModule.getPlugin(), reattemptRunnable, 3);
+            }
         }
     }
 
