@@ -57,7 +57,7 @@ public class PunishmentManager {
     }
 
     public JailManager getJailManager() {
-        return null;
+        return adminModule.getJailManager();
     }
 
     public BanEnforcer getBanEnforcer() {
