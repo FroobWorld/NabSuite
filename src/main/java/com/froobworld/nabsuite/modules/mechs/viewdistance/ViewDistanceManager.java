@@ -49,7 +49,7 @@ public class ViewDistanceManager {
     void recalcPlayerViewDistance(Player player, int clientViewDistance) {
         int clampedViewDistance = Math.max(Bukkit.getSimulationDistance(), Math.min(32, Math.min(clientViewDistance, getMaxViewDistance(player))));
         player.setViewDistance(clampedViewDistance);
-        mechsModule.getPlugin().getLogger().info("Set view distance of " + player.getName() + " to " + clampedViewDistance + " (client view distance is " + player.getClientOption(ClientOption.VIEW_DISTANCE) + ").");
+        mechsModule.getPlugin().getLogger().info("Set view distance of " + player.getName() + " to " + clampedViewDistance + " (client view distance is " + clientViewDistance + ").");
     }
 
 }
