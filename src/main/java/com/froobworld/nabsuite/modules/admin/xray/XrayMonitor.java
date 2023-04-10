@@ -4,6 +4,7 @@ import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.util.OreUtils;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.luckperms.api.LuckPerms;
@@ -20,10 +21,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayDeque;
-import java.util.Map;
-import java.util.Queue;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +34,7 @@ public class XrayMonitor implements Listener {
     private final AdminModule adminModule;
     private final VeinTracker diamondVeinTracker;
     private final Map<Player, PlayerTracker> playerTrackers = new WeakHashMap<>();
+    private final Map<UUID, Boolean> understandsCache = new HashMap<>();
 
     public XrayMonitor(AdminModule adminModule) {
         this.adminModule = adminModule;
@@ -48,8 +47,10 @@ public class XrayMonitor implements Listener {
     @EventHandler(ignoreCancelled = true)
     private void onBlockBreak(BlockBreakEvent event) {
         if (OreUtils.isDiamondOre(event.getBlock().getType())) {
-            if (!hasReceivedFirstDiamondWarning(event.getPlayer())) {
+            if (!understandsRules(event.getPlayer())) {
                 sendFirstDiamondWarning(event.getPlayer());
+                event.setCancelled(true);
+                return;
             }
             if (diamondVeinTracker.addLocation(event.getBlock().getLocation(), OreUtils::isDiamondOre) >= MINIMUM_VEIN_SIZE) {
                 PlayerTracker playerTracker = playerTrackers.computeIfAbsent(event.getPlayer(), player -> new PlayerTracker());
@@ -88,26 +89,42 @@ public class XrayMonitor implements Listener {
         }
     }
 
-    private boolean hasReceivedFirstDiamondWarning(Player player) {
-        return !player.getPersistentDataContainer().has(firstDiamondWarningKey);
+    public boolean understandsRules(Player player) {
+        return understandsCache.computeIfAbsent(player.getUniqueId(), k -> !player.getPersistentDataContainer().has(firstDiamondWarningKey));
+    }
+
+    public void setUnderstandsRules(Player player) {
+        player.getPersistentDataContainer().remove(firstDiamondWarningKey);
+        understandsCache.put(player.getUniqueId(), true);
     }
 
     private void sendFirstDiamondWarning(Player player) {
         player.sendMessage(
-                Component.text("Congratulations on finding your first diamonds!", NamedTextColor.YELLOW)
+                Component.newline()
+                        .append(Component.text("Congratulations on finding your first diamonds!", NamedTextColor.GOLD))
                         .append(Component.newline())
                         .append(Component.newline())
                         .append(
                                 Component.text("Please remember that ", NamedTextColor.RED)
-                                        .append(Component.text("using x-ray is against the rules", NamedTextColor.DARK_RED, TextDecoration.BOLD))
-                                        .append(Component.text(".", NamedTextColor.RED))
+                                        .append(Component.text("using x-ray is against the rules", NamedTextColor.GOLD, TextDecoration.BOLD))
+                                        .append(Component.text(",", NamedTextColor.RED))
+                        )
+                        .append(Component.text(" and will result in a ban and items being removed.", NamedTextColor.RED))
+                        .append(Component.newline())
+                        .append(Component.newline())
+                        .append(Component.text("Suspicious mining is automatically flagged for investigation.", NamedTextColor.RED))
+                        //.append(Component.text("Suspicious mining activity will be flagged for investigation.", NamedTextColor.RED))
+                        .append(Component.newline())
+                        .append(Component.newline())
+                        .append(
+                                Component.text("Type ")
+                                        .append(Component.text("/noxray", NamedTextColor.GOLD))
+                                        .append(Component.text(" to continue mining."))
+                                        .clickEvent(ClickEvent.runCommand("/noxray"))
+                                        .color(NamedTextColor.RED)
                         )
                         .append(Component.newline())
-                        .append(Component.text("Use of x-ray will result in a ban and items being removed.", NamedTextColor.RED))
-                        .append(Component.newline())
-                        .append(Component.text("Suspicious mining activity will be flagged for investigation.", NamedTextColor.RED))
         );
-        player.getPersistentDataContainer().remove(firstDiamondWarningKey);
     }
 
     public CompletableFuture<Boolean> markAsXrayer(Player player) {

@@ -179,6 +179,8 @@ permissions:
     description: "Access to the /unrestrict command."
   nabsuite.command.lockdown:
     description: "Access to the /lockdown command."
+  nabsuite.command.noxray:
+    description: "Access to the /noxray command."
 
   # Admin module other permissions
   nabsuite.vanish:

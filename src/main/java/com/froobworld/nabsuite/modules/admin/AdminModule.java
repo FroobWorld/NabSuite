@@ -33,6 +33,7 @@ public class AdminModule extends NabModule {
     private TicketManager ticketManager;
     private DiscordStaffLog discordStaffLog;
     private TheftPreventionManager theftPreventionManager;
+    private XrayMonitor xrayMonitor;
     private SuspiciousActivityMonitor suspiciousActivityMonitor;
     private ContingencyManager contingencyManager;
 
@@ -61,7 +62,7 @@ public class AdminModule extends NabModule {
         new ProfanityFilter(this);
         discordStaffLog = new DiscordStaffLog(this);
         theftPreventionManager = new TheftPreventionManager(this);
-        new XrayMonitor(this);
+        xrayMonitor = new XrayMonitor(this);
         this.suspiciousActivityMonitor = new SuspiciousActivityMonitor(this);
         this.contingencyManager = new ContingencyManager(this);
 
@@ -94,7 +95,8 @@ public class AdminModule extends NabModule {
                 new SeeInventoryCommand(this),
                 new RestrictCommand(this),
                 new UnrestrictCommand(this),
-                new LockdownCommand(this)
+                new LockdownCommand(this),
+                new NoXrayCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -162,5 +164,9 @@ public class AdminModule extends NabModule {
 
     public ContingencyManager getContingencyManager() {
         return contingencyManager;
+    }
+
+    public XrayMonitor getXrayMonitor() {
+        return xrayMonitor;
     }
 }
