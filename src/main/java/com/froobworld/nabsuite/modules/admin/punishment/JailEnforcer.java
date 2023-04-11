@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.modules.admin.jail.Jail;
 import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.froobworld.nabsuite.util.DurationDisplayer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -46,20 +47,33 @@ public class JailEnforcer implements Listener {
         ));
         Player onlinePlayer = player.asPlayer();
         if (onlinePlayer != null) {
-            Component message = Component.text("You have been jailed");
+            Component message = Component.newline()
+                    .append(Component.text("You have been jailed"));
             if (reason != null) {
                 message = message.append(Component.text(" ("))
-                        .append(Component.text(reason))
+                        .append(Component.text(reason, NamedTextColor.GOLD))
                         .append(Component.text(")"));
             }
-            message = message.append(Component.text(".")).color(NamedTextColor.YELLOW);
+            message = message.append(Component.text(".")).color(NamedTextColor.RED);
             if (duration > 0) {
                 message = message.append(Component.newline())
+                        .append(Component.newline())
                         .append(Component.text("You will be released in "))
-                        .append(Component.text(DurationDisplayer.asDurationString(duration)))
+                        .append(Component.text(DurationDisplayer.asDurationString(jailPunishment.getTime() + jailPunishment.getDuration() - System.currentTimeMillis()), NamedTextColor.GOLD))
                         .append(Component.text("."))
-                        .color(NamedTextColor.YELLOW);
+                        .color(NamedTextColor.RED);
             }
+            String banAppealUrl = adminModule.getAdminConfig().banAppealUrl.get();
+            if (banAppealUrl != null && !banAppealUrl.isEmpty()) {
+                message = message.append(Component.newline())
+                        .append(Component.newline())
+                        .append(Component.text("Appeal at "))
+                        .append(Component.text(banAppealUrl).color(NamedTextColor.GOLD))
+                        .append(Component.text("."))
+                        .color(NamedTextColor.RED)
+                        .clickEvent(ClickEvent.openUrl("https://" + banAppealUrl));
+            }
+            message = message.append(Component.newline());
             Component finalMessage = message;
             onlinePlayer.teleportAsync(jail.getLocation())
                     .thenAccept(b -> {
@@ -119,20 +133,33 @@ public class JailEnforcer implements Listener {
     }
 
     private void sendJailMessage(Player player, JailPunishment jailPunishment) {
-        Component message = Component.text("You are jailed");
+        Component message = Component.newline()
+                .append(Component.text("You are jailed"));
         if (jailPunishment.getReason() != null) {
             message = message.append(Component.text(" ("))
-                    .append(Component.text(jailPunishment.getReason()))
+                    .append(Component.text(jailPunishment.getReason(), NamedTextColor.GOLD))
                     .append(Component.text(")"));
         }
-        message = message.append(Component.text(".")).color(NamedTextColor.YELLOW);
+        message = message.append(Component.text(".")).color(NamedTextColor.RED);
         if (jailPunishment.getDuration() > 0) {
             message = message.append(Component.newline())
-                    .append(Component.text("You will be unjailed in "))
-                    .append(Component.text(DurationDisplayer.asDurationString(jailPunishment.getTime() + jailPunishment.getDuration() - System.currentTimeMillis())))
+                    .append(Component.newline())
+                    .append(Component.text("You will be released in "))
+                    .append(Component.text(DurationDisplayer.asDurationString(jailPunishment.getTime() + jailPunishment.getDuration() - System.currentTimeMillis()), NamedTextColor.GOLD))
                     .append(Component.text("."))
-                    .color(NamedTextColor.YELLOW);
+                    .color(NamedTextColor.RED);
         }
+        String banAppealUrl = adminModule.getAdminConfig().banAppealUrl.get();
+        if (banAppealUrl != null && !banAppealUrl.isEmpty()) {
+            message = message.append(Component.newline())
+                    .append(Component.newline())
+                    .append(Component.text("Appeal at "))
+                    .append(Component.text(banAppealUrl).color(NamedTextColor.GOLD))
+                    .append(Component.text("."))
+                    .color(NamedTextColor.RED)
+                    .clickEvent(ClickEvent.openUrl("https://" + banAppealUrl));
+        }
+        message = message.append(Component.newline());
         player.sendMessage(message);
     }
 
