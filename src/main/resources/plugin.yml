@@ -199,6 +199,8 @@ permissions:
     description: "Access to the /togglevd command."
   nabsuite.command.nabmode:
     description: "Access to the /nabmode command."
+  nabsuite.command.effectivevd:
+    description: "Access to the /effectivevd command."
 
   # Mechs module other permissions
   nabsuite.nabmode:

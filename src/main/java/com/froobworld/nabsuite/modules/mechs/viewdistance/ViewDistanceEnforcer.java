@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,6 +85,11 @@ public class ViewDistanceEnforcer implements Listener {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(mechsModule.getPlugin(), reattemptRunnable, 3);
             }
         }
+    }
+
+    @EventHandler
+    private void onWorldChange(PlayerChangedWorldEvent event) {
+        viewDistanceManager.recalcPlayerViewDistance(event.getPlayer(), event.getPlayer().getClientViewDistance());
     }
 
 }

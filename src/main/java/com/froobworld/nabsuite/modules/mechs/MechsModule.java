@@ -2,6 +2,7 @@ package com.froobworld.nabsuite.modules.mechs;
 
 import com.froobworld.nabsuite.NabModule;
 import com.froobworld.nabsuite.NabSuite;
+import com.froobworld.nabsuite.modules.mechs.command.EffectiveViewDistanceCommand;
 import com.froobworld.nabsuite.modules.mechs.command.PvpCommand;
 import com.froobworld.nabsuite.modules.mechs.command.ToggleViewDistanceCommand;
 import com.froobworld.nabsuite.modules.mechs.config.MechsConfig;
@@ -41,7 +42,8 @@ public class MechsModule extends NabModule {
 
         Lists.newArrayList(
                 new PvpCommand(this),
-                new ToggleViewDistanceCommand(this)
+                new ToggleViewDistanceCommand(this),
+                new EffectiveViewDistanceCommand()
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
