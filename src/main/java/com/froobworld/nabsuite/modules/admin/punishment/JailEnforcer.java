@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.admin.punishment;
 
+import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.jail.Jail;
@@ -16,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -207,6 +209,25 @@ public class JailEnforcer implements Listener {
         }
         if (testJail(event.getPlayer(), false)) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    private void onDeath(PlayerDeathEvent event) {
+        if (testJail(event.getPlayer(), false)) {
+            event.setKeepInventory(true);
+            event.getDrops().clear();
+            event.setKeepLevel(true);
+            event.setShouldDropExperience(false);
+        }
+    }
+
+    @EventHandler
+    private void onPhantomSpawn(PhantomPreSpawnEvent event) {
+        if (event.getSpawningEntity() instanceof Player) {
+            if (testJail((Player) event.getSpawningEntity(), false)) {
+                event.setCancelled(true);
+            }
         }
     }
 
