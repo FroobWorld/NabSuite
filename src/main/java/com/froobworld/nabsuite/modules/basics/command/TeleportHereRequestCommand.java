@@ -65,6 +65,14 @@ public class TeleportHereRequestCommand extends NabCommand {
                                 false,
                                 (context, player) -> basicsModule.getPlayerDataManager().getPlayerData(player).teleportRequestsEnabled(),
                                 "Player has teleport requests disabled"
+                        ),
+                        new ArgumentPredicate<>(
+                                false,
+                                (context, player) -> {
+                                    Player sender = (Player) context.getSender();
+                                    return !basicsModule.getPlayerDataManager().getIgnoreManager().isIgnoring(player, sender);
+                                },
+                                "Player is ignoring you"
                         )
                 ));
     }
