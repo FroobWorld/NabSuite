@@ -41,20 +41,23 @@ public class MuteEnforcer implements Listener {
         ));
         Player onlinePlayer = player.asPlayer();
         if (onlinePlayer != null) {
-            Component message = Component.text("You have been muted");
+            Component message = Component.newline()
+                    .append(Component.text("You have been muted"));
             if (reason != null) {
                 message = message.append(Component.text(" ("))
-                        .append(Component.text(reason))
+                        .append(Component.text(reason, NamedTextColor.GOLD))
                         .append(Component.text(")"));
             }
             message = message.append(Component.text(".")).color(NamedTextColor.YELLOW);
             if (duration > 0) {
                 message = message.append(Component.newline())
+                        .append(Component.newline())
                         .append(Component.text("You will be unmuted in "))
-                        .append(Component.text(DurationDisplayer.asDurationString(duration)))
+                        .append(Component.text(DurationDisplayer.asDurationString(duration), NamedTextColor.GOLD))
                         .append(Component.text("."))
-                        .color(NamedTextColor.YELLOW);
+                        .color(NamedTextColor.RED);
             }
+            message = message.append(Component.newline());
             onlinePlayer.sendMessage(message);
         }
         return mutePunishment;
@@ -102,20 +105,23 @@ public class MuteEnforcer implements Listener {
         MutePunishment mutePunishment = punishmentManager.getPunishments(player.getUniqueId()).getMutePunishment();
         if (mutePunishment != null) {
             if (notifyOnFail) {
-                Component message = Component.text("You are muted");
+                Component message = Component.newline()
+                        .append(Component.text("You are muted"));
                 if (mutePunishment.getReason() != null) {
                     message = message.append(Component.text(" ("))
-                            .append(Component.text(mutePunishment.getReason()))
+                            .append(Component.text(mutePunishment.getReason(), NamedTextColor.GOLD))
                             .append(Component.text(")"));
                 }
-                message = message.append(Component.text(".")).color(NamedTextColor.YELLOW);
+                message = message.append(Component.text(".")).color(NamedTextColor.RED);
                 if (mutePunishment.getDuration() > 0) {
                     message = message.append(Component.newline())
+                            .append(Component.newline())
                             .append(Component.text("You will be unmuted in "))
-                            .append(Component.text(DurationDisplayer.asDurationString(mutePunishment.getTime() + mutePunishment.getDuration() - System.currentTimeMillis())))
+                            .append(Component.text(DurationDisplayer.asDurationString(mutePunishment.getTime() + mutePunishment.getDuration() - System.currentTimeMillis()), NamedTextColor.GOLD))
                             .append(Component.text("."))
-                            .color(NamedTextColor.YELLOW);
+                            .color(NamedTextColor.RED);
                 }
+                message = message.append(Component.newline());
                 player.sendMessage(message);
             }
             return true;
