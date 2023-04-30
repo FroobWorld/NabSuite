@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -61,6 +62,14 @@ public class NabDimensionManager implements Listener {
     private void onExperienceGain(PlayerPickupExperienceEvent event) {
         if (event.getPlayer().getWorld().equals(nabWorld)) {
             event.getExperienceOrb().setExperience(0);
+        }
+    }
+
+    @EventHandler
+    private void onPlayerDeath(PlayerDeathEvent event) {
+        if (event.getPlayer().getWorld().equals(nabWorld)) {
+            event.setKeepLevel(true);
+            event.setShouldDropExperience(false);
         }
     }
 
