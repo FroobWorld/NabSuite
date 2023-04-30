@@ -122,7 +122,6 @@ public class AfkManager implements Listener {
                 return;
             }
             for (int i = 0; i < playersToKick; i++) {
-                System.out.println(kickablePlayers.get(i).getName());
                 kickablePlayers.get(i).kick(
                         Component.text("Kicked - server full.", NamedTextColor.WHITE)
                                 .append(Component.newline())
