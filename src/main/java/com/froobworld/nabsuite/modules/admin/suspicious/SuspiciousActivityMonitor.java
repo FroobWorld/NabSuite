@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SuspiciousActivityMonitor {
     private static final double SUSPICION_THRESHOLD = 2.0;
-    private static final long TIME_PLAYED_THRESHOLD = TimeUnit.HOURS.toSeconds(1) * 20; // One hour in ticks
+    private static final long TIME_PLAYED_THRESHOLD = TimeUnit.MINUTES.toSeconds(90) * 20; // 90 minutes in ticks
     private final NamespacedKey pdcKey;
     private final List<ActivityMonitor> monitors;
     private final AdminModule adminModule;
