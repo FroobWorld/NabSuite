@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.admin.suspicious;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.suspicious.monitors.ActivityMonitor;
+import com.froobworld.nabsuite.modules.admin.suspicious.monitors.LavaCastMonitor;
 import com.froobworld.nabsuite.modules.admin.suspicious.monitors.TheftMonitor;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -23,7 +24,8 @@ public class SuspiciousActivityMonitor {
     public SuspiciousActivityMonitor(AdminModule adminModule) {
         this.pdcKey = NamespacedKey.fromString("tripped-suspicion-monitor", adminModule.getPlugin());
         monitors = List.of(
-                new TheftMonitor(adminModule)
+                new TheftMonitor(adminModule),
+                new LavaCastMonitor(adminModule)
         );
         this.adminModule = adminModule;
         Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), this::checkAllPlayers, 1200, 1200);
