@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class RandomTeleporter {
     private final Random random = new Random();
-    private static final int MAX_ATTEMPTS = 15;
+    private static final int MAX_ATTEMPTS = 25;
     private static final double MIN_DISTANCE_FROM_HOME = 300;
     private final BasicsModule basicsModule;
 
