@@ -19,10 +19,8 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class BanEnforcer implements Listener {
-    private static final long AUTO_EXPIRY_TIME = TimeUnit.DAYS.toMillis(2 * 365); // two years
     private final AdminModule adminModule;
     private final PunishmentManager punishmentManager;
 
@@ -90,7 +88,12 @@ public class BanEnforcer implements Listener {
         if (banPunishment == null) {
             return;
         }
-        if ((banPunishment.isPermanent() && banPunishment.getTime() + AUTO_EXPIRY_TIME > System.currentTimeMillis()) || banPunishment.getTime() + banPunishment.getDuration() > System.currentTimeMillis()) {
+        long autoExpiryTime = adminModule.getAdminConfig().banSettings.autoExpiryTime.get();
+        long autoExpiryCutoff = adminModule.getAdminConfig().banSettings.autoExpiryCutoff.get().getTime();
+        boolean expired = banPunishment.isPermanent() ?
+                System.currentTimeMillis() - banPunishment.getTime() > autoExpiryTime && banPunishment.getTime() < autoExpiryCutoff :
+                System.currentTimeMillis() - banPunishment.getTime() > banPunishment.getDuration();
+        if (!expired) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.kickMessage(getKickMessage(banPunishment));
         } else {
@@ -119,7 +122,7 @@ public class BanEnforcer implements Listener {
                 .append(Component.newline())
                 .append(Component.newline())
                 .append(Component.text("Appeal at "))
-                .append(Component.text(adminModule.getAdminConfig().banAppealUrl.get(), NamedTextColor.RED));
+                .append(Component.text(adminModule.getAdminConfig().banSettings.banAppealUrl.get(), NamedTextColor.RED));
 
         return kickMessage;
     }

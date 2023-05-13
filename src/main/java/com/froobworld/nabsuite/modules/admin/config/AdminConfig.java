@@ -2,15 +2,18 @@ package com.froobworld.nabsuite.modules.admin.config;
 
 import com.froobworld.nabconfiguration.ConfigEntries;
 import com.froobworld.nabconfiguration.ConfigEntry;
+import com.froobworld.nabconfiguration.ConfigSection;
 import com.froobworld.nabconfiguration.NabConfiguration;
 import com.froobworld.nabconfiguration.annotations.Entry;
+import com.froobworld.nabconfiguration.annotations.Section;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 public class AdminConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 1;
+    private static final int CONFIG_VERSION = 2;
 
     public AdminConfig(AdminModule adminModule) {
         super(
@@ -21,14 +24,27 @@ public class AdminConfig extends NabConfiguration {
         );
     }
 
-    @Entry(key = "ban-appeal-url")
-    public final ConfigEntry<String> banAppealUrl = new ConfigEntry<>();
-
     @Entry(key = "jail-command-whitelist")
     public final ConfigEntry<List<String>> jailCommandWhitelist = ConfigEntries.stringListEntry();
 
     @Entry(key = "word-filters")
     public final ConfigEntry<List<String>> wordFilters = ConfigEntries.stringListEntry();
+
+    @Section(key = "ban-settings")
+    public final BanSettings banSettings = new BanSettings();
+
+    public static class BanSettings extends ConfigSection {
+
+        @Entry(key = "ban-appeal-url")
+        public final ConfigEntry<String> banAppealUrl = new ConfigEntry<>();
+
+        @Entry(key = "auto-expiry-time")
+        public final ConfigEntry<Integer> autoExpiryTime = ConfigEntries.integerEntry();
+
+        @Entry(key = "auto-expiry-cutoff")
+        public final ConfigEntry<Date> autoExpiryCutoff = new ConfigEntry<>();
+
+    }
 
 
 }

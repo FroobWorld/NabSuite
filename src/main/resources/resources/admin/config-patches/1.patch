@@ -1,0 +1,17 @@
+[add-section]
+key=ban-settings
+comment=# Settings related to bans.
+
+[move]
+from=ban-appeal-url
+to=ban-settings.ban-appeal-url
+
+[add-field]
+key=ban-settings.auto-expiry-time
+value=730
+comment=# The time in days after which a permanent ban will expire.
+
+[add-field]
+key=ban-settings.auto-expiry-cutoff
+value=2021-12-01
+comment=# The date after which permanent bans will no longer automatically expire.

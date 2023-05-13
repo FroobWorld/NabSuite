@@ -65,7 +65,7 @@ public class JailEnforcer implements Listener {
                         .append(Component.text("."))
                         .color(NamedTextColor.RED);
             }
-            String banAppealUrl = adminModule.getAdminConfig().banAppealUrl.get();
+            String banAppealUrl = adminModule.getAdminConfig().banSettings.banAppealUrl.get();
             if (banAppealUrl != null && !banAppealUrl.isEmpty()) {
                 message = message.append(Component.newline())
                         .append(Component.newline())
@@ -151,7 +151,7 @@ public class JailEnforcer implements Listener {
                     .append(Component.text("."))
                     .color(NamedTextColor.RED);
         }
-        String banAppealUrl = adminModule.getAdminConfig().banAppealUrl.get();
+        String banAppealUrl = adminModule.getAdminConfig().banSettings.banAppealUrl.get();
         if (banAppealUrl != null && !banAppealUrl.isEmpty()) {
             message = message.append(Component.newline())
                     .append(Component.newline())

@@ -1,8 +1,16 @@
 # Don't edit this.
-version: 1
+version: 2
 
-# The URL provided to banned players for the purpose of appealing.
-ban-appeal-url: "froobworld.com"
+# Settings related to bans.
+ban-settings:
+  # The URL provided to banned players for the purpose of appealing.
+  ban-appeal-url: "froobworld.com/appeal"
+
+  # The time in days after which a permanent ban will expire.
+  auto-expiry-time: 730
+
+  # The date after which permanent bans will no longer automatically expire.
+  auto-expiry-cutoff: 2021-12-01
 
 # Which commands should players who are in jail be allowed to use?
 jail-command-whitelist:
