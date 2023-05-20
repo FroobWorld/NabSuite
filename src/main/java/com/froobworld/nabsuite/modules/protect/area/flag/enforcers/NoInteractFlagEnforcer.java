@@ -4,6 +4,7 @@ import com.froobworld.nabsuite.modules.protect.area.AreaLike;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.util.PlayerCauser;
+import com.froobworld.nabsuite.modules.protect.vehicle.VehicleTracker;
 import org.bukkit.Location;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -21,9 +22,11 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class NoInteractFlagEnforcer implements Listener {
     private final AreaManager areaManager;
+    private final VehicleTracker vehicleTracker;
 
-    public NoInteractFlagEnforcer(AreaManager areaManager) {
+    public NoInteractFlagEnforcer(AreaManager areaManager, VehicleTracker vehicleTracker) {
         this.areaManager = areaManager;
+        this.vehicleTracker = vehicleTracker;
     }
 
     private boolean canInteract(Location location, Player player, boolean informOnFail) {
@@ -53,6 +56,9 @@ public class NoInteractFlagEnforcer implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onInteractEntity(PlayerInteractEntityEvent event) {
+        if (vehicleTracker.hasAccessed(event.getRightClicked(), event.getPlayer())) {
+            return;
+        }
         if (!canInteract(event.getRightClicked().getLocation(), event.getPlayer(), true)) {
             event.setCancelled(true);
         }
@@ -60,6 +66,9 @@ public class NoInteractFlagEnforcer implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onInteractAtEntity(PlayerInteractAtEntityEvent event) {
+        if (vehicleTracker.hasAccessed(event.getRightClicked(), event.getPlayer())) {
+            return;
+        }
         if (!canInteract(event.getRightClicked().getLocation(), event.getPlayer(), true)) {
             event.setCancelled(true);
         }
@@ -67,6 +76,9 @@ public class NoInteractFlagEnforcer implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerLeashEntity(PlayerLeashEntityEvent event) {
+        if (vehicleTracker.hasAccessed(event.getEntity(), event.getPlayer())) {
+            return;
+        }
         if (!canInteract(event.getEntity().getLocation(), event.getPlayer(), true)) {
             event.setCancelled(true);
         }
@@ -74,6 +86,9 @@ public class NoInteractFlagEnforcer implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerUnleashEntity(PlayerUnleashEntityEvent event) {
+        if (vehicleTracker.hasAccessed(event.getEntity(), event.getPlayer())) {
+            return;
+        }
         if (!canInteract(event.getEntity().getLocation(), event.getPlayer(), true)) {
             event.setCancelled(true);
         }
@@ -109,6 +124,9 @@ public class NoInteractFlagEnforcer implements Listener {
         if (event.getEntity() instanceof Monster && event.getEntity().customName() == null && causer.equals(((Monster) event.getEntity()).getTarget())) {
             return; // Allow the killing of un-named monsters that are attacking the player
         }
+        if (vehicleTracker.hasAccessed(event.getEntity(), causer)) {
+            return;
+        }
         if (!canInteract(event.getEntity().getLocation(), causer, true)) {
             event.setCancelled(true);
         }
@@ -118,6 +136,9 @@ public class NoInteractFlagEnforcer implements Listener {
     public void onVehicleDamage(VehicleDamageEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getAttacker());
         if (causer == null) {
+            return;
+        }
+        if (vehicleTracker.hasAccessed(event.getVehicle(), causer)) {
             return;
         }
         if (!canInteract(event.getVehicle().getLocation(), causer, true)) {
@@ -131,6 +152,9 @@ public class NoInteractFlagEnforcer implements Listener {
         if (causer == null) {
             return;
         }
+        if (vehicleTracker.hasAccessed(event.getVehicle(), causer)) {
+            return;
+        }
         if (!canInteract(event.getVehicle().getLocation(), causer, true)) {
             event.setCancelled(true);
         }
@@ -140,6 +164,9 @@ public class NoInteractFlagEnforcer implements Listener {
     public void onVehicleEnter(VehicleEnterEvent event) {
         Player causer = PlayerCauser.getPlayerCauser(event.getEntered());
         if (causer == null) {
+            return;
+        }
+        if (vehicleTracker.hasAccessed(event.getVehicle(), causer)) {
             return;
         }
         if (!canInteract(event.getVehicle().getLocation(), causer, true)) {

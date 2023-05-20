@@ -10,6 +10,7 @@ import com.froobworld.nabsuite.modules.protect.horse.HorseManager;
 import com.froobworld.nabsuite.modules.protect.lock.LockManager;
 import com.froobworld.nabsuite.modules.protect.user.GroupUserManager;
 import com.froobworld.nabsuite.modules.protect.user.UserManager;
+import com.froobworld.nabsuite.modules.protect.vehicle.VehicleTracker;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 
@@ -21,6 +22,7 @@ public class ProtectModule extends NabModule {
     private AreaManager areaManager;
     private HorseManager horseManager;
     private LockManager lockManager;
+    private VehicleTracker vehicleTracker;
 
 
     public ProtectModule(NabSuite nabSuite) {
@@ -37,6 +39,7 @@ public class ProtectModule extends NabModule {
             Bukkit.getPluginManager().disablePlugin(getPlugin());
             return;
         }
+        vehicleTracker = new VehicleTracker(this);
         userManager = new UserManager(this);
         groupUserManager = new GroupUserManager(this);
         areaManager = new AreaManager(this);
@@ -97,5 +100,9 @@ public class ProtectModule extends NabModule {
 
     public HorseManager getHorseManager() {
         return horseManager;
+    }
+
+    public VehicleTracker getVehicleTracker() {
+        return vehicleTracker;
     }
 }

@@ -13,7 +13,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -170,7 +169,7 @@ public class AreaManager {
     private void initiateFlagEnforcers() {
         Set.of(
                 new NoBuildFlagEnforcer(this),
-                new NoInteractFlagEnforcer(this),
+                new NoInteractFlagEnforcer(this, protectModule.getVehicleTracker()),
                 new NoExplodeFlagEnforcer(this),
                 new NoFireDestroyFlagEnforcer(this),
                 new NoFireSpreadFlagEnforcer(this),
