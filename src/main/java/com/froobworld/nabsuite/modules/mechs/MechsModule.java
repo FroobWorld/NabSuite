@@ -6,7 +6,7 @@ import com.froobworld.nabsuite.modules.mechs.command.EffectiveViewDistanceComman
 import com.froobworld.nabsuite.modules.mechs.command.PvpCommand;
 import com.froobworld.nabsuite.modules.mechs.command.ToggleViewDistanceCommand;
 import com.froobworld.nabsuite.modules.mechs.config.MechsConfig;
-import com.froobworld.nabsuite.modules.mechs.end.EndManager;
+import com.froobworld.nabsuite.modules.mechs.worldsize.WorldSizeManager;
 import com.froobworld.nabsuite.modules.mechs.mobgriefing.MobGriefingManager;
 import com.froobworld.nabsuite.modules.mechs.pvp.PvpManager;
 import com.froobworld.nabsuite.modules.mechs.trees.TreeManager;
@@ -37,7 +37,7 @@ public class MechsModule extends NabModule {
         this.pvpManager = new PvpManager(this);
         this.treeManager = new TreeManager(this);
         this.viewDistanceManager = new ViewDistanceManager(this);
-        new EndManager(this);
+        new WorldSizeManager(this);
         new MobGriefingManager(this);
 
         Lists.newArrayList(
