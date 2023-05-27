@@ -181,5 +181,12 @@ public class NoInteractFlagEnforcer implements Listener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onSignChange(SignChangeEvent event) {
+        if (!canInteract(event.getBlock().getLocation(), event.getPlayer(), true)) {
+            event.setCancelled(true);
+        }
+    }
+
 
 }
