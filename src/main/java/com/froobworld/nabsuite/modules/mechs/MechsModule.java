@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.modules.mechs.command.EffectiveViewDistanceComman
 import com.froobworld.nabsuite.modules.mechs.command.PvpCommand;
 import com.froobworld.nabsuite.modules.mechs.command.ToggleViewDistanceCommand;
 import com.froobworld.nabsuite.modules.mechs.config.MechsConfig;
+import com.froobworld.nabsuite.modules.mechs.signedit.SignEditDisabler;
 import com.froobworld.nabsuite.modules.mechs.worldsize.WorldSizeManager;
 import com.froobworld.nabsuite.modules.mechs.mobgriefing.MobGriefingManager;
 import com.froobworld.nabsuite.modules.mechs.pvp.PvpManager;
@@ -39,6 +40,7 @@ public class MechsModule extends NabModule {
         this.viewDistanceManager = new ViewDistanceManager(this);
         new WorldSizeManager(this);
         new MobGriefingManager(this);
+        new SignEditDisabler(this);
 
         Lists.newArrayList(
                 new PvpCommand(this),
