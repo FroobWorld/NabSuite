@@ -1,0 +1,25 @@
+[move]
+from=random-teleport.world-settings.*.major-radius-x
+to=random-teleport.world-settings.{0}.radius-x
+
+[move]
+from=random-teleport.world-settings.*.major-radius-z
+to=random-teleport.world-settings.{0}.radius-z
+
+[move]
+from=random-teleport.world-settings.*.minor-radius-x
+to=random-teleport.world-settings.{0}.exclusion-radius-x
+
+[move]
+from=random-teleport.world-settings.*.minor-radius-z
+to=random-teleport.world-settings.{0}.exclusion-radius-z
+
+[add-field]
+key=random-teleport.world-settings.default.exclusion-centre-x
+value=0
+comment=# The x coordinate of the centre of the exclusion zone.
+
+[add-field]
+key=random-teleport.world-settings.default.exclusion-centre-z
+value=0
+comment=# The z coordinate of the centre of the exclusion zone.

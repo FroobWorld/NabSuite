@@ -41,6 +41,9 @@ public class RandomTeleporter {
     }
 
     private CompletableFuture<Location> testLocation(Location location) {
+        if (location == null) {
+            return CompletableFuture.completedFuture(null);
+        }
         ProtectModule protectModule = basicsModule.getPlugin().getModule(ProtectModule.class);
         if (protectModule != null) {
             if (protectModule.getAreaManager().isAreaAtLocation(location)) {
@@ -70,11 +73,20 @@ public class RandomTeleporter {
 
     private Location generateRandomLocation(World world) {
         BasicsConfig.RandomTeleportSettings.WorldSettings worldSettings = basicsModule.getConfig().randomTeleport.worldSettings.of(world);
-        boolean unboundedX = random.nextBoolean();
-        int offsetX = (random.nextBoolean() ? -1 : 1) * (unboundedX ? random.nextInt(worldSettings.majorRadiusX.get()) : (worldSettings.minorRadiusX.get() + random.nextInt(worldSettings.majorRadiusX.get() - worldSettings.minorRadiusX.get())));
-        int offsetZ = (random.nextBoolean() ? -1 : 1) * (unboundedX ? (worldSettings.minorRadiusZ.get() + random.nextInt(worldSettings.majorRadiusZ.get() - worldSettings.minorRadiusZ.get())) : random.nextInt(worldSettings.majorRadiusZ.get()));
+        int offsetX = (random.nextBoolean() ? -1 : 1) * random.nextInt(worldSettings.radiusX.get());
+        int offsetZ = (random.nextBoolean() ? -1 : 1) * random.nextInt(worldSettings.radiusZ.get());
+        Location location = new Location(world, worldSettings.centreX.get() + offsetX + 0.5, 0, worldSettings.centreZ.get() + offsetZ + 0.5);
 
-        return new Location(world, worldSettings.centreX.get() + offsetX + 0.5, 0, worldSettings.centreZ.get() + offsetZ + 0.5);
+        if (location.getBlockX() > worldSettings.exclusionCentreX.get() - worldSettings.exclusionRadiusX.get()) {
+            if (location.getBlockX() < worldSettings.exclusionCentreX.get() + worldSettings.exclusionRadiusX.get()) {
+                if (location.getBlockZ() > worldSettings.exclusionCentreZ.get() - worldSettings.exclusionRadiusZ.get()) {
+                    if (location.getBlockZ() < worldSettings.exclusionCentreZ.get() + worldSettings.exclusionRadiusZ.get()) {
+                        return null;
+                    }
+                }
+            }
+        }
+        return location;
     }
 
 }

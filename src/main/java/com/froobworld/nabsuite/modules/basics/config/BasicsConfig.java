@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class BasicsConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 2;
+    private static final int CONFIG_VERSION = 3;
 
     public BasicsConfig(BasicsModule basicsModule) {
         super(
@@ -108,17 +108,23 @@ public class BasicsConfig extends NabConfiguration {
             @Entry(key = "centre-z")
             public final ConfigEntry<Integer> centreZ = ConfigEntries.integerEntry();
 
-            @Entry(key = "major-radius-x")
-            public final ConfigEntry<Integer> majorRadiusX = ConfigEntries.integerEntry();
+            @Entry(key = "radius-x")
+            public final ConfigEntry<Integer> radiusX = ConfigEntries.integerEntry();
 
-            @Entry(key = "minor-radius-x")
-            public final ConfigEntry<Integer> minorRadiusX = ConfigEntries.integerEntry();
+            @Entry(key = "radius-z")
+            public final ConfigEntry<Integer> radiusZ = ConfigEntries.integerEntry();
 
-            @Entry(key = "major-radius-z")
-            public final ConfigEntry<Integer> majorRadiusZ = ConfigEntries.integerEntry();
+            @Entry(key = "exclusion-centre-x")
+            public final ConfigEntry<Integer> exclusionCentreX = ConfigEntries.integerEntry();
 
-            @Entry(key = "minor-radius-z")
-            public final ConfigEntry<Integer> minorRadiusZ = ConfigEntries.integerEntry();
+            @Entry(key = "exclusion-centre-z")
+            public final ConfigEntry<Integer> exclusionCentreZ = ConfigEntries.integerEntry();
+
+            @Entry(key = "exclusion-radius-x")
+            public final ConfigEntry<Integer> exclusionRadiusX = ConfigEntries.integerEntry();
+
+            @Entry(key = "exclusion-radius-z")
+            public final ConfigEntry<Integer> exclusionRadiusZ = ConfigEntries.integerEntry();
 
         }
 

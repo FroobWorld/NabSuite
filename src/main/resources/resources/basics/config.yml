@@ -1,5 +1,5 @@
 # Don't edit this.
-version: 2
+version: 3
 
 # The highest number to check when testing a player's permissions for the maximum number of homes they can set.
 max-home-permission-check: 3
@@ -80,13 +80,17 @@ random-teleport:
       centre-z: 0
 
       # At most how far away on the x-axis should the random teleport be from the centre?
-      major-radius-x: 7000
-
-      # At most least far away on the x-axis should the random teleport be from the centre?
-      minor-radius-x: 1500
+      radius-x: 7000
 
       # At most how far away on the z-axis should the random teleport be from the centre?
-      major-radius-z: 7000
+      radius-z: 7000
+
+      exlcusion-centre-x: 0
+
+      exlcusion-centre-z: 0
+
+      # At least how far away on the x-axis should the random teleport be from the centre?
+      exlcusion-radius-x: 1500
 
       # At least how far away on the z-axis should the random teleport be from the centre?
-      minor-radius-z: 1500
+      exlcusion-radius-z: 1500
