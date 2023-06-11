@@ -60,6 +60,8 @@ public class TreeReplanter implements Listener {
             return Material.ACACIA_SAPLING;
         } else if (Tag.JUNGLE_LOGS.isTagged(woodType)) {
             return Material.JUNGLE_SAPLING;
+        } else if (Tag.CHERRY_LOGS.isTagged(woodType)) {
+            return Material.CHERRY_SAPLING;
         }
         return null;
     }
