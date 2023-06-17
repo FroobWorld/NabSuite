@@ -6,7 +6,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -133,6 +135,22 @@ public class LootLimitEnforcer implements Listener {
             if (lootLimitManager.isLootBlock(block.getLocation())) {
                 event.setCancelled(true);
                 return;
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onBlockPlace(BlockPlaceEvent event) {
+        if (event.getBlock().getType() == Material.CHEST || event.getBlock().getType() == Material.TRAPPED_CHEST) {
+            BlockFace[] faces = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+            for (BlockFace face : faces) {
+                if (lootLimitManager.isLootChest(event.getBlock().getRelative(face).getLocation())) {
+                    if (lootLimitManager.hasLootedPreviously(event.getPlayer(), event.getBlock().getRelative(face).getLocation())) {
+                        event.setCancelled(true);
+                        sendFailureMessage(event.getPlayer());
+                        return;
+                    }
+                }
             }
         }
     }
