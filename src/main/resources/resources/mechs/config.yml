@@ -8,3 +8,19 @@ view-distance:
 
   # The uncapped view distance.
   uncapped-view-distance: 32
+
+world-border:
+  default:
+    use-border: true
+
+    centre-x: 0
+
+    centre-z: 0
+
+    radius-x: 7000
+
+    radius-z: 7000
+
+    border-region-radius-x: 7000
+
+    border-region-radius-z: 7000

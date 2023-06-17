@@ -2,12 +2,13 @@ package com.froobworld.nabsuite.modules.mechs;
 
 import com.froobworld.nabsuite.NabModule;
 import com.froobworld.nabsuite.NabSuite;
+import com.froobworld.nabsuite.modules.mechs.border.WorldBorderManager;
+import com.froobworld.nabsuite.modules.mechs.command.BorderWarningCommand;
 import com.froobworld.nabsuite.modules.mechs.command.EffectiveViewDistanceCommand;
 import com.froobworld.nabsuite.modules.mechs.command.PvpCommand;
 import com.froobworld.nabsuite.modules.mechs.command.ToggleViewDistanceCommand;
 import com.froobworld.nabsuite.modules.mechs.config.MechsConfig;
 import com.froobworld.nabsuite.modules.mechs.signedit.SignEditDisabler;
-import com.froobworld.nabsuite.modules.mechs.worldsize.WorldSizeManager;
 import com.froobworld.nabsuite.modules.mechs.mobgriefing.MobGriefingManager;
 import com.froobworld.nabsuite.modules.mechs.pvp.PvpManager;
 import com.froobworld.nabsuite.modules.mechs.trees.TreeManager;
@@ -20,6 +21,7 @@ public class MechsModule extends NabModule {
     private PvpManager pvpManager;
     private TreeManager treeManager;
     private ViewDistanceManager viewDistanceManager;
+    private WorldBorderManager worldBorderManager;
 
     public MechsModule(NabSuite nabSuite) {
         super(nabSuite, "mechs");
@@ -38,20 +40,22 @@ public class MechsModule extends NabModule {
         this.pvpManager = new PvpManager(this);
         this.treeManager = new TreeManager(this);
         this.viewDistanceManager = new ViewDistanceManager(this);
-        new WorldSizeManager(this);
+        this.worldBorderManager = new WorldBorderManager(this);
         new MobGriefingManager(this);
         new SignEditDisabler(this);
 
         Lists.newArrayList(
                 new PvpCommand(this),
                 new ToggleViewDistanceCommand(this),
-                new EffectiveViewDistanceCommand()
+                new EffectiveViewDistanceCommand(),
+                new BorderWarningCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
     @Override
     public void onDisable() {
         treeManager.shutdown();
+        worldBorderManager.shutdown();
     }
 
     public MechsConfig getConfig() {
@@ -64,5 +68,9 @@ public class MechsModule extends NabModule {
 
     public ViewDistanceManager getViewDistanceManager() {
         return viewDistanceManager;
+    }
+
+    public WorldBorderManager getWorldBorderManager() {
+        return worldBorderManager;
     }
 }

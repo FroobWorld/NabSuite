@@ -201,6 +201,8 @@ permissions:
     description: "Access to the /nabmode command."
   nabsuite.command.effectivevd:
     description: "Access to the /effectivevd command."
+  nabsuite.command.borderwarning:
+    description: "Access to the /borderwarning command."
 
   # Mechs module other permissions
   nabsuite.nabmode:
