@@ -32,7 +32,7 @@ public class BorderWarningCommand extends NabCommand {
         } else {
             mechsModule.getWorldBorderManager().acceptBorderRegionWarning(player);
             player.sendMessage(
-                    Component.text("Thank you for confirming you understand the border region.", NamedTextColor.YELLOW)
+                    Component.text("Thank you for accepting the border region warning.", NamedTextColor.YELLOW)
             );
         }
     }
