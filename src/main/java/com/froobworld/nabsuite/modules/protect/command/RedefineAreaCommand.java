@@ -1,6 +1,7 @@
 package com.froobworld.nabsuite.modules.protect.command;
 
 import cloud.commandframework.Command;
+import cloud.commandframework.arguments.flags.CommandFlag;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
@@ -43,7 +44,11 @@ public class RedefineAreaCommand extends NabCommand {
         if (!corner1.getWorld().equals(area.getWorld())) {
             sender.sendMessage(Component.text("The corners you selected are not in the same world as the area.", NamedTextColor.RED));
         }
-        area.setCorners(corner1.toVector(), corner2.toVector());
+        boolean useSelectedVerticalBounds = context.flags().isPresent("no-extend-vertical");
+        area.setCorners(
+                corner1.toVector().setY(useSelectedVerticalBounds ? corner1.getY() : -64),
+                corner2.toVector().setY(useSelectedVerticalBounds ? corner2.getY() : 320)
+        );
         sender.sendMessage(Component.text("Area redefined.", NamedTextColor.YELLOW));
     }
 
@@ -68,6 +73,9 @@ public class RedefineAreaCommand extends NabCommand {
                                         "You don't have permission to redefine this area."
                                 )
                         )
+                )
+                .flag(
+                        CommandFlag.newBuilder("no-extend-vertical").build()
                 );
     }
 }
