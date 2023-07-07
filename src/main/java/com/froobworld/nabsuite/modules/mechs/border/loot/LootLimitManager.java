@@ -28,7 +28,8 @@ public class LootLimitManager implements Listener {
             .add(Material.GOLD_BLOCK, Material.DIAMOND_BLOCK)
             .add(Material.BOOKSHELF, Material.CHISELED_BOOKSHELF)
             .add(Material.TNT)
-            .add(Material.CRYING_OBSIDIAN);
+            .add(Material.CRYING_OBSIDIAN)
+            .add(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.ANCIENT_DEBRIS);
     private final MechsModule mechsModule;
     private final PlayerLootTracker playerLootTracker;
     private final Map<UUID, Set<Location>> sessionLootCache = new HashMap<>();
