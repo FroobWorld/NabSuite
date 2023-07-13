@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.basics.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
+import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.nabmode.NabModeModule;
 import com.froobworld.nabsuite.util.NumberDisplayer;
@@ -28,6 +29,9 @@ public class HoldingCommand extends NabCommand {
     @Override
     public void execute(CommandContext<CommandSender> context) {
         Player sender = (Player) context.getSender();
+        if (basicsModule.getPlugin().getModule(AdminModule.class).getPunishmentManager().getMuteEnforcer().testMute(sender, true)) {
+            return;
+        }
         ItemStack itemStack = sender.getInventory().getItemInMainHand();
         if (itemStack.getAmount() == 0) {
             sender.sendMessage(
