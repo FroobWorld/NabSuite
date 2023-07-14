@@ -38,8 +38,11 @@ public class NoPvpFlagEnforcer implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player) {
             Player victim = (Player) event.getEntity();
-            Player attacker = PlayerCauser.getPlayerCauser(event.getDamager());
+            Player attacker = PlayerCauser.getPlayerCauser(event.getDamager(), false);
             if (attacker == null) {
+                return;
+            }
+            if (victim.equals(attacker)) {
                 return;
             }
             if (!canPvp(victim, attacker, true)) {
@@ -52,8 +55,11 @@ public class NoPvpFlagEnforcer implements Listener {
     public void onPlayerCombust(EntityCombustByEntityEvent event) {
         if (event.getEntity() instanceof Player) {
             Player victim = (Player) event.getEntity();
-            Player attacker = PlayerCauser.getPlayerCauser(event.getCombuster());
+            Player attacker = PlayerCauser.getPlayerCauser(event.getCombuster(), false);
             if (attacker == null) {
+                return;
+            }
+            if (victim.equals(attacker)) {
                 return;
             }
             if (!canPvp(victim, attacker, true)) {
