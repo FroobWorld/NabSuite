@@ -5,7 +5,9 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.command.argument.arguments.PlayerIdentityArgument;
+import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
+import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,7 +42,22 @@ public class MailSendCommand extends NabCommand {
                         true,
                         "recipient",
                         basicsModule.getPlugin().getPlayerIdentityManager(),
-                        false
+                        false,
+                        new ArgumentPredicate<>(false, (context, recipient) -> {
+                            AdminModule adminModule = basicsModule.getPlugin().getModule(AdminModule.class);
+                            if (adminModule == null) {
+                                return true;
+                            }
+                            Player sender = (Player) context.getSender();
+                            if (adminModule.getPunishmentManager().getMuteEnforcer().testMute(sender, false)) {
+                                return basicsModule.getPlayerDataManager().getFriendManager().areFriends(sender, recipient.getUuid());
+                            }
+                            return true;
+                        }, "While muted you may only mail players on your /friend list."),
+                        new ArgumentPredicate<>(false, (context, recipient) -> {
+                            Player sender = (Player) context.getSender();
+                            return !basicsModule.getPlayerDataManager().getIgnoreManager().isIgnoring(sender, recipient.getUuid());
+                        }, "You cannot mail someone who is ignoring you.")
                 ))
                 .argument(StringArgument.greedy("message"));
     }
