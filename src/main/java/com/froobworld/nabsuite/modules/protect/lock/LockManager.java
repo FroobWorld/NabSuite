@@ -281,7 +281,8 @@ public class LockManager {
                 material == Material.RED_BED ||
                 material == Material.LIGHT_GRAY_BED ||
                 material == Material.WHITE_BED ||
-                material == Material.YELLOW_BED;
+                material == Material.YELLOW_BED ||
+                material == Material.BARREL;
     }
 
     public void onBlockBreak(BlockBreakEvent event) {
