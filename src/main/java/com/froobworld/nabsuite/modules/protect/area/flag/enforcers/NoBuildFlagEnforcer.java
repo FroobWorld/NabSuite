@@ -19,6 +19,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 
 public class NoBuildFlagEnforcer implements Listener {
     private final AreaManager areaManager;
@@ -112,6 +113,13 @@ public class NoBuildFlagEnforcer implements Listener {
             return;
         }
         if (!canBuild(event.getEntity().getLocation(), causer, true)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onTakeBook(PlayerTakeLecternBookEvent event) {
+        if (!canBuild(event.getLectern().getLocation(), event.getPlayer(), true)) {
             event.setCancelled(true);
         }
     }
