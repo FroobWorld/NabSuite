@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.protect.lock;
 
+import com.destroystokyo.paper.MaterialTags;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.player.PlayerDataManager;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
@@ -219,69 +220,21 @@ public class LockManager {
 
         return material == Material.CHEST ||
                 material == Material.TRAPPED_CHEST ||
-                material == Material.IRON_TRAPDOOR ||
-                material == Material.ACACIA_TRAPDOOR ||
-                material == Material.BIRCH_TRAPDOOR ||
-                material == Material.DARK_OAK_TRAPDOOR ||
-                material == Material.JUNGLE_TRAPDOOR ||
-                material == Material.SPRUCE_TRAPDOOR ||
-                material == Material.OAK_TRAPDOOR ||
-                material == Material.ACACIA_DOOR ||
-                material == Material.BIRCH_DOOR ||
-                material == Material.DARK_OAK_DOOR ||
-                material == Material.IRON_DOOR ||
-                material == Material.JUNGLE_DOOR ||
-                material == Material.SPRUCE_DOOR ||
-                material == Material.OAK_DOOR ||
+                MaterialTags.DOORS.isTagged(material) ||
+                MaterialTags.TRAPDOORS.isTagged(material) ||
+                MaterialTags.SHULKER_BOXES.isTagged(material) ||
+                MaterialTags.BEDS.isTagged(material) ||
+                MaterialTags.FENCE_GATES.isTagged(material) ||
                 material == Material.HOPPER ||
                 material == Material.ANVIL ||
                 material == Material.BEACON ||
                 material == Material.BREWING_STAND ||
-                material == Material.SHULKER_BOX ||
-                material == Material.BLACK_SHULKER_BOX ||
-                material == Material.BLUE_SHULKER_BOX ||
-                material == Material.BROWN_SHULKER_BOX ||
-                material == Material.CYAN_SHULKER_BOX ||
-                material == Material.GRAY_SHULKER_BOX ||
-                material == Material.GREEN_SHULKER_BOX ||
-                material == Material.LIGHT_BLUE_SHULKER_BOX ||
-                material == Material.LIME_SHULKER_BOX ||
-                material == Material.MAGENTA_SHULKER_BOX ||
-                material == Material.ORANGE_SHULKER_BOX ||
-                material == Material.PINK_SHULKER_BOX ||
-                material == Material.PURPLE_SHULKER_BOX ||
-                material == Material.RED_SHULKER_BOX ||
-                material == Material.LIGHT_GRAY_SHULKER_BOX ||
-                material == Material.WHITE_SHULKER_BOX ||
-                material == Material.YELLOW_SHULKER_BOX ||
                 material == Material.FURNACE ||
                 material == Material.DROPPER ||
                 material == Material.DISPENSER ||
                 material == Material.JUKEBOX ||
-                material == Material.OAK_FENCE_GATE ||
-                material == Material.ACACIA_FENCE_GATE ||
-                material == Material.BIRCH_FENCE_GATE ||
-                material == Material.DARK_OAK_FENCE_GATE ||
-                material == Material.JUNGLE_FENCE_GATE ||
-                material == Material.SPRUCE_FENCE_GATE ||
                 material == Material.ENDER_CHEST ||
                 material == Material.ENCHANTING_TABLE ||
-                material == Material.BLACK_BED ||
-                material == Material.BLUE_BED ||
-                material == Material.BROWN_BED ||
-                material == Material.CYAN_BED ||
-                material == Material.GRAY_BED ||
-                material == Material.GREEN_BED ||
-                material == Material.LIGHT_BLUE_BED ||
-                material == Material.LIME_BED ||
-                material == Material.MAGENTA_BED ||
-                material == Material.ORANGE_BED ||
-                material == Material.PINK_BED ||
-                material == Material.PURPLE_BED ||
-                material == Material.RED_BED ||
-                material == Material.LIGHT_GRAY_BED ||
-                material == Material.WHITE_BED ||
-                material == Material.YELLOW_BED ||
                 material == Material.BARREL;
     }
 
