@@ -78,14 +78,14 @@ public class LockListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onInventoryMoveItem(InventoryMoveItemEvent event) {
-        if (event.getSource().getHolder() instanceof BlockState || event.getSource().getHolder() instanceof DoubleChest) {
-            if (event.getDestination().getHolder() instanceof HopperMinecart) {
+        if (event.getSource().getHolder(false) instanceof BlockState || event.getSource().getHolder(false) instanceof DoubleChest) {
+            if (event.getDestination().getHolder(false) instanceof HopperMinecart) {
                 if (lockManager.getOwner(event.getSource().getLocation(), true) != null) {
                     event.setCancelled(true);
                     return;
                 }
             }
-            if (event.getDestination().getHolder() instanceof BlockState) {
+            if (event.getDestination().getHolder(false) instanceof BlockState) {
                 UUID ownerDestination = lockManager.getOwner(event.getDestination().getLocation(), true);
                 UUID ownerSource = lockManager.getOwner(event.getSource().getLocation(), true);
                 if (ownerSource != null && !ownerSource.equals(ownerDestination)) {
