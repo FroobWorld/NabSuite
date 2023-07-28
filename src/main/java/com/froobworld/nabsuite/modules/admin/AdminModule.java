@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.modules.admin.command.*;
 import com.froobworld.nabsuite.modules.admin.config.AdminConfig;
 import com.froobworld.nabsuite.modules.admin.contingency.ContingencyManager;
 import com.froobworld.nabsuite.modules.admin.greylist.GreylistManager;
+import com.froobworld.nabsuite.modules.admin.inventory.InvSeeManager;
 import com.froobworld.nabsuite.modules.admin.jail.JailManager;
 import com.froobworld.nabsuite.modules.admin.notification.DiscordStaffLog;
 import com.froobworld.nabsuite.modules.admin.notification.NotificationCentre;
@@ -65,6 +66,7 @@ public class AdminModule extends NabModule {
         xrayMonitor = new XrayMonitor(this);
         this.suspiciousActivityMonitor = new SuspiciousActivityMonitor(this);
         this.contingencyManager = new ContingencyManager(this);
+        new InvSeeManager(this);
 
         Lists.newArrayList(
                 new BanCommand(this),
