@@ -1,6 +1,7 @@
 package com.froobworld.nabsuite.modules.admin.notification;
 
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.admin.note.PlayerNote;
 import com.froobworld.nabsuite.modules.admin.punishment.PunishmentLogItem;
 import com.froobworld.nabsuite.modules.admin.ticket.Ticket;
 import com.froobworld.nabsuite.modules.protect.area.Area;
@@ -137,6 +138,26 @@ public class DiscordStaffLog {
             if (reason != null) {
                 embedBuilder.addField("Reason", reason, true);
             }
+            channel.sendMessageEmbeds(embedBuilder.build()).queue();
+        }
+    }
+
+    public void sendNoteCreationNotification(PlayerNote note, String subjectName, String creatorName) {
+        DiscordSRV discordSRV = adminModule.getPlugin().getHookManager().getDiscordSRVHook().getDiscordSRV();
+        if (discordSRV == null) {
+            return;
+        }
+
+        TextChannel channel = discordSRV.getDestinationTextChannelForGameChannelName("staff-log");
+        if (channel != null) {
+
+            EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Note created")
+                    .setColor(Color.YELLOW)
+                    .setThumbnail(getSkinUrl(note.getSubject()))
+                    .addField("Subject", subjectName, true)
+                    .addField("Creator", creatorName, true)
+                    .addField("Note", note.getMessage(), true);
+
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
     }

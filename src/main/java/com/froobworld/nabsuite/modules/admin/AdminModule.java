@@ -9,6 +9,7 @@ import com.froobworld.nabsuite.modules.admin.contingency.ContingencyManager;
 import com.froobworld.nabsuite.modules.admin.greylist.GreylistManager;
 import com.froobworld.nabsuite.modules.admin.inventory.InvSeeManager;
 import com.froobworld.nabsuite.modules.admin.jail.JailManager;
+import com.froobworld.nabsuite.modules.admin.note.NoteManager;
 import com.froobworld.nabsuite.modules.admin.notification.DiscordStaffLog;
 import com.froobworld.nabsuite.modules.admin.notification.NotificationCentre;
 import com.froobworld.nabsuite.modules.admin.punishment.PunishmentManager;
@@ -37,6 +38,7 @@ public class AdminModule extends NabModule {
     private XrayMonitor xrayMonitor;
     private SuspiciousActivityMonitor suspiciousActivityMonitor;
     private ContingencyManager contingencyManager;
+    private NoteManager noteManager;
 
     public AdminModule(NabSuite nabSuite) {
         super(nabSuite, "admin");
@@ -66,6 +68,7 @@ public class AdminModule extends NabModule {
         xrayMonitor = new XrayMonitor(this);
         this.suspiciousActivityMonitor = new SuspiciousActivityMonitor(this);
         this.contingencyManager = new ContingencyManager(this);
+        this.noteManager = new NoteManager(this);
         new InvSeeManager(this);
 
         Lists.newArrayList(
@@ -98,7 +101,9 @@ public class AdminModule extends NabModule {
                 new RestrictCommand(this),
                 new UnrestrictCommand(this),
                 new LockdownCommand(this),
-                new NoXrayCommand(this)
+                new NoXrayCommand(this),
+                new NotesCommand(this),
+                new WarnCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -170,5 +175,9 @@ public class AdminModule extends NabModule {
 
     public XrayMonitor getXrayMonitor() {
         return xrayMonitor;
+    }
+
+    public NoteManager getNoteManager() {
+        return noteManager;
     }
 }

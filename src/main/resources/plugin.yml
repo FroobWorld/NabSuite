@@ -181,6 +181,18 @@ permissions:
     description: "Access to the /lockdown command."
   nabsuite.command.noxray:
     description: "Access to the /noxray command."
+  nabsuite.command.notes:
+    description: "Access to the /notes command."
+  nabsuite.command.notes.add:
+    description: "Access to the /notes add command."
+    children:
+      - nabsuite.command.notes
+  nabsuite.command.notes.read:
+    description: "Access to the /notes read command."
+    children:
+      - nabsuite.command.notes
+  nabsuite.command.warn:
+    description: "Access to the /warn command."
 
   # Admin module other permissions
   nabsuite.vanish:
