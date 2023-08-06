@@ -53,7 +53,7 @@ public class PunishmentLogItem {
         this.playerIdentityManager = playerIdentityManager;
     }
 
-    PunishmentLogItem(PlayerIdentityManager playerIdentityManager, Type type, UUID subject, UUID mediator, long time, long duration, String reason) {
+    public PunishmentLogItem(PlayerIdentityManager playerIdentityManager, Type type, UUID subject, UUID mediator, long time, long duration, String reason) {
         this.playerIdentityManager = playerIdentityManager;
         this.type = type;
         this.subject = subject;
@@ -107,6 +107,10 @@ public class PunishmentLogItem {
             action = Component.text("unjailed", NamedTextColor.RED);
         } else if (type == Type.UNRESTRICTED_AUTOMATIC || type == Type.UNRESTRICTED_MANUAL) {
             action = Component.text("unrestricted", NamedTextColor.RED);
+        } else if (type == Type.WARN) {
+            action = Component.text("warned", NamedTextColor.RED);
+        } else if (type == Type.NOTE_ADDED) {
+            action = Component.text("noted", NamedTextColor.RED);
         }
         action = Component.text(" was ", NamedTextColor.WHITE).append(action);
         if (duration > 0) {
@@ -119,9 +123,15 @@ public class PunishmentLogItem {
             action = action.append(Component.text(" by ", NamedTextColor.WHITE)).append(mediator);
         }
         if (reason != null) {
-            action = action.append(Component.text(" for \"", NamedTextColor.WHITE))
-                    .append(Component.text(reason))
-                    .append(Component.text("\"", NamedTextColor.WHITE));
+            if (type == Type.WARN || type == Type.NOTE_ADDED) {
+                action = action.append(Component.text(" with message \"", NamedTextColor.WHITE))
+                        .append(Component.text(reason))
+                        .append(Component.text("\"", NamedTextColor.WHITE));
+            } else {
+                action = action.append(Component.text(" for \"", NamedTextColor.WHITE))
+                        .append(Component.text(reason))
+                        .append(Component.text("\"", NamedTextColor.WHITE));
+            }
         }
         action = action.append(Component.space())
                 .append(Component.text(DurationDisplayer.asDurationString(System.currentTimeMillis() - time), NamedTextColor.WHITE))
@@ -141,7 +151,9 @@ public class PunishmentLogItem {
         UNJAIL_AUTOMATIC,
         UNJAIL_MANUAL,
         UNRESTRICTED_AUTOMATIC,
-        UNRESTRICTED_MANUAL
+        UNRESTRICTED_MANUAL,
+        WARN,
+        NOTE_ADDED
     }
 
     static PunishmentLogItem fromJsonReader(PlayerIdentityManager playerIdentityManager, JsonReader jsonReader) throws IOException {

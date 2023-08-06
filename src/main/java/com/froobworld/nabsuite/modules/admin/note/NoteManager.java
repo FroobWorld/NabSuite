@@ -2,10 +2,15 @@ package com.froobworld.nabsuite.modules.admin.note;
 
 import com.froobworld.nabsuite.data.DataLoader;
 import com.froobworld.nabsuite.data.DataSaver;
+import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.admin.punishment.PunishmentLogItem;
+import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.io.File;
 import java.util.UUID;
@@ -46,18 +51,49 @@ public class NoteManager {
     }
 
     public PlayerNote createNote(UUID subject, UUID creator, String message) {
+        return createNote(subject, creator, message, true);
+    }
+    private PlayerNote createNote(UUID subject, UUID creator, String message, boolean log) {
         PlayerNote playerNote = new PlayerNote(subject, creator, message);
         getNotes(subject).addNote(playerNote);
-        String subjectName = adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(subject).getLastName();
-        String creatorName;
-        if (creator.equals(ConsoleUtils.CONSOLE_UUID)) {
-            creatorName = "Console";
-        } else {
-            creatorName = adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(creator).getLastName();
+        if (log) {
+            adminModule.getPunishmentManager().getPunishments(subject).addPunishmentLogItem(new PunishmentLogItem(
+                    adminModule.getPlugin().getPlayerIdentityManager(),
+                    PunishmentLogItem.Type.NOTE_ADDED,
+                    subject,
+                    creator,
+                    playerNote.getTimeCreated(),
+                    -1,
+                    message
+            ));
         }
-        adminModule.getDiscordStaffLog().sendNoteCreationNotification(playerNote, subjectName, creatorName);
 
         return playerNote;
+    }
+
+    public void sendWarning(PlayerIdentity subject, UUID creator, String message) {
+        BasicsModule basicsModule = adminModule.getPlugin().getModule(BasicsModule.class);
+        basicsModule.getMailCentre().sendSystemMail(subject.getUuid(), "You have received a warning with message \"" + message + "\".");
+        PlayerNote playerNote = createNote(subject.getUuid(), creator, "Warning sent with message \"" + message + "\".", false);
+        adminModule.getPunishmentManager().getPunishments(subject.getUuid()).addPunishmentLogItem(new PunishmentLogItem(
+                adminModule.getPlugin().getPlayerIdentityManager(),
+                PunishmentLogItem.Type.WARN,
+                subject.getUuid(),
+                creator,
+                playerNote.getTimeCreated(),
+                -1,
+                message
+        ));
+        if (subject.asPlayer() != null) {
+            subject.asPlayer().sendMessage(
+                    Component.newline()
+                            .append(Component.text("You have received a warning with the following message:", NamedTextColor.RED))
+                            .append(Component.newline())
+                            .append(Component.newline())
+                            .append(Component.text(message, NamedTextColor.GOLD))
+                            .append(Component.newline())
+            );
+        }
     }
 
 }

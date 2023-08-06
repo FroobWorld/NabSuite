@@ -112,7 +112,7 @@ public class Punishments {
         punishmentManager.punishmentsSaver.scheduleSave(this);
     }
 
-    void addPunishmentLogItem(PunishmentLogItem punishmentLogItem) {
+    public void addPunishmentLogItem(PunishmentLogItem punishmentLogItem) {
         if (punishmentHistory == null) {
             punishmentHistory = new ArrayList<>();
         }
