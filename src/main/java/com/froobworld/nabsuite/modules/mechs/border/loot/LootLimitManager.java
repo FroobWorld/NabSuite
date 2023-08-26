@@ -30,6 +30,8 @@ public class LootLimitManager implements Listener {
             .add(Material.TNT)
             .add(Material.CRYING_OBSIDIAN)
             .add(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.ANCIENT_DEBRIS);
+    private static final MaterialSetTag LOOTABLE_EXPLODABLE_BLOCKS = new MaterialSetTag(NamespacedKey.fromString("loot_tracker_lootable_explodable_blocks"))
+            .add(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE);
     private final MechsModule mechsModule;
     private final PlayerLootTracker playerLootTracker;
     private final Map<UUID, Set<Location>> sessionLootCache = new HashMap<>();
@@ -60,11 +62,25 @@ public class LootLimitManager implements Listener {
         return LOOTABLE_BLOCKS.isTagged(block);
     }
 
+    public boolean isExplodableLootBlockType(Block block) {
+        return LOOTABLE_EXPLODABLE_BLOCKS.isTagged(block);
+    }
+
     public boolean isLootBlock(Location location) {
         if (!worldBorderManager.isBorderRegion(location)) {
             return false;
         }
         if (!isLootBlockType(location.getBlock())) {
+            return false;
+        }
+        return !location.getChunk().getPersistentDataContainer().has(placedBlockKey(location));
+    }
+
+    public boolean isNonExplodableLootBlock(Location location) {
+        if (!worldBorderManager.isBorderRegion(location)) {
+            return false;
+        }
+        if (!isLootBlockType(location.getBlock()) || isExplodableLootBlockType(location.getBlock())) {
             return false;
         }
         return !location.getChunk().getPersistentDataContainer().has(placedBlockKey(location));

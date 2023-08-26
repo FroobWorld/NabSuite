@@ -100,15 +100,15 @@ public class LootLimitEnforcer implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     private void onEntityExplode(EntityExplodeEvent event) {
-        event.blockList().removeIf(block -> lootLimitManager.isLootChest(block.getLocation()) || lootLimitManager.isLootBlock(block.getLocation()));
+        event.blockList().removeIf(block -> lootLimitManager.isLootChest(block.getLocation()) || lootLimitManager.isNonExplodableLootBlock(block.getLocation()));
     }
 
     @EventHandler(ignoreCancelled = true)
     private void onBlockExplode(BlockExplodeEvent event) {
-        if (lootLimitManager.isLootChest(event.getBlock().getLocation()) || lootLimitManager.isLootBlock(event.getBlock().getLocation())) {
+        if (lootLimitManager.isLootChest(event.getBlock().getLocation()) || lootLimitManager.isNonExplodableLootBlock(event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
-        event.blockList().removeIf(block -> lootLimitManager.isLootChest(block.getLocation()) || lootLimitManager.isLootBlock(block.getLocation()));
+        event.blockList().removeIf(block -> lootLimitManager.isLootChest(block.getLocation()) || lootLimitManager.isNonExplodableLootBlock(block.getLocation()));
     }
 
     @EventHandler(ignoreCancelled = true)
