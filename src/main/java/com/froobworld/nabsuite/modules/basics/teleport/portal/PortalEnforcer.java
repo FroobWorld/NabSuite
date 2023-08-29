@@ -16,7 +16,7 @@ public class PortalEnforcer {
 
     public PortalEnforcer(BasicsModule basicsModule, PortalManager portalManager) {
         this.portalManager = portalManager;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(basicsModule.getPlugin(), this::loop, 10, 10);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(basicsModule.getPlugin(), this::loop, 1, 1);
     }
 
     private void loop() {

@@ -1,6 +1,7 @@
 package com.froobworld.nabsuite.modules.basics.command;
 
 import cloud.commandframework.Command;
+import cloud.commandframework.arguments.flags.CommandFlag;
 import cloud.commandframework.arguments.standard.DoubleArgument;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
@@ -33,7 +34,7 @@ public class SetPortalCommand extends NabCommand {
         Player player = (Player) context.getSender();
         String portalName = context.get("name");
         double radius = context.get("radius");
-        Portal portal = basicsModule.getPortalManager().createPortal(portalName, radius, player);
+        Portal portal = basicsModule.getPortalManager().createPortal(portalName, radius, player, context.flags().isPresent("relative-positioning"));
         player.sendMessage(
                 Component.text("Created portal '" + portal.getName() + "' at your location.").color(NamedTextColor.YELLOW)
         );
@@ -62,6 +63,12 @@ public class SetPortalCommand extends NabCommand {
                         .withMin(0)
                         .withMax(10)
                         .build()
+                )
+                .flag(
+                        CommandFlag
+                                .newBuilder("relative-positioning")
+                                .withAliases("r")
+                                .build()
                 );
     }
 }

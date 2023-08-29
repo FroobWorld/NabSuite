@@ -1,6 +1,7 @@
 package com.froobworld.nabsuite.modules.basics.command;
 
 import cloud.commandframework.Command;
+import cloud.commandframework.arguments.flags.CommandFlag;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
@@ -28,7 +29,11 @@ public class LinkPortalsCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         Portal portal1 = context.get("portal1");
         Portal portal2 = context.get("portal2");
-        portal1.setLink(portal2);
+        if (context.flags().isPresent("one-way")) {
+            portal1.setLinkOneWay(portal2);
+        } else {
+            portal1.setLink(portal2);
+        }
         context.getSender().sendMessage(Component.text("Portals linked.", NamedTextColor.YELLOW));
     }
 
@@ -49,6 +54,11 @@ public class LinkPortalsCommand extends NabCommand {
                                 (context, portal) -> !portal.equals(context.get("portal1")),
                                 "The two portals must be different."
                         )
-                ));
+                ))
+                .flag(
+                        CommandFlag.newBuilder("one-way")
+                                .withAliases("o")
+                                .build()
+                );
     }
 }

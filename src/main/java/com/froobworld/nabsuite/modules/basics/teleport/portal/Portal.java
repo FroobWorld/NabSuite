@@ -53,13 +53,14 @@ public class Portal {
         this.portalManager = portalManager;
     }
 
-    public Portal(PortalManager portalManager, String name, Location location, double radius, UUID creator) {
+    public Portal(PortalManager portalManager, String name, Location location, double radius, boolean useRelativePositioning, UUID creator) {
         this.portalManager = portalManager;
         this.name = name;
         this.location = location;
         this.radius = radius;
         this.creator = creator;
         this.created = System.currentTimeMillis();
+        this.useRelativePositioning = useRelativePositioning;
     }
 
     public Location getLocation() {
@@ -79,7 +80,8 @@ public class Portal {
 
     public void setLink(Portal portal) {
         Portal currentLink = getLink();
-        if (currentLink != null) {
+        this.link = null;
+        if (currentLink != null && this.equals(currentLink.getLink())) {
             currentLink.setLink(null);
         }
         this.link = portal == null ? null : portal.getName();
@@ -89,7 +91,7 @@ public class Portal {
         portalManager.portalSaver.scheduleSave(this);
     }
 
-    private void setLinkOneWay(Portal portal) {
+    public void setLinkOneWay(Portal portal) {
         link = portal.getName();
         portalManager.portalSaver.scheduleSave(this);
     }

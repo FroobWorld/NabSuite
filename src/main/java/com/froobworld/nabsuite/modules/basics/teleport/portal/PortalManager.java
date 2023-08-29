@@ -37,14 +37,14 @@ public class PortalManager {
         portalSaver.stop();
     }
 
-    public Portal createPortal(String name, double radius, Player creator) {
+    public Portal createPortal(String name, double radius, Player creator, boolean relativePositioning) {
         if (!portalNamePattern.matcher(name).matches()) {
             throw new IllegalArgumentException("Name does not match pattern: " + portalNamePattern);
         }
         if (portalMap.containsKey(name.toLowerCase())) {
             throw new IllegalStateException("Portal with that name already exists");
         }
-        Portal portal = new Portal(this, name, creator.getLocation(), radius, creator.getUniqueId());
+        Portal portal = new Portal(this, name, creator.getLocation(), radius, relativePositioning, creator.getUniqueId());
         portalMap.put(name.toLowerCase(), portal);
         portalSaver.scheduleSave(portal);
         return portal;
