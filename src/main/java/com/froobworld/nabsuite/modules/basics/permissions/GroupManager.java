@@ -15,9 +15,9 @@ import net.luckperms.api.event.user.track.UserTrackEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class GroupManager implements Listener {
     private final BasicsModule basicsModule;
@@ -72,7 +72,7 @@ public class GroupManager implements Listener {
         updateDisplayName(event.getPlayer());
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     private void onPlayerChat(AsyncChatEvent event) {
         event.renderer(
                 ChatRenderer.viewerUnaware((source, displayName, message) -> displayName

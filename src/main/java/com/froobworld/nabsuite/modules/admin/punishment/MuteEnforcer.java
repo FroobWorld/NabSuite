@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.util.DurationDisplayer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,9 +27,9 @@ public class MuteEnforcer implements Listener {
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
-    public MutePunishment mute(PlayerIdentity player, CommandSender mediator, String reason, long duration) {
+    public MutePunishment mute(PlayerIdentity player, CommandSender mediator, String reason, long duration, boolean shadow) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
-        MutePunishment mutePunishment = new MutePunishment(reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration);
+        MutePunishment mutePunishment = new MutePunishment(reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration, shadow);
         punishments.setMutePunishment(mutePunishment);
         punishments.addPunishmentLogItem(new PunishmentLogItem(
                 punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
@@ -40,7 +41,7 @@ public class MuteEnforcer implements Listener {
                 mutePunishment.getReason()
         ));
         Player onlinePlayer = player.asPlayer();
-        if (onlinePlayer != null) {
+        if (onlinePlayer != null && !shadow) {
             Component message = Component.newline()
                     .append(Component.text("You have been muted"));
             if (reason != null) {
@@ -73,6 +74,7 @@ public class MuteEnforcer implements Listener {
 
     private void unmute(boolean automatic, PlayerIdentity player, UUID mediator) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
+        MutePunishment mutePunishment = punishments.getMutePunishment();
         punishments.setMutePunishment(null);
         punishments.addPunishmentLogItem(new PunishmentLogItem(
                 punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
@@ -84,7 +86,7 @@ public class MuteEnforcer implements Listener {
                 null
         ));
         Player onlinePlayer = player.asPlayer();
-        if (onlinePlayer != null) {
+        if (onlinePlayer != null && !mutePunishment.isShadow()) {
             onlinePlayer.sendMessage(
                     Component.text("You have been unmuted.").color(NamedTextColor.YELLOW)
             );
@@ -104,7 +106,7 @@ public class MuteEnforcer implements Listener {
         verifyMuteStatus(player);
         MutePunishment mutePunishment = punishmentManager.getPunishments(player.getUniqueId()).getMutePunishment();
         if (mutePunishment != null) {
-            if (notifyOnFail) {
+            if (notifyOnFail && !mutePunishment.isShadow()) {
                 Component message = Component.newline()
                         .append(Component.text("You are muted"));
                 if (mutePunishment.getReason() != null) {
@@ -129,9 +131,19 @@ public class MuteEnforcer implements Listener {
         return false;
     }
 
+    private boolean isShadowMute(Player player) {
+        MutePunishment mutePunishment = punishmentManager.getPunishments(player.getUniqueId()).getMutePunishment();
+        return mutePunishment != null && mutePunishment.isShadow();
+    }
+
     @EventHandler
     private void onChat(AsyncChatEvent event) {
         if (testMute(event.getPlayer(), true)) {
+            if (isShadowMute(event.getPlayer())) {
+                //noinspection OverrideOnly
+                event.getPlayer().sendMessage(event.renderer().render(event.getPlayer(), event.getPlayer().displayName(), event.message(), event.getPlayer()));
+                adminModule.getPlugin().getSLF4JLogger().info("(Shadow muted) {}: {}", event.getPlayer().getName(), PlainTextComponentSerializer.plainText().serialize(event.message()));
+            }
             event.setCancelled(true);
         }
     }

@@ -37,7 +37,8 @@ public class MuteCommand extends NabCommand {
                 player,
                 context.getSender(),
                 reason.orElse(null),
-                duration
+                duration,
+                false
         );
         context.getSender().sendMessage(
                 Component.text("Player muted.").color(NamedTextColor.YELLOW)

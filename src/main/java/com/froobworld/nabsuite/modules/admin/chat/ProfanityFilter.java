@@ -1,11 +1,14 @@
 package com.froobworld.nabsuite.modules.admin.chat;
 
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.admin.punishment.Punishments;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 
@@ -14,9 +17,12 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class ProfanityFilter implements Listener {
+    private final AdminModule adminModule;
     private final List<TextReplacementConfig> replacementConfigs = new ArrayList<>();
+    private final List<Pattern> highlyOffensiveWords = new ArrayList<>();
 
     public ProfanityFilter(AdminModule adminModule) {
+        this.adminModule = adminModule;
         for (String worldFilter : adminModule.getAdminConfig().wordFilters.get()) {
             String[] filterSplit = worldFilter.split(":", 2);
             String word = filterSplit[0];
@@ -28,11 +34,33 @@ public class ProfanityFilter implements Listener {
                             .build()
             );
         }
+        for (String offensiveWord : adminModule.getAdminConfig().highlyOffensiveWords.get()) {
+            highlyOffensiveWords.add(Pattern.compile(expandPattern(offensiveWord), Pattern.CASE_INSENSITIVE));
+        }
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     private void onPlayerChat(AsyncChatEvent event) {
+        String plainTextMessage = PlainTextComponentSerializer.plainText().serialize(event.message());
+        for (Pattern pattern : highlyOffensiveWords) {
+            if (pattern.matcher(plainTextMessage).find()) {
+                Punishments punishments = adminModule.getPunishmentManager().getPunishments(event.getPlayer().getUniqueId());
+                if (punishments.getMutePunishment() == null) {
+                    adminModule.getPunishmentManager().getMuteEnforcer().mute(
+                            adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(event.getPlayer()),
+                            Bukkit.getConsoleSender(),
+                            "Highly offensive language",
+                            -1,
+                            true
+                    );
+                    adminModule.getTicketManager().createSystemTicket(
+                            event.getPlayer().getLocation(),
+                            String.format("Player %s was automatically muted for highly offensive language. Message was \"%s\".", event.getPlayer().getName(), plainTextMessage)
+                    );
+                }
+            }
+        }
         event.message(filter(event.message()));
     }
 

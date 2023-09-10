@@ -1,0 +1,4 @@
+[add-field]
+key=highly-offensive-words
+value=[]
+comment=# Players who use these words will be shadow muted and a ticket will be opened.

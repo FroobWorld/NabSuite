@@ -1,5 +1,5 @@
 # Don't edit this.
-version: 2
+version: 3
 
 # Settings related to bans.
 ban-settings:
@@ -21,3 +21,6 @@ jail-command-whitelist:
 # Filter words in chat and on signs. Format "<word>:<replacement word>"
 word-filters:
   - "hell:heck"
+
+# Players who use these words will be shadow muted and a ticket will be opened.
+highly-offensive-words: []

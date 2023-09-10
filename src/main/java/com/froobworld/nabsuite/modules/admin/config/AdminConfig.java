@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 public class AdminConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 2;
+    private static final int CONFIG_VERSION = 3;
 
     public AdminConfig(AdminModule adminModule) {
         super(
@@ -29,6 +29,9 @@ public class AdminConfig extends NabConfiguration {
 
     @Entry(key = "word-filters")
     public final ConfigEntry<List<String>> wordFilters = ConfigEntries.stringListEntry();
+
+    @Entry(key = "highly-offensive-words")
+    public final ConfigEntry<List<String>> highlyOffensiveWords = ConfigEntries.stringListEntry();
 
     @Section(key = "ban-settings")
     public final BanSettings banSettings = new BanSettings();
