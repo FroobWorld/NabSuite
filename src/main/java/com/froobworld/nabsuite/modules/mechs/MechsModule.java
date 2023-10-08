@@ -39,7 +39,7 @@ public class MechsModule extends NabModule {
         }
         this.pvpManager = new PvpManager(this);
         this.treeManager = new TreeManager(this);
-        this.viewDistanceManager = new ViewDistanceManager(this);
+        //this.viewDistanceManager = new ViewDistanceManager(this);
         this.worldBorderManager = new WorldBorderManager(this);
         new MobGriefingManager(this);
         new SignEditDisabler(this);
@@ -47,7 +47,7 @@ public class MechsModule extends NabModule {
         Lists.newArrayList(
                 new PvpCommand(this),
                 new ToggleViewDistanceCommand(this),
-                new EffectiveViewDistanceCommand(),
+                //new EffectiveViewDistanceCommand(),
                 new BorderWarningCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
