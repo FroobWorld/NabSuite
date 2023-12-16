@@ -117,7 +117,7 @@ public class VanishEnforcer implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_AIR) {
+        if (event.getAction() != Action.PHYSICAL) {
             return;
         }
         if (vanishManager.isVanished(event.getPlayer())) {
