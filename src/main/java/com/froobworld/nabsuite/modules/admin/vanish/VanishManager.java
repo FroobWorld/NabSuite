@@ -4,6 +4,7 @@ import com.froobworld.nabsuite.data.SchemaEntries;
 import com.froobworld.nabsuite.data.SimpleDataSchema;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -27,12 +28,14 @@ public class VanishManager {
     private final NamespacedKey vanishBackExemptionKey;
     private final AdminModule adminModule;
     private final Map<Player, Boolean> vanishCache = new WeakHashMap<>();
+    private final BossBar vanishBossBar;
 
     public VanishManager(AdminModule adminModule) {
         this.adminModule = adminModule;
         this.vanishPdcKey = NamespacedKey.fromString("vanish", adminModule.getPlugin());
         this.vanishBackExemptionKey = NamespacedKey.fromString("vanish-back-exemption", adminModule.getPlugin());
-        Bukkit.getPluginManager().registerEvents(new VanishEnforcer(this), adminModule.getPlugin());
+        vanishBossBar = BossBar.bossBar(Component.text("Vanished", NamedTextColor.WHITE), 1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
+        Bukkit.getPluginManager().registerEvents(new VanishEnforcer(adminModule, this), adminModule.getPlugin());
     }
 
     void globalUpdateVanish() {
@@ -57,9 +60,13 @@ public class VanishManager {
         if (isVanished(player)) {
             basicsModule.getBackManager().addBackExemption(player, vanishBackExemptionKey);
             setSilentChests(player, true);
+            player.setSilent(true);
+            player.showBossBar(vanishBossBar);
         } else {
             basicsModule.getBackManager().removeBackExemption(player, vanishBackExemptionKey);
             setSilentChests(player, false);
+            player.setSilent(false);
+            player.hideBossBar(vanishBossBar);
         }
         DynmapAPI dynmapAPI = adminModule.getPlugin().getHookManager().getDynmapHook().getDynmapAPI();
         if (dynmapAPI != null) {

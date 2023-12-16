@@ -1,6 +1,8 @@
 package com.froobworld.nabsuite.modules.admin.vanish;
 
 import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
+import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent;
+import com.froobworld.nabsuite.modules.admin.AdminModule;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -10,8 +12,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockReceiveGameEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.meta.FireworkMeta;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -20,10 +24,12 @@ import java.util.concurrent.TimeUnit;
 public class VanishEnforcer implements Listener {
     private static final int PERK_DISTANCE = 150;
     private static final long PERK_CHECK_TIMEOUT = TimeUnit.MINUTES.toMillis(1);
+    private final AdminModule adminModule;
     private final VanishManager vanishManager;
     private final Map<Player, Long> lastSuccessfulPerkCheck = new WeakHashMap<>();
 
-    public VanishEnforcer(VanishManager vanishManager) {
+    public VanishEnforcer(AdminModule adminModule, VanishManager vanishManager) {
+        this.adminModule = adminModule;
         this.vanishManager = vanishManager;
     }
 
@@ -111,7 +117,7 @@ public class VanishEnforcer implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.LEFT_CLICK_AIR || event.getAction() != Action.RIGHT_CLICK_AIR) {
+        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_AIR) {
             return;
         }
         if (vanishManager.isVanished(event.getPlayer())) {
@@ -167,6 +173,31 @@ public class VanishEnforcer implements Listener {
             event.getEntity().sendMessage(
                     Component.text("As you are vanished, you have kept your items and experience.")
             );
+        }
+    }
+
+    @EventHandler
+    public void onGameEvent(BlockReceiveGameEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (vanishManager.isVanished(player)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onElytraBoost(PlayerElytraBoostEvent event) {
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.getFirework().setSilent(true);
+            FireworkMeta fireworkMeta = event.getFirework().getFireworkMeta();
+            fireworkMeta.clearEffects();
+            event.getFirework().setFireworkMeta(fireworkMeta);
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                if (!player.equals(event.getPlayer())) {
+                    player.hideEntity(adminModule.getPlugin(), event.getFirework());
+                }
+            });
         }
     }
 
