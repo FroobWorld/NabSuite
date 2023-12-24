@@ -1,8 +1,10 @@
 package com.froobworld.nabsuite.modules.admin.vanish;
 
 import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
+import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import io.papermc.paper.event.entity.WardenAngerChangeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -31,6 +33,11 @@ public class VanishEnforcer implements Listener {
     public VanishEnforcer(AdminModule adminModule, VanishManager vanishManager) {
         this.adminModule = adminModule;
         this.vanishManager = vanishManager;
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), () -> Bukkit.getOnlinePlayers().forEach(player -> {
+            if (vanishManager.isVanished(player)) {
+                perkCheck(player);
+            }
+        }), 20, 20);
     }
 
     private boolean perkCheck(Player player) {
@@ -82,6 +89,16 @@ public class VanishEnforcer implements Listener {
 
     @EventHandler
     public void onEntityTarget(EntityTargetEvent event) {
+        if (!(event.getTarget() instanceof Player player)) {
+            return;
+        }
+        if (vanishManager.isVanished(player) && perkCheck(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onWardenAngerChange(WardenAngerChangeEvent event) {
         if (!(event.getTarget() instanceof Player player)) {
             return;
         }
@@ -198,6 +215,13 @@ public class VanishEnforcer implements Listener {
                     player.hideEntity(adminModule.getPlugin(), event.getFirework());
                 }
             });
+        }
+    }
+
+    @EventHandler
+    public void onAdvancementProgress(PlayerAdvancementCriterionGrantEvent event) {
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
         }
     }
 
