@@ -5,20 +5,19 @@ import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.util.PlayerCauser;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 
 public class NoBuildFlagEnforcer implements Listener {
@@ -120,6 +119,19 @@ public class NoBuildFlagEnforcer implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onTakeBook(PlayerTakeLecternBookEvent event) {
         if (!canBuild(event.getLectern().getLocation(), event.getPlayer(), true)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.PHYSICAL) {
+            return;
+        }
+        if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.FARMLAND) {
+            return;
+        }
+        if (!canBuild(event.getClickedBlock().getLocation(), event.getPlayer(), false)) {
             event.setCancelled(true);
         }
     }
