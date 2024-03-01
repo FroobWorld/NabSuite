@@ -41,7 +41,8 @@ public class JailCommand extends NabCommand {
                 context.getSender(),
                 jail,
                 reason.orElse(null),
-                duration
+                duration,
+                false
         );
         context.getSender().sendMessage(
                 Component.text("Player jailed.").color(NamedTextColor.YELLOW)

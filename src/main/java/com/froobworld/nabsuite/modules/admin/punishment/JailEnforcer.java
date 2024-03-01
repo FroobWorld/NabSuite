@@ -34,30 +34,34 @@ public class JailEnforcer implements Listener {
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
-    public JailPunishment jail(PlayerIdentity player, CommandSender mediator, Jail jail, String reason, long duration) {
+    public JailPunishment jail(PlayerIdentity player, CommandSender mediator, Jail jail, String reason, long duration, boolean confinement) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
-        JailPunishment jailPunishment = new JailPunishment(adminModule.getJailManager(), jail.getName(), reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration);
+        JailPunishment jailPunishment = new JailPunishment(adminModule.getJailManager(), jail.getName(), reason, ConsoleUtils.getSenderUUID(mediator), System.currentTimeMillis(), duration, confinement);
         punishments.setJailPunishment(jailPunishment);
         punishments.addPunishmentLogItem(new PunishmentLogItem(
                 punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                PunishmentLogItem.Type.JAIL,
+                confinement ? PunishmentLogItem.Type.CONFINED : PunishmentLogItem.Type.JAIL,
                 player.getUuid(),
                 jailPunishment.getMediator(),
                 jailPunishment.getTime(),
-                jailPunishment.getDuration(),
+                confinement ? -1 : jailPunishment.getDuration(),
                 jailPunishment.getReason()
         ));
         Player onlinePlayer = player.asPlayer();
         if (onlinePlayer != null) {
-            Component message = Component.newline()
-                    .append(Component.text("You have been jailed"));
+            Component message = Component.newline();
+            if (confinement) {
+                message = message.append(Component.text("You have been confined pending staff review"));
+            } else {
+                message = message.append(Component.text("You have been jailed"));
+            }
             if (reason != null) {
                 message = message.append(Component.text(" ("))
                         .append(Component.text(reason, NamedTextColor.GOLD))
                         .append(Component.text(")"));
             }
             message = message.append(Component.text(".")).color(NamedTextColor.RED);
-            if (duration > 0) {
+            if (!confinement && duration > 0) {
                 message = message.append(Component.newline())
                         .append(Component.newline())
                         .append(Component.text("You will be released in "))
@@ -66,7 +70,7 @@ public class JailEnforcer implements Listener {
                         .color(NamedTextColor.RED);
             }
             String banAppealUrl = adminModule.getAdminConfig().banSettings.banAppealUrl.get();
-            if (banAppealUrl != null && !banAppealUrl.isEmpty()) {
+            if (!confinement && banAppealUrl != null && !banAppealUrl.isEmpty()) {
                 message = message.append(Component.newline())
                         .append(Component.newline())
                         .append(Component.text("Appeal at "))
@@ -95,10 +99,17 @@ public class JailEnforcer implements Listener {
 
     private void unjail(boolean automatic, PlayerIdentity player, UUID mediator) {
         Punishments punishments = punishmentManager.getPunishments(player.getUuid());
+        JailPunishment punishment = punishments.getJailPunishment();
         punishments.setJailPunishment(null);
+        PunishmentLogItem.Type logType;
+        if (punishment.isConfinement()) {
+            logType = automatic ? PunishmentLogItem.Type.UNCONFINED_AUTOMATIC : PunishmentLogItem.Type.UNCONFINED_MANUAL;
+        } else {
+            logType = automatic ? PunishmentLogItem.Type.UNJAIL_AUTOMATIC : PunishmentLogItem.Type.UNJAIL_MANUAL;
+        }
         punishments.addPunishmentLogItem(new PunishmentLogItem(
                 punishmentManager.adminModule.getPlugin().getPlayerIdentityManager(),
-                automatic ? PunishmentLogItem.Type.UNJAIL_AUTOMATIC : PunishmentLogItem.Type.UNJAIL_MANUAL,
+                logType,
                 player.getUuid(),
                 mediator,
                 System.currentTimeMillis(),
@@ -107,9 +118,15 @@ public class JailEnforcer implements Listener {
         ));
         Player onlinePlayer = player.asPlayer();
         if (onlinePlayer != null) {
-            onlinePlayer.sendMessage(
-                    Component.text("You have been unjailed.").color(NamedTextColor.YELLOW)
-            );
+            if (punishment.isConfinement()) {
+                onlinePlayer.sendMessage(
+                        Component.text("You have been unconfined.").color(NamedTextColor.YELLOW)
+                );
+            } else {
+                onlinePlayer.sendMessage(
+                        Component.text("You have been unjailed.").color(NamedTextColor.YELLOW)
+                );
+            }
         }
     }
 
@@ -135,15 +152,19 @@ public class JailEnforcer implements Listener {
     }
 
     private void sendJailMessage(Player player, JailPunishment jailPunishment) {
-        Component message = Component.newline()
-                .append(Component.text("You are jailed"));
+        Component message = Component.newline();
+        if (jailPunishment.isConfinement()) {
+            message = message.append(Component.text("You are confined pending staff review"));
+        } else {
+            message = message.append(Component.text("You are jailed"));
+        }
         if (jailPunishment.getReason() != null) {
             message = message.append(Component.text(" ("))
                     .append(Component.text(jailPunishment.getReason(), NamedTextColor.GOLD))
                     .append(Component.text(")"));
         }
         message = message.append(Component.text(".")).color(NamedTextColor.RED);
-        if (jailPunishment.getDuration() > 0) {
+        if (!jailPunishment.isConfinement() && jailPunishment.getDuration() > 0) {
             message = message.append(Component.newline())
                     .append(Component.newline())
                     .append(Component.text("You will be released in "))
@@ -152,7 +173,7 @@ public class JailEnforcer implements Listener {
                     .color(NamedTextColor.RED);
         }
         String banAppealUrl = adminModule.getAdminConfig().banSettings.banAppealUrl.get();
-        if (banAppealUrl != null && !banAppealUrl.isEmpty()) {
+        if (!jailPunishment.isConfinement() && banAppealUrl != null && !banAppealUrl.isEmpty()) {
             message = message.append(Component.newline())
                     .append(Component.newline())
                     .append(Component.text("Appeal at "))

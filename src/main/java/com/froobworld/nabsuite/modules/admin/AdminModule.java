@@ -103,7 +103,9 @@ public class AdminModule extends NabModule {
                 new LockdownCommand(this),
                 new NoXrayCommand(this),
                 new NotesCommand(this),
-                new WarnCommand(this)
+                new WarnCommand(this),
+                new ConfineCommand(this),
+                new UnconfineCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 

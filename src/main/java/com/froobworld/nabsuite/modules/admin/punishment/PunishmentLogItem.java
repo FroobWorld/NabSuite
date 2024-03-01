@@ -99,6 +99,8 @@ public class PunishmentLogItem {
             action = Component.text("jailed", NamedTextColor.RED);
         } else if (type == Type.RESTRICTED) {
             action = Component.text("restricted", NamedTextColor.RED);
+        } else if (type == Type.CONFINED) {
+            action = Component.text("confined", NamedTextColor.RED);
         } else if (type == Type.UNBAN_AUTOMATIC || type == Type.UNBAN_MANUAL) {
             action = Component.text("unbanned", NamedTextColor.RED);
         } else if (type == Type.UNMUTE_AUTOMATIC || type == Type.UNMUTE_MANUAL) {
@@ -107,6 +109,8 @@ public class PunishmentLogItem {
             action = Component.text("unjailed", NamedTextColor.RED);
         } else if (type == Type.UNRESTRICTED_AUTOMATIC || type == Type.UNRESTRICTED_MANUAL) {
             action = Component.text("unrestricted", NamedTextColor.RED);
+        } else if (type == Type.UNCONFINED_AUTOMATIC || type == Type.UNCONFINED_MANUAL) {
+            action = Component.text("unconfined", NamedTextColor.RED);
         } else if (type == Type.WARN) {
             action = Component.text("warned", NamedTextColor.RED);
         } else if (type == Type.NOTE_ADDED) {
@@ -117,7 +121,7 @@ public class PunishmentLogItem {
             action = action.append(Component.text(" for ", NamedTextColor.WHITE))
                     .append(Component.text(DurationDisplayer.asDurationString(duration)));
         }
-        if (type == Type.UNBAN_AUTOMATIC || type == Type.UNMUTE_AUTOMATIC || type == Type.UNJAIL_AUTOMATIC || type == Type.UNRESTRICTED_AUTOMATIC) {
+        if (type == Type.UNBAN_AUTOMATIC || type == Type.UNMUTE_AUTOMATIC || type == Type.UNJAIL_AUTOMATIC || type == Type.UNRESTRICTED_AUTOMATIC || type == Type.UNCONFINED_AUTOMATIC) {
             action = action.append(Component.text(" automatically", NamedTextColor.WHITE));
         } else {
             action = action.append(Component.text(" by ", NamedTextColor.WHITE)).append(mediator);
@@ -144,6 +148,7 @@ public class PunishmentLogItem {
         MUTE,
         JAIL,
         RESTRICTED,
+        CONFINED,
         UNBAN_AUTOMATIC,
         UNBAN_MANUAL,
         UNMUTE_AUTOMATIC,
@@ -152,6 +157,8 @@ public class PunishmentLogItem {
         UNJAIL_MANUAL,
         UNRESTRICTED_AUTOMATIC,
         UNRESTRICTED_MANUAL,
+        UNCONFINED_AUTOMATIC,
+        UNCONFINED_MANUAL,
         WARN,
         NOTE_ADDED
     }

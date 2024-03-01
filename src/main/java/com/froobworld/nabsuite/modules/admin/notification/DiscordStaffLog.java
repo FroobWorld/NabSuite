@@ -31,7 +31,7 @@ public class DiscordStaffLog {
         }
 
         Color colour;
-        if (punishmentLogItem.getType() == PunishmentLogItem.Type.BAN || punishmentLogItem.getType() == PunishmentLogItem.Type.MUTE || punishmentLogItem.getType() == PunishmentLogItem.Type.JAIL || punishmentLogItem.getType() == PunishmentLogItem.Type.RESTRICTED) {
+        if (punishmentLogItem.getType() == PunishmentLogItem.Type.BAN || punishmentLogItem.getType() == PunishmentLogItem.Type.MUTE || punishmentLogItem.getType() == PunishmentLogItem.Type.JAIL || punishmentLogItem.getType() == PunishmentLogItem.Type.RESTRICTED || punishmentLogItem.getType() == PunishmentLogItem.Type.CONFINED) {
             colour = Color.RED;
         } else if (punishmentLogItem.getType() == PunishmentLogItem.Type.WARN || punishmentLogItem.getType() == PunishmentLogItem.Type.NOTE_ADDED) {
             colour = Color.YELLOW;

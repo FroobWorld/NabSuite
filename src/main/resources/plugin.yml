@@ -177,6 +177,10 @@ permissions:
     description: "Access to the /restrict command."
   nabsuite.command.unrestrict:
     description: "Access to the /unrestrict command."
+  nabsuite.command.confine:
+    description: "Access to the /confine command."
+  nabsuite.command.unconfine:
+    description: "Access to the /unconfine command."
   nabsuite.command.lockdown:
     description: "Access to the /lockdown command."
   nabsuite.command.noxray:
