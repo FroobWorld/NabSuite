@@ -37,7 +37,7 @@ public class ConfineCommand extends NabCommand {
         PlayerIdentity player = context.get("player");
         String reason = context.get("reason");
         List<Jail> jails = new ArrayList<>(adminModule.getPunishmentManager().getJailManager().getJails());
-        Jail jail = jails.get(new Random().nextInt(jails.size()));
+        Jail jail = jails.isEmpty() ? null : jails.get(new Random().nextInt(jails.size()));
         if (jail == null) {
             context.getSender().sendMessage(
                     Component.text("Unable to find jail. Player could not be confined.", NamedTextColor.RED)
