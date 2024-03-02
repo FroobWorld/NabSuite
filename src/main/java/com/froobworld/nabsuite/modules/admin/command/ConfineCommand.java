@@ -14,6 +14,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class ConfineCommand extends NabCommand {
@@ -33,7 +36,8 @@ public class ConfineCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         PlayerIdentity player = context.get("player");
         String reason = context.get("reason");
-        Jail jail = adminModule.getPunishmentManager().getJailManager().getJails().stream().findAny().orElse(null);
+        List<Jail> jails = new ArrayList<>(adminModule.getPunishmentManager().getJailManager().getJails());
+        Jail jail = jails.get(new Random().nextInt(jails.size()));
         if (jail == null) {
             context.getSender().sendMessage(
                     Component.text("Unable to find jail. Player could not be confined.", NamedTextColor.RED)
