@@ -8,15 +8,13 @@ import com.froobworld.nabsuite.command.argument.arguments.StringArgument;
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.admin.command.argument.JailArgument;
 import com.froobworld.nabsuite.modules.admin.jail.Jail;
 import com.froobworld.nabsuite.modules.admin.punishment.JailPunishment;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class ConfineCommand extends NabCommand {
@@ -35,15 +33,8 @@ public class ConfineCommand extends NabCommand {
     @Override
     public void execute(CommandContext<CommandSender> context) {
         PlayerIdentity player = context.get("player");
+        Jail jail = context.get("jail");
         String reason = context.get("reason");
-        List<Jail> jails = new ArrayList<>(adminModule.getPunishmentManager().getJailManager().getJails());
-        Jail jail = jails.isEmpty() ? null : jails.get(new Random().nextInt(jails.size()));
-        if (jail == null) {
-            context.getSender().sendMessage(
-                    Component.text("Unable to find jail. Player could not be confined.", NamedTextColor.RED)
-            );
-            return;
-        }
         adminModule.getPunishmentManager().getJailEnforcer().jail(player, context.getSender(), jail, reason, TimeUnit.DAYS.toMillis(1), true);
         context.getSender().sendMessage(
                 Component.text(player.getLastName() + " has been confined.", NamedTextColor.YELLOW)
@@ -66,6 +57,11 @@ public class ConfineCommand extends NabCommand {
                                 },
                                 "That player is already confined or jailed"
                         )
+                ))
+                .argument(new JailArgument<>(
+                        true,
+                        "jail",
+                        adminModule.getJailManager()
                 ))
                 .argument(new StringArgument<>(
                         true,
