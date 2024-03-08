@@ -8,6 +8,7 @@ import io.papermc.paper.event.entity.WardenAngerChangeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -221,6 +222,26 @@ public class VanishEnforcer implements Listener {
     @EventHandler
     public void onAdvancementProgress(PlayerAdvancementCriterionGrantEvent event) {
         if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDrop(PlayerDropItemEvent event) {
+        if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerThrow(ProjectileLaunchEvent event) {
+        if (!(event.getEntity().getShooter() instanceof Player player)) {
+            return;
+        }
+        if (event.getEntity() instanceof Firework && ((Firework) event.getEntity()).getAttachedTo() instanceof Player) {
+            return;
+        }
+        if (vanishManager.isVanished(player)) {
             event.setCancelled(true);
         }
     }
