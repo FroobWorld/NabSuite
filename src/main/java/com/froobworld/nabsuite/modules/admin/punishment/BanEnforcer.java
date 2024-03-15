@@ -43,7 +43,6 @@ public class BanEnforcer implements Listener {
         }
         broadcastMessage = broadcastMessage.append(Component.text("."));
         Bukkit.broadcast(broadcastMessage, "nabsuite.command.ban");
-        Bukkit.getConsoleSender().sendMessage(broadcastMessage);
         if (onlinePlayer != null) {
             onlinePlayer.kick(getKickMessage(banPunishment), PlayerKickEvent.Cause.BANNED);
         }
