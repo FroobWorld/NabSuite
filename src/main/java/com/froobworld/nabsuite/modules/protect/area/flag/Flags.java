@@ -17,6 +17,7 @@ public final class Flags {
     public static final String NO_MOB_DAMAGE = "no-mob-damage";
     public static final String NO_MOB_GRIEF = "no-mob-grief";
     public static final String KEEP_INVENTORY = "keep-inventory";
+    public static final String NO_WITHER = "no-wither";
 
     public static final Set<String> flags = Set.of(
             NO_BUILD,
@@ -29,7 +30,8 @@ public final class Flags {
             NO_MOB_TARGET,
             NO_MOB_DAMAGE,
             NO_MOB_GRIEF,
-            KEEP_INVENTORY
+            KEEP_INVENTORY,
+            NO_WITHER
     );
 
 }

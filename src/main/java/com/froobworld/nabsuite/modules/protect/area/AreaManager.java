@@ -178,7 +178,8 @@ public class AreaManager {
                 new NoMobSpawnFlagEnforcer(this),
                 new NoMobGriefFlagEnforcer(this),
                 new NoPvpFlagEnforcer(this),
-                new KeepInventoryFlagEnforcer(this)
+                new KeepInventoryFlagEnforcer(this),
+                new NoWitherFlagEnforcer(this)
         ).forEach(enforcer -> Bukkit.getPluginManager().registerEvents(enforcer, protectModule.getPlugin()));
     }
 
