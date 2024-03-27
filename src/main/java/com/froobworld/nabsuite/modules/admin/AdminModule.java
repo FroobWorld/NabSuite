@@ -105,7 +105,8 @@ public class AdminModule extends NabModule {
                 new NotesCommand(this),
                 new WarnCommand(this),
                 new ConfineCommand(this),
-                new UnconfineCommand(this)
+                new UnconfineCommand(this),
+                new KillWithersCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 

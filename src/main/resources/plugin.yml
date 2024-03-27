@@ -197,6 +197,8 @@ permissions:
       - nabsuite.command.notes
   nabsuite.command.warn:
     description: "Access to the /warn command."
+  nabsuite.command.killwithers:
+    description: "Access to the /killwithers command."
 
   # Admin module other permissions
   nabsuite.vanish:
