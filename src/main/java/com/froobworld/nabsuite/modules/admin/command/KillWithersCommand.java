@@ -61,7 +61,7 @@ public class KillWithersCommand extends NabCommand implements Listener {
                         true,
                         "radius",
                         context -> 1,
-                        context -> 100
+                        context -> 256
                 ));
     }
 
