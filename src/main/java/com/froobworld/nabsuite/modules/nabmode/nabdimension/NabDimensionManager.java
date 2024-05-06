@@ -40,7 +40,7 @@ public class NabDimensionManager implements Listener {
         try {
             return on(nabWorld)
                     .call("getHandle")
-                    .call("B_") // get WorldData
+                    .call("getLevelData") // get WorldData
                     .get("creativeLevel");
         } catch (Exception e) {
             if (!haveWarned) {
