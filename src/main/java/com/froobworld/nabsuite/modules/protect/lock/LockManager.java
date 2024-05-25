@@ -238,6 +238,10 @@ public class LockManager {
                 material == Material.BARREL;
     }
 
+    public boolean isLockSign(Sign sign) {
+        return sign.getLine(0).equalsIgnoreCase(LOCK_HEADER) || sign.getLine(0).equalsIgnoreCase(MORE_HEADER);
+    }
+
     public void onBlockBreak(BlockBreakEvent event) {
         for (Block block : getAttachedLockables(event.getBlock())) {
             UUID owner = getOwner(block.getLocation(), false);
@@ -266,7 +270,7 @@ public class LockManager {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getBlockData() instanceof WallSign) {
             Sign sign = (Sign) event.getClickedBlock().getState();
-            if (sign.getLine(0).equalsIgnoreCase(LOCK_HEADER) || sign.getLine(0).equalsIgnoreCase(MORE_HEADER)) {
+            if (isLockSign(sign)) {
                 if (!selectedSigns.containsKey(event.getPlayer()) || selectedSigns.get(event.getPlayer()) != event.getClickedBlock().getLocation()) {
                     selectedSigns.put(event.getPlayer(), event.getClickedBlock().getLocation());
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "Sign selected. Use /lock to edit it.");

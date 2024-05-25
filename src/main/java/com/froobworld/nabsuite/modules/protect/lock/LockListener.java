@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.protect.lock;
 
+import io.papermc.paper.event.player.PlayerOpenSignEvent;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
@@ -45,6 +46,13 @@ public class LockListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityExplode_Override(EntityExplodeEvent event) {
         lockManager.onEntityExplode(event);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onSignInteract(PlayerOpenSignEvent event) {
+        if (lockManager.isLockSign(event.getSign())) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
