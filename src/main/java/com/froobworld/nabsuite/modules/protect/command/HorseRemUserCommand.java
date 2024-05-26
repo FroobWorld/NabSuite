@@ -46,7 +46,7 @@ public class HorseRemUserCommand extends NabCommand {
                         true,
                         "user",
                         protectModule,
-                        true,
+                        false,
                         new ArgumentPredicate<>(
                                 false,
                                 (context, user) -> {
