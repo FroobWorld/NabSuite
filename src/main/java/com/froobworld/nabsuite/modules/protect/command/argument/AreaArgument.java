@@ -10,9 +10,7 @@ import com.froobworld.nabsuite.modules.protect.area.Area;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class AreaArgument<C> extends CommandArgument<C, Area> {
 
@@ -47,9 +45,18 @@ public class AreaArgument<C> extends CommandArgument<C, Area> {
         @Override
         public @NonNull List<String> suggestions(@NonNull CommandContext<C> commandContext, @NonNull String input) {
             List<String> suggestions = new ArrayList<>();
-            for (Area area : areaManager.getAreas()) {
+            Set<Area> areas = Collections.emptySet();
+            if (input.contains(":")) {
+                Area parent = areaManager.getArea(input.substring(0, input.lastIndexOf(":")));
+                if (parent != null) {
+                    areas = parent.getChildren();
+                }
+            } else {
+                areas = areaManager.getAreas();
+            }
+            for (Area area : areas) {
                 if (ArgumentPredicate.testAll(commandContext, area, predicates).getFailure().isEmpty()) {
-                    suggestions.add(area.getName());
+                    suggestions.add(area.getLongFormName());
                 }
             }
 
