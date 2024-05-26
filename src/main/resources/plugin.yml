@@ -227,6 +227,8 @@ permissions:
     description: "Allows player access to nab mode."
 
   # Protect module commands
+  nabsuite.command.area:
+    description: "Access to the /area command."
   nabsuite.command.area.addflag:
     description: "Access to the /area addflag command."
     children:
@@ -351,6 +353,20 @@ permissions:
     description: "Access to the /globalarea subarea info command."
     children:
       - nabsuite.command.globalarea.subarea
+  nabsuite.command.horse:
+    description: "Access to the /horse command."
+  nabsuite.command.horse.adduser:
+    description: "Access to the /horse adduser command."
+    children:
+      - nabsuite.command.horse
+  nabsuite.command.horse.remuser:
+    description: "Access to the /horse remuser command."
+    children:
+      - nabsuite.command.horse
+  nabsuite.command.horse.info:
+    description: "Access to the /horse info command."
+    children:
+      - nabsuite.command.horse
 
   # Protect module other permissions
   nabsuite.editallareas:

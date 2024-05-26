@@ -74,6 +74,10 @@ public class Horse {
         return player.getUniqueId().equals(owner);
     }
 
+    public boolean isUser(User user) {
+        return users.contains(user);
+    }
+
     public boolean hasUserRights(Player player) {
         for (User user : users) {
             if (user.includesPlayer(player)) {

@@ -58,7 +58,8 @@ public class ProtectModule extends NabModule {
                 new ClaimHorseCommand(this),
                 new UnclaimHorseCommand(this),
                 new LockCommand(this),
-                new GlobalAreaCommand(this)
+                new GlobalAreaCommand(this),
+                new HorseCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
 
     }
