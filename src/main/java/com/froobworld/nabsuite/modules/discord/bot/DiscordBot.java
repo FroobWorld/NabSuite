@@ -75,6 +75,10 @@ public class DiscordBot {
         return accountLinkManager;
     }
 
+    public DiscordSyncer getDiscordSyncer() {
+        return discordSyncer;
+    }
+
     public Guild getGuild() {
         jda = getJda();
         if (jda == null) {

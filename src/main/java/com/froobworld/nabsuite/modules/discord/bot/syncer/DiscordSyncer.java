@@ -37,12 +37,12 @@ public class DiscordSyncer extends ListenerAdapter implements Listener {
         }
     }
 
-    private void syncPlayer(UUID uuid) {
+    public void syncPlayer(UUID uuid) {
         nicknameSyncer.syncPlayer(uuid);
         roleSyncer.syncPlayer(uuid);
     }
 
-    private void syncMember(Member member) {
+    public void syncMember(Member member) {
         nicknameSyncer.syncMember(member);
         roleSyncer.syncMember(member);
     }

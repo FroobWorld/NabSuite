@@ -60,6 +60,7 @@ public class AccountLinkManager {
     public void setLinked(UUID uuid, User user) {
         linkedAccountDataManager.addLinkedAccount(uuid, user.getId());
         pendingLinks.invalidate(uuid);
+        discordModule.getDiscordBot().getDiscordSyncer().syncPlayer(uuid);
     }
 
     public int initiateLink(Player player) {
