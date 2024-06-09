@@ -123,6 +123,11 @@ public class Minecraft2DiscordBridge implements Listener {
         if (channel == null) {
             return;
         }
+        String key = event.getAdvancement().getKey().getKey();
+        if (key.contains("recipe/") || key.contains("recipes/")) {
+            return;
+        }
+
         String advancementName = PlainTextComponentSerializer.plainText().serialize(event.getAdvancement().displayName());
         channel.sendMessageEmbeds(
                 new EmbedBuilder()
