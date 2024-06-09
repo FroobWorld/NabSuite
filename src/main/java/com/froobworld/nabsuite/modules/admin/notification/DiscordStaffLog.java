@@ -179,16 +179,16 @@ public class DiscordStaffLog {
 
     private static String getHeadUrl(UUID uuid) {
         if (ConsoleUtils.CONSOLE_UUID.equals(uuid)) {
-            return DiscordUtils.getAvatarUrl(UUID.fromString("f78a4d8d-d51b-4b39-98a3-230f2de0c670"), 128);
+            return DiscordUtils.getAvatarUrl(UUID.fromString("f78a4d8d-d51b-4b39-98a3-230f2de0c670"), 64);
         }
-        return DiscordUtils.getAvatarUrl(uuid, 128);
+        return DiscordUtils.getAvatarUrl(uuid, 64);
     }
 
     private static String getSkinUrl(UUID uuid) {
         if (ConsoleUtils.CONSOLE_UUID.equals(uuid)) {
             return DiscordUtils.getAvatarUrl(UUID.fromString("f78a4d8d-d51b-4b39-98a3-230f2de0c670"), 64);
         }
-        return DiscordUtils.getAvatarUrl(uuid, 128);
+        return DiscordUtils.getAvatarUrl(uuid, 64);
     }
 
 }
