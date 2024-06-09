@@ -123,8 +123,13 @@ public class Minecraft2DiscordBridge implements Listener {
         if (channel == null) {
             return;
         }
+
+        // ignore recipes and other advancements that don't show in chat
         String key = event.getAdvancement().getKey().getKey();
         if (key.contains("recipe/") || key.contains("recipes/")) {
+            return;
+        }
+        if (event.message() == null) {
             return;
         }
 
