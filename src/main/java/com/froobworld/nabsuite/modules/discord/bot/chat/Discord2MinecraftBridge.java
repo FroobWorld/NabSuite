@@ -8,10 +8,8 @@ import com.froobworld.nabsuite.modules.discord.DiscordModule;
 import com.vdurmont.emoji.EmojiParser;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -21,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class Discord2MinecraftBridge extends ListenerAdapter {
@@ -107,7 +106,8 @@ public class Discord2MinecraftBridge extends ListenerAdapter {
     }
 
     private void handlePlayerList(Message message) {
-        String playerList = Bukkit.getOnlinePlayers().stream()
+        Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+        String playerList = onlinePlayers.stream()
                 .map(Player::getName)
                 .collect(Collectors.joining(", "));
 
@@ -116,11 +116,11 @@ public class Discord2MinecraftBridge extends ListenerAdapter {
             playerList = PlainTextComponentSerializer.plainText().serialize(PlayerList.getPlayerListDecorated(basicsModule));
         }
 
-        String playerListMessage = null;
+        String playerListMessage;
         if (playerList.isEmpty()) {
-            playerListMessage = "**There are no players online.**";
+            playerListMessage = "**```There are no players online.```**";
         } else {
-            playerListMessage = "**Currently online:** " + MarkdownSanitizer.escape(playerList);
+            playerListMessage = String.format("**```Currently online (%d/%d)```**```%s```", onlinePlayers.size(), Bukkit.getMaxPlayers(), playerList);
         }
         message.reply(playerListMessage).mentionRepliedUser(false).queue();
     }
