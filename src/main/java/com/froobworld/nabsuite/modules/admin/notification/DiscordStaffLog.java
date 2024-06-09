@@ -171,7 +171,7 @@ public class DiscordStaffLog {
         if (channel != null) {
             MessageEmbed embed = new EmbedBuilder()
                     .setColor(colour)
-                    .setAuthor(MarkdownSanitizer.escape(notification), null, subject == null ? null : getHeadUrl(subject))
+                    .setAuthor(notification, null, subject == null ? null : getHeadUrl(subject))
                     .build();
             channel.sendMessageEmbeds(embed).queue();
         }

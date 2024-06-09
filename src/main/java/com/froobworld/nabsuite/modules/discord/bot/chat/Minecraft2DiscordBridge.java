@@ -90,14 +90,14 @@ public class Minecraft2DiscordBridge implements Listener {
             channel.sendMessageEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.YELLOW)
-                            .setAuthor(MarkdownSanitizer.escape(event.getPlayer().getName() + " joined the server for the first time"), null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
+                            .setAuthor(event.getPlayer().getName() + " joined the server for the first time", null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
                             .build()
             ).queue();
         } else {
             channel.sendMessageEmbeds(
                     new EmbedBuilder()
                             .setColor(Color.GREEN)
-                            .setAuthor(MarkdownSanitizer.escape(event.getPlayer().getName() + " joined the server"), null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
+                            .setAuthor(event.getPlayer().getName() + " joined the server", null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
                             .build()
             ).queue();
         }
@@ -112,7 +112,7 @@ public class Minecraft2DiscordBridge implements Listener {
         channel.sendMessageEmbeds(
                 new EmbedBuilder()
                         .setColor(Color.RED)
-                        .setAuthor(MarkdownSanitizer.escape(event.getPlayer().getName() + " left the server"), null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
+                        .setAuthor(event.getPlayer().getName() + " left the server", null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
                         .build()
         ).queue();
     }
@@ -132,7 +132,7 @@ public class Minecraft2DiscordBridge implements Listener {
         channel.sendMessageEmbeds(
                 new EmbedBuilder()
                         .setColor(Color.ORANGE)
-                        .setAuthor(MarkdownSanitizer.escape(event.getPlayer().getName() + " has made advancement " + advancementName), null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
+                        .setAuthor(event.getPlayer().getName() + " has made advancement " + advancementName, null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
                         .build()
         ).queue();
     }
@@ -151,7 +151,7 @@ public class Minecraft2DiscordBridge implements Listener {
         channel.sendMessageEmbeds(
                 new EmbedBuilder()
                         .setColor(Color.BLACK)
-                        .setAuthor(MarkdownSanitizer.escape(deathMessageString), null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
+                        .setAuthor(deathMessageString, null, DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
                         .build()
         ).queue();
     }
