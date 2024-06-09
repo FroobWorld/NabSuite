@@ -1,0 +1,38 @@
+# Don't edit this.
+version: 1
+
+# The bot's token.
+bot-token: ""
+
+# The guild ID of the Discord server.
+guild-id: ""
+
+# The URL of the Discord server invite.
+invite-url: ""
+
+# The relevant Discord channel IDs.
+channels:
+  # The ID of the channel where in-game chat messages are relayed.
+  chat: ""
+
+  # The ID of the channel where staff log items are relayed.
+  staff-log: ""
+
+# Message formats for relayed messages.
+message-formats:
+  # The format going from Discord to Minecraft.
+  discord-to-minecraft: "[<blue>Discord</blue>] <username>: <message>"
+
+  # The format going from Minecraft to Discord.
+  minecraft-to-discord: "<username> » <message>"
+
+# The relevant role IDs.
+roles:
+  # The ID of the Discord role to give to linked accounts.
+  verified-role: "role-id"
+
+  # The Minecraft and Discord roles to sync between linked accounts.
+  # Format: <Minecraft role name>:<Discord role ID>
+  sync-roles:
+    - "<mc group name1>:<discord role id1>"
+    - "<mc group name2>:<discord role id2>"

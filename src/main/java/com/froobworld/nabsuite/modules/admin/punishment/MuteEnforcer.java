@@ -23,7 +23,7 @@ public class MuteEnforcer implements Listener {
     public MuteEnforcer(AdminModule adminModule, PunishmentManager punishmentManager) {
         this.adminModule = adminModule;
         this.punishmentManager = punishmentManager;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), () -> Bukkit.getOnlinePlayers().forEach(this::verifyMuteStatus), 100, 100);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), () -> Bukkit.getOnlinePlayers().forEach(player -> verifyMuteStatus(player.getUniqueId())), 100, 100);
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
@@ -93,19 +93,25 @@ public class MuteEnforcer implements Listener {
         }
     }
 
-    private void verifyMuteStatus(Player player) {
-        MutePunishment mutePunishment = punishmentManager.getPunishments(player.getUniqueId()).getMutePunishment();
+    private void verifyMuteStatus(UUID uuid) {
+        MutePunishment mutePunishment = punishmentManager.getPunishments(uuid).getMutePunishment();
         if (mutePunishment != null && mutePunishment.getDuration() > 0) {
             if (System.currentTimeMillis() >= mutePunishment.getTime() + mutePunishment.getDuration()) {
-                expireMute(adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(player));
+                expireMute(adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(uuid));
             }
         }
     }
 
+    public boolean testMute(UUID uuid) {
+        verifyMuteStatus(uuid);
+        MutePunishment mutePunishment = punishmentManager.getPunishments(uuid).getMutePunishment();
+        return mutePunishment != null;
+    }
+
     public boolean testMute(Player player, boolean notifyOnFail) {
-        verifyMuteStatus(player);
+        verifyMuteStatus(player.getUniqueId());
         MutePunishment mutePunishment = punishmentManager.getPunishments(player.getUniqueId()).getMutePunishment();
-        if (mutePunishment != null) {
+        if (testMute(player.getUniqueId())) {
             if (notifyOnFail && !mutePunishment.isShadow()) {
                 Component message = Component.newline()
                         .append(Component.text("You are muted"));

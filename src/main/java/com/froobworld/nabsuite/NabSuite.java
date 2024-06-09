@@ -5,6 +5,7 @@ import com.froobworld.nabsuite.data.identity.PlayerIdentityManager;
 import com.froobworld.nabsuite.hook.HookManager;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.froobworld.nabsuite.modules.discord.DiscordModule;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import com.froobworld.nabsuite.modules.nabmode.NabModeModule;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
@@ -36,6 +37,7 @@ public class NabSuite extends JavaPlugin {
             addModule(new ProtectModule(this));
             addModule(new MechsModule(this));
             addModule(new NabModeModule(this));
+            addModule(new DiscordModule(this));
         }
         modules.values().forEach(NabModule::preModulesEnable);
         modules.values().forEach(NabModule::onEnable);

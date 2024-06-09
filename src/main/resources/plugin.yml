@@ -376,4 +376,14 @@ permissions:
   nabsuite.bypasslocks:
     description: "The ability to bypass all locks."
 
-
+  # Discord module commands
+  nabsuite.command.discord:
+    description: "Access to the /discord command."
+  nabsuite.command.discord.url:
+    description: "Access to the /discord url command."
+    children:
+      - nabsuite.command.discord
+  nabsuite.command.discord.link:
+    description: "Access to the /discord link command."
+    children:
+      - nabsuite.command.discord

@@ -82,9 +82,8 @@ public class BanEnforcer implements Listener {
         ));
     }
 
-    @EventHandler
-    private void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
-        BanPunishment banPunishment = punishmentManager.getPunishments(event.getUniqueId()).getBanPunishment();
+    private void verifyBan(UUID uuid) {
+        BanPunishment banPunishment = punishmentManager.getPunishments(uuid).getBanPunishment();
         if (banPunishment == null) {
             return;
         }
@@ -93,11 +92,22 @@ public class BanEnforcer implements Listener {
         boolean expired = banPunishment.isPermanent() ?
                 System.currentTimeMillis() - banPunishment.getTime() > autoExpiryTime && banPunishment.getTime() < autoExpiryCutoff :
                 System.currentTimeMillis() - banPunishment.getTime() > banPunishment.getDuration();
-        if (!expired) {
+        if (expired) {
+            expireBan(uuid);
+        }
+    }
+
+    public BanPunishment testBan(UUID uuid) {
+        verifyBan(uuid);
+        return punishmentManager.getPunishments(uuid).getBanPunishment();
+    }
+
+    @EventHandler
+    private void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
+        BanPunishment banPunishment = testBan(event.getUniqueId());
+        if (banPunishment != null) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
             event.kickMessage(getKickMessage(banPunishment));
-        } else {
-            expireBan(event.getUniqueId());
         }
     }
 

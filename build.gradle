@@ -38,11 +38,18 @@ dependencies {
     compileOnly 'net.luckperms:api:5.4'
     compileOnly 'us.dynmap:DynmapCoreAPI:3.3'
     compileOnly 'us.dynmap:dynmap-api:3.3'
-    compileOnly 'com.discordsrv:discordsrv:1.25.0'
     implementation 'cloud.commandframework:cloud-paper:1.6.2'
-    implementation 'cloud.commandframework:cloud-minecraft-extras:1.6.2'
+    implementation ('cloud.commandframework:cloud-minecraft-extras:1.6.2') {
+        exclude group: 'net.kyori'
+    }
     implementation 'com.froobworld:nab-configuration:1.0.2'
     implementation 'org.jooq:joor-java-8:0.9.14'
+    implementation ('net.dv8tion:JDA:4.3.0_333') {
+        exclude module: 'opus-java'
+        exclude module: 'lavaplayer'
+        exclude group: 'org.slf4j'
+    }
+    implementation 'com.vdurmont:emoji-java:5.1.1'
 }
 
 shadowJar {
@@ -52,6 +59,19 @@ shadowJar {
     relocate 'org.joor', 'com.froobworld.nabsuite.lib.joor'
     relocate 'cloud.commandframework', 'com.froobworld.nabsuite.lib.cloud'
     relocate 'io.leangen.geantyref', 'com.froobworld.nabsuite.lib.typetoken'
+    relocate 'com.fasterxml.jackson', 'com.froobworld.nabsuite.lib.jackson'
+    relocate 'com.iwebpp.crypto', 'com.froobworld.nabsuite.lib.crypto'
+    relocate 'com.neovisionaries.ws', 'com.froobworld.nabsuite.lib.ws'
+    relocate 'com.vdurmont.emoji', 'com.froobworld.nabsuite.lib.emoji'
+    relocate 'gnu.trove', 'com.froobworld.nabsuite.lib.trove'
+    relocate 'javax.annotation', 'com.froobworld.nabsuite.lib.javaxannotation'
+    relocate 'net.dv8tion.jda', 'com.froobworld.nabsuite.lib.jda'
+    relocate 'okhttp3', 'com.froobworld.nabsuite.lib.okhttp3'
+    relocate 'okio', 'com.froobworld.nabsuite.lib.okio'
+    relocate 'org.apache.commons', 'com.froobworld.nabsuite.lib.apachecommons'
+    relocate 'org.intellij.lang', 'com.froobworld.nabsuite.lib.intellijlang'
+    relocate 'org.jetbrains.annotations', 'com.froobworld.nabsuite.lib.jetbrainsannotations'
+    relocate 'org.json', 'com.froobworld.nabsuite.lib.json'
 }
 
 test {
