@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.punishment.PunishmentLogItem;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.froobworld.nabsuite.util.ComponentUtils;
 import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -90,7 +91,7 @@ public class NoteManager {
                             .append(Component.text("You have received a warning with the following message:", NamedTextColor.RED))
                             .append(Component.newline())
                             .append(Component.newline())
-                            .append(Component.text(message, NamedTextColor.GOLD))
+                            .append(ComponentUtils.clickableUrls(Component.text(message, NamedTextColor.GOLD)))
                             .append(Component.newline())
             );
         }

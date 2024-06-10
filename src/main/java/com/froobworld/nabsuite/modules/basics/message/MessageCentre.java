@@ -2,6 +2,7 @@ package com.froobworld.nabsuite.modules.basics.message;
 
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.froobworld.nabsuite.util.ComponentUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -58,13 +59,13 @@ public class MessageCentre {
                 Component.text("[Me -> ")
                 .append(toName)
                 .append(Component.text("] "))
-                .append(Component.text(message))
+                .append(ComponentUtils.clickableUrls(Component.text(message)))
         );
         to.sendMessage(
                 Component.text("[")
                 .append(fromName)
                 .append(Component.text(" -> Me] "))
-                .append(Component.text(message))
+                .append(ComponentUtils.clickableUrls(Component.text(message)))
         );
         lastMessenger.put(toUuid, fromUuid);
     }

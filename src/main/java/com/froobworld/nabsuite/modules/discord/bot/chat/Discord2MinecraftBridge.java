@@ -5,6 +5,7 @@ import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.util.PlayerList;
 import com.froobworld.nabsuite.modules.discord.DiscordModule;
+import com.froobworld.nabsuite.util.ComponentUtils;
 import com.vdurmont.emoji.EmojiParser;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -72,7 +73,7 @@ public class Discord2MinecraftBridge extends ListenerAdapter {
             Component message = MiniMessage.miniMessage().deserialize(messageFormat,
                     TagResolver.builder()
                             .tag("username", Tag.inserting(Component.text(linkedAccount.getLastName())))
-                            .tag("message", Tag.inserting(Component.text(messageText)))
+                            .tag("message", Tag.inserting(ComponentUtils.clickableUrls(Component.text(messageText))))
                             .build()
             );
             AdminModule adminModule = discordModule.getPlugin().getModule(AdminModule.class);

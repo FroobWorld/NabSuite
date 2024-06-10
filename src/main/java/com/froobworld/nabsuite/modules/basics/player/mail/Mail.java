@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.basics.player.mail;
 import com.froobworld.nabsuite.data.SchemaEntries;
 import com.froobworld.nabsuite.data.SimpleDataSchema;
 import com.froobworld.nabsuite.data.identity.PlayerIdentityManager;
+import com.froobworld.nabsuite.util.ComponentUtils;
 import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.froobworld.nabsuite.util.DurationDisplayer;
 import com.google.gson.stream.JsonReader;
@@ -56,7 +57,7 @@ public class Mail {
                 .append(Component.text(" ago)", NamedTextColor.GRAY))
                 .append(Component.text(":", NamedTextColor.GRAY))
                 .append(Component.newline())
-                .append(Component.text(message, NamedTextColor.WHITE));
+                .append(ComponentUtils.clickableUrls(Component.text(message, NamedTextColor.WHITE)));
     }
 
     public long getTimestamp() {

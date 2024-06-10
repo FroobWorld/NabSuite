@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.command.argument.TicketArgument;
 import com.froobworld.nabsuite.modules.admin.ticket.Ticket;
+import com.froobworld.nabsuite.util.ComponentUtils;
 import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.froobworld.nabsuite.util.DurationDisplayer;
 import com.froobworld.nabsuite.util.VectorDisplayer;
@@ -51,7 +52,7 @@ public class TicketReadCommand extends NabCommand {
         );
         context.getSender().sendMessage(
                 Component.text("Message: ", NamedTextColor.YELLOW)
-                        .append(Component.text(ticket.getMessage(), NamedTextColor.WHITE))
+                        .append(ComponentUtils.clickableUrls(Component.text(ticket.getMessage(), NamedTextColor.WHITE)))
         );
         if (ticket.getNotes().isEmpty()) {
             return;
@@ -60,7 +61,7 @@ public class TicketReadCommand extends NabCommand {
         for (Ticket.TicketNote note : ticket.getNotes()) {
             String created = DurationDisplayer.asDurationString(System.currentTimeMillis() - note.getTimestamp());
             String creatorName = note.getCreator().equals(ConsoleUtils.CONSOLE_UUID) ? "Console" : adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(note.getCreator()).getLastName();
-            context.getSender().sendMessage(Component.text("- " + creatorName + " (" + created + " ago): " + note.getMessage()));
+            context.getSender().sendMessage(ComponentUtils.clickableUrls(Component.text("- " + creatorName + " (" + created + " ago): " + note.getMessage())));
         }
     }
 

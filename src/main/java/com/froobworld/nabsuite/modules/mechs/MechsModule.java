@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.mechs;
 import com.froobworld.nabsuite.NabModule;
 import com.froobworld.nabsuite.NabSuite;
 import com.froobworld.nabsuite.modules.mechs.border.WorldBorderManager;
+import com.froobworld.nabsuite.modules.mechs.chat.ClickableLinkReplacer;
 import com.froobworld.nabsuite.modules.mechs.command.BorderWarningCommand;
 import com.froobworld.nabsuite.modules.mechs.command.EffectiveViewDistanceCommand;
 import com.froobworld.nabsuite.modules.mechs.command.PvpCommand;
@@ -43,6 +44,7 @@ public class MechsModule extends NabModule {
         this.worldBorderManager = new WorldBorderManager(this);
         new MobGriefingManager(this);
         new SignEditDisabler(this);
+        new ClickableLinkReplacer(this);
 
         Lists.newArrayList(
                 new PvpCommand(this),
