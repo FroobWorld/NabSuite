@@ -12,7 +12,6 @@ import com.froobworld.nabsuite.util.DurationDisplayer;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -50,15 +49,15 @@ public class DiscordStaffLog {
                     .setColor(colour)
                     .setTitle("Punishment log")
                     .setThumbnail(getSkinUrl(punishmentLogItem.getSubject()))
-                    .addField("Subject", MarkdownSanitizer.escape(subject), true)
+                    .addField("Subject", DiscordUtils.escapeMarkdown(subject), true)
                     .addField("Type", punishmentLogItem.getType().toString(), true)
-                    .addField("Mediator", MarkdownSanitizer.escape(mediator), true);
+                    .addField("Mediator", DiscordUtils.escapeMarkdown(mediator), true);
             if (punishmentLogItem.getDuration() > 0) {
                 embedBuilder.addField("Duration", DurationDisplayer.asDurationString(punishmentLogItem.getDuration()), true);
             }
 
             if (punishmentLogItem.getReason() != null) {
-                embedBuilder.addField("Reason", MarkdownSanitizer.escape(punishmentLogItem.getReason()), true);
+                embedBuilder.addField("Reason", DiscordUtils.escapeMarkdown(punishmentLogItem.getReason()), true);
             }
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
@@ -76,9 +75,9 @@ public class DiscordStaffLog {
             EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Ticket opened")
                     .setColor(Color.CYAN)
                     .setThumbnail(getSkinUrl(ticket.getCreator()))
-                    .addField("Creator", MarkdownSanitizer.escape(creator), true)
+                    .addField("Creator", DiscordUtils.escapeMarkdown(creator), true)
                     .addField("Id", ticket.getId() + "", true)
-                    .addField("Message", MarkdownSanitizer.escape(ticket.getMessage()), true);
+                    .addField("Message", DiscordUtils.escapeMarkdown(ticket.getMessage()), true);
 
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
@@ -96,9 +95,9 @@ public class DiscordStaffLog {
             EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Ticket closed")
                     .setColor(Color.GREEN)
                     .setThumbnail(getSkinUrl(ConsoleUtils.getSenderUUID(resolver)))
-                    .addField("Closed by", MarkdownSanitizer.escape(resolverName), true)
+                    .addField("Closed by", DiscordUtils.escapeMarkdown(resolverName), true)
                     .addField("Id", ticket.getId() + "", true)
-                    .addField("Resolution", MarkdownSanitizer.escape(closureMessage), true);
+                    .addField("Resolution", DiscordUtils.escapeMarkdown(closureMessage), true);
 
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
@@ -116,8 +115,8 @@ public class DiscordStaffLog {
             EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Area requested")
                     .setColor(Color.CYAN)
                     .setThumbnail(getSkinUrl(area.getCreator()))
-                    .addField("Creator", MarkdownSanitizer.escape(creator), true)
-                    .addField("Area name", MarkdownSanitizer.escape(area.getName()), true);
+                    .addField("Creator", DiscordUtils.escapeMarkdown(creator), true)
+                    .addField("Area name", DiscordUtils.escapeMarkdown(area.getName()), true);
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
     }
@@ -134,10 +133,10 @@ public class DiscordStaffLog {
             EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Area request " + (approved ? "approved" : "denied"))
                     .setColor(approved ? Color.GREEN : Color.RED)
                     .setThumbnail(getSkinUrl(ConsoleUtils.getSenderUUID(handler)))
-                    .addField("Reviewer", MarkdownSanitizer.escape(handlerName), true)
-                    .addField("Area name", MarkdownSanitizer.escape(area.getName()), true);
+                    .addField("Reviewer", DiscordUtils.escapeMarkdown(handlerName), true)
+                    .addField("Area name", DiscordUtils.escapeMarkdown(area.getName()), true);
             if (reason != null) {
-                embedBuilder.addField("Reason", MarkdownSanitizer.escape(reason), true);
+                embedBuilder.addField("Reason", DiscordUtils.escapeMarkdown(reason), true);
             }
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
@@ -154,9 +153,9 @@ public class DiscordStaffLog {
             EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Note created")
                     .setColor(Color.YELLOW)
                     .setThumbnail(getSkinUrl(note.getSubject()))
-                    .addField("Subject", MarkdownSanitizer.escape(subjectName), true)
-                    .addField("Creator", MarkdownSanitizer.escape(creatorName), true)
-                    .addField("Note", MarkdownSanitizer.escape(note.getMessage()), true);
+                    .addField("Subject", DiscordUtils.escapeMarkdown(subjectName), true)
+                    .addField("Creator", DiscordUtils.escapeMarkdown(creatorName), true)
+                    .addField("Note", DiscordUtils.escapeMarkdown(note.getMessage()), true);
 
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }

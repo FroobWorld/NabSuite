@@ -6,7 +6,6 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
-import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -75,7 +74,7 @@ public class Minecraft2DiscordBridge implements Listener {
                 .replace("<username>", event.getPlayer().getName())
                 .replace("<message>", PlainTextComponentSerializer.plainText().serialize(event.message()));
 
-        channel.sendMessage(MarkdownSanitizer.escape(messageText))
+        channel.sendMessage(DiscordUtils.escapeMarkdown(messageText))
                 .allowedMentions(Collections.emptySet())
                 .queue();
     }
