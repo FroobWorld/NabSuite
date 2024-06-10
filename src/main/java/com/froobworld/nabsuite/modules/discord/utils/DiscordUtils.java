@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public final class DiscordUtils {
-    private static final Pattern HTTP_PATTERN = Pattern.compile("^(http:\\/\\/|https:\\/\\/)?(www.)?([a-zA-Z0-9]+).[a-zA-Z0-9]*.[a-z]{3}.?([a-z]+)?(\\/[a-z0-9])*(\\/?|(\\?[a-z0-9]=[a-z0-9](&[a-z0-9]=[a-z0-9]*)?))$");
+    private static final Pattern HTTP_PATTERN = Pattern.compile("(https?://)?[a-z0-9]+(\\.[a-z0-9]+)*(\\.[a-z0-9]{1,10})((/+)[^/ ]*)*");
 
     private DiscordUtils() {}
 
@@ -38,7 +38,7 @@ public final class DiscordUtils {
         for (Map.Entry<String, String> entry : replacedUrls.entrySet()) {
             String urlKey = entry.getKey();
             String urlString = entry.getValue();
-            escapedString = escapedString.replace(urlString, urlKey);
+            escapedString = escapedString.replace(urlKey, urlString);
         }
         return escapedString;
     }
