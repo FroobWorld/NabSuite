@@ -8,6 +8,7 @@ import com.froobworld.nabsuite.modules.protect.vehicle.VehicleTracker;
 import org.bukkit.Location;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -50,7 +51,7 @@ public class NoInteractFlagEnforcer implements Listener {
             return;
         }
         if (!canInteract(event.getClickedBlock().getLocation(), event.getPlayer(), event.getAction() != Action.PHYSICAL)) {
-            event.setCancelled(true);
+            event.setUseInteractedBlock(Event.Result.DENY);
         }
     }
 
