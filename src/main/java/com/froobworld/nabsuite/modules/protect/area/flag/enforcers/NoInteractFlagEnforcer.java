@@ -108,6 +108,15 @@ public class NoInteractFlagEnforcer implements Listener {
         if (causer == null) {
             return;
         }
+        if (event.getEntity() instanceof Player) {
+            return;
+        }
+        if (event.getEntity() instanceof Monster && event.getEntity().customName() == null && causer.equals(((Monster) event.getEntity()).getTarget())) {
+            return; // Allow the killing of un-named monsters that are attacking the player
+        }
+        if (vehicleTracker.hasAccessed(event.getEntity(), causer)) {
+            return;
+        }
         if (!canInteract(event.getEntity().getLocation(), causer, true)) {
             event.setCancelled(true);
         }
