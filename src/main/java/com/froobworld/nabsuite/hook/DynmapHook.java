@@ -9,7 +9,7 @@ public class DynmapHook {
 
     public DynmapHook() {
         Plugin dynmap = Bukkit.getPluginManager().getPlugin("dynmap");
-        if (dynmap != null) {
+        if (dynmap != null && dynmap.isEnabled()) {
             dynmapAPI = (DynmapAPI) dynmap;
         } else {
             dynmapAPI = null;
