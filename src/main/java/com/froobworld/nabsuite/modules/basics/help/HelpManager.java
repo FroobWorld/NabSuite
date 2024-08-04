@@ -16,6 +16,9 @@ public class HelpManager {
         Set<Command> processedCommands = new HashSet<>();
         helpObjects.clear();
         for (Command command : Bukkit.getCommandMap().getKnownCommands().values()) {
+            if (command.getName().equalsIgnoreCase("callback")) {
+                continue; // hacky fix to stop the callback command showing up in help menus
+            }
             if (processedCommands.contains(command)) {
                 continue;
             }
