@@ -43,7 +43,7 @@ public class ChannelPlayerlistCommand extends NabCommand {
         }
         context.getSender().sendMessage(
                 Component.text(
-                        "There " + NumberDisplayer.toStringWithModifierAndPrefix(Bukkit.getOnlinePlayers().size(), " player ", " players ", "is ", "are ") + "in this channel.",
+                        "There " + NumberDisplayer.toStringWithModifierAndPrefix(players.size(), " player ", " players ", "is ", "are ") + "in this channel.",
                         NamedTextColor.YELLOW
                 )
         );
