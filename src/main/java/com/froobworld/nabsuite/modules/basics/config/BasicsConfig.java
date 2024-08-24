@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class BasicsConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 3;
+    private static final int CONFIG_VERSION = 4;
 
     public BasicsConfig(BasicsModule basicsModule) {
         super(
@@ -69,6 +69,9 @@ public class BasicsConfig extends NabConfiguration {
 
     @EntryMap(key = "display-name-formats", defaultKey = "default")
     public final ConfigEntryMap<String, String> displayNameFormats = new ConfigEntryMap<>(Function.identity(), ConfigEntry::new, true);
+
+    @Entry(key = "chat-channel-format")
+    public final ConfigEntry<String> chatChannelFormat = new ConfigEntry<>();
 
     @Section(key = "auto-promote")
     public final AutoPromote autoPromote = new AutoPromote();

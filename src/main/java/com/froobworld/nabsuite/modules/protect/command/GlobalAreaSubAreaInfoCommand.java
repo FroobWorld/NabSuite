@@ -8,7 +8,7 @@ import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.area.GlobalArea;
 import com.froobworld.nabsuite.modules.protect.area.GlobalSubArea;
 import com.froobworld.nabsuite.modules.protect.command.argument.GlobalSubAreaArgument;
-import com.froobworld.nabsuite.modules.protect.user.User;
+import com.froobworld.nabsuite.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;

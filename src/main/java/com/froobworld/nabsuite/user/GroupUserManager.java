@@ -1,37 +1,36 @@
-package com.froobworld.nabsuite.modules.protect.user;
+package com.froobworld.nabsuite.user;
 
-import com.froobworld.nabsuite.modules.protect.ProtectModule;
+import com.froobworld.nabsuite.NabSuite;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.model.group.Group;
+import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryMode;
 import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class GroupUserManager implements Listener {
     private final LuckPerms luckPerms;
-    private final Map<Player, Set<String>> groupMembershipsMap = new WeakHashMap<>();
+    private final Map<UUID, Set<String>> groupMembershipsMap = new WeakHashMap<>();
     private final ExecutorService executorService;
     private final Set<String> allowableGroups;
 
-    public GroupUserManager(ProtectModule protectModule) {
+    public GroupUserManager(NabSuite nabSuite) {
         this.executorService = Executors.newSingleThreadExecutor();
-        luckPerms = protectModule.getPlugin().getHookManager().getLuckPermsHook().getLuckPerms();
+        luckPerms = nabSuite.getHookManager().getLuckPermsHook().getLuckPerms();
         if (luckPerms != null) {
             luckPerms.getEventBus().subscribe(UserDataRecalculateEvent.class, this::onUserDataRecalculate);
-            Bukkit.getPluginManager().registerEvents(this, protectModule.getPlugin());
+            Bukkit.getPluginManager().registerEvents(this, nabSuite);
             this.allowableGroups = luckPerms.getGroupManager().getLoadedGroups().stream()
                     .map(Group::getName)
                     .collect(Collectors.toSet());
@@ -46,16 +45,32 @@ public class GroupUserManager implements Listener {
     }
 
     public Set<String> getGroupMemberships(Player player) {
-        return groupMembershipsMap.getOrDefault(player, Collections.emptySet());
+        return groupMembershipsMap.getOrDefault(player.getUniqueId(), Collections.emptySet());
+    }
+
+    private void updatePlayer(UUID uuid) {
+        User user = luckPerms.getUserManager().getUser(uuid);
+        if (user == null) {
+            return;
+        }
+        Group primaryGroup =  luckPerms.getGroupManager().getGroup(user.getPrimaryGroup());
+        if (primaryGroup == null) {
+            return;
+        }
+        Set<String> groupMemberships = primaryGroup.getInheritedGroups(QueryOptions.builder(QueryMode.NON_CONTEXTUAL).build()).stream()
+                .map(Group::getName)
+                .collect(Collectors.toSet());
+        groupMemberships.add(primaryGroup.getName());
+        groupMembershipsMap.put(uuid, groupMemberships);
     }
 
     private void updatePlayer(Player player) {
-        String primaryGroup = luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
-        Set<String> groupMemberships = luckPerms.getGroupManager().getGroup(primaryGroup).getInheritedGroups(QueryOptions.builder(QueryMode.NON_CONTEXTUAL).build()).stream()
-                .map(Group::getName)
-                .collect(Collectors.toSet());
-        groupMemberships.add(primaryGroup);
-        groupMembershipsMap.put(player, groupMemberships);
+        updatePlayer(player.getUniqueId());
+    }
+
+    @EventHandler
+    private void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
+        updatePlayer(event.getUniqueId());
     }
 
     @EventHandler

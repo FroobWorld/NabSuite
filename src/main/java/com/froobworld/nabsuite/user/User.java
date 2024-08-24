@@ -1,4 +1,4 @@
-package com.froobworld.nabsuite.modules.protect.user;
+package com.froobworld.nabsuite.user;
 
 import com.google.gson.stream.JsonWriter;
 import net.kyori.adventure.text.Component;

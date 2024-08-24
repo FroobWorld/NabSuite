@@ -9,6 +9,7 @@ import com.froobworld.nabsuite.modules.discord.DiscordModule;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import com.froobworld.nabsuite.modules.nabmode.NabModeModule;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
+import com.froobworld.nabsuite.user.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,6 +20,7 @@ public class NabSuite extends JavaPlugin {
     private NabCommandManager commandManager;
     private PlayerIdentityManager playerIdentityManager;
     private HookManager hookManager;
+    private UserManager userManager;
 
     @Override
     public void onEnable() {
@@ -31,6 +33,7 @@ public class NabSuite extends JavaPlugin {
         }
         hookManager = new HookManager();
         playerIdentityManager = new PlayerIdentityManager(this);
+        userManager = new UserManager(this);
         if (modules.isEmpty()) {
             addModule(new BasicsModule(this));
             addModule(new AdminModule(this));
@@ -71,6 +74,10 @@ public class NabSuite extends JavaPlugin {
     public <T extends NabModule> T getModule(Class<T> type) {
         //noinspection unchecked
         return (T) modules.get(type);
+    }
+
+    public UserManager getUserManager() {
+        return userManager;
     }
 
 }

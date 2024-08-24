@@ -2,8 +2,8 @@ package com.froobworld.nabsuite.modules.protect.area;
 
 import com.froobworld.nabsuite.data.SchemaEntries;
 import com.froobworld.nabsuite.data.SimpleDataSchema;
-import com.froobworld.nabsuite.modules.protect.user.User;
-import com.froobworld.nabsuite.modules.protect.user.UserManager;
+import com.froobworld.nabsuite.user.User;
+import com.froobworld.nabsuite.user.UserManager;
 import com.google.gson.stream.JsonReader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

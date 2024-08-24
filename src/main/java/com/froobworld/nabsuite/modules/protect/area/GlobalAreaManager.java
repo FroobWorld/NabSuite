@@ -17,7 +17,7 @@ public class GlobalAreaManager {
             .addField("global-areas", SchemaEntries.mapEntry(
                     globalAreaManager -> globalAreaManager.globalAreaMap,
                     (globalAreaManager, globalAreaMap) -> globalAreaManager.globalAreaMap = globalAreaMap,
-                    (jsonReader, globalAreaManager) -> GlobalArea.fromJsonReader(globalAreaManager, globalAreaManager.protectModule.getUserManager(), jsonReader),
+                    (jsonReader, globalAreaManager) -> GlobalArea.fromJsonReader(globalAreaManager, globalAreaManager.protectModule.getPlugin().getUserManager(), jsonReader),
                     GlobalArea.SCHEMA::write,
                     HashMap::new,
                     UUID::toString,
@@ -45,7 +45,7 @@ public class GlobalAreaManager {
     public GlobalArea getGlobalArea(World world) {
         GlobalArea globalArea = globalAreaMap.get(world.getUID());
         if (globalArea == null) {
-            globalArea = new GlobalArea(this, protectModule.getUserManager());
+            globalArea = new GlobalArea(this, protectModule.getPlugin().getUserManager());
             globalAreaMap.put(world.getUID(), globalArea);
             scheduleSave();
         }

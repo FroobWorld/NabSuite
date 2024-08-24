@@ -9,7 +9,7 @@ import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.area.Area;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
-import com.froobworld.nabsuite.modules.protect.user.PlayerUser;
+import com.froobworld.nabsuite.user.PlayerUser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
@@ -55,7 +55,7 @@ public class SetAreaCommand extends NabCommand {
                 corner1.getWorld(),
                 corner1.toVector().setY(useSelectedVerticalBounds ? corner1.getY() : -64),
                 corner2.toVector().setY(useSelectedVerticalBounds ? corner2.getY() : 320),
-                new PlayerUser(protectModule, sender.getUniqueId()),
+                protectModule.getPlugin().getUserManager().newPlayerUser(sender.getUniqueId()),
                 autoApproved
         );
         if (area.isApproved()) {

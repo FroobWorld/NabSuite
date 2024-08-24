@@ -29,7 +29,7 @@ public class HorseManager {
         horseMap.putAll(DataLoader.loadAll(
                 directory,
                 fileName -> fileNamePattern.matcher(fileName.toLowerCase()).matches(),
-                bytes -> Horse.fromJsonString(this, protectModule.getUserManager(), new String(bytes)),
+                bytes -> Horse.fromJsonString(this, protectModule.getPlugin().getUserManager(), new String(bytes)),
                 (fileName, horse) -> horse.getUuid()
         ));
         horseSaver.start();
@@ -53,7 +53,7 @@ public class HorseManager {
 
     public Horse protectHorse(UUID uuid, UUID owner) {
         if (!horseMap.containsKey(uuid)) {
-            Horse horse = new Horse(this, protectModule.getUserManager(), uuid, owner);
+            Horse horse = new Horse(this, protectModule.getPlugin().getUserManager(), uuid, owner);
             horseMap.put(uuid, horse);
             horseSaver.scheduleSave(horse);
             return horse;

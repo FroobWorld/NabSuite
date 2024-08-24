@@ -6,7 +6,7 @@ import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.area.Area;
 import com.froobworld.nabsuite.modules.protect.command.argument.AreaArgument;
-import com.froobworld.nabsuite.modules.protect.user.User;
+import com.froobworld.nabsuite.user.User;
 import com.froobworld.nabsuite.util.VectorDisplayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
@@ -43,41 +43,41 @@ public class AreaInfoCommand extends NabCommand {
                         .append(Component.text("(" + VectorDisplayer.vectorToString(area.getCorner1(), true) + "), ").color(NamedTextColor.WHITE))
                         .append(Component.text("(" + VectorDisplayer.vectorToString(area.getCorner2(), true) + ")").color(NamedTextColor.WHITE))
         );
+
+        Component owners = area.getOwners().isEmpty() ? Component.text("(none)") :
+                Component.join(
+                        JoinConfiguration.separator(Component.text(", ")),
+                        area.getOwners().stream()
+                                .map(User::asDecoratedComponent)
+                                .collect(Collectors.toList())
+                ).color(NamedTextColor.WHITE);
         context.getSender().sendMessage(
                 Component.text("Owners: ").color(NamedTextColor.YELLOW)
-                .append(
-                        Component.join(
-                                JoinConfiguration.separator(Component.text(", ")),
-                                area.getOwners().stream()
-                                        .map(User::asDecoratedComponent)
-                                        .collect(Collectors.toList())
-                        ).color(NamedTextColor.WHITE)
-                )
-
+                        .append(owners.color(NamedTextColor.WHITE))
         );
+
+        Component managers = area.getManagers().isEmpty() ? Component.text("(none)") :
+                Component.join(
+                        JoinConfiguration.separator(Component.text(", ")),
+                        area.getManagers().stream()
+                                .map(User::asDecoratedComponent)
+                                .collect(Collectors.toList())
+                ).color(NamedTextColor.WHITE);
         context.getSender().sendMessage(
                 Component.text("Managers: ").color(NamedTextColor.YELLOW)
-                        .append(
-                                Component.join(
-                                        JoinConfiguration.separator(Component.text(", ")),
-                                        area.getManagers().stream()
-                                                .map(User::asDecoratedComponent)
-                                                .collect(Collectors.toList())
-                                ).color(NamedTextColor.WHITE)
-                        )
-
+                        .append(managers.color(NamedTextColor.WHITE))
         );
+
+        Component users = area.getUsers().isEmpty() ? Component.text("(none)") :
+                Component.join(
+                        JoinConfiguration.separator(Component.text(", ")),
+                        area.getUsers().stream()
+                                .map(User::asDecoratedComponent)
+                                .collect(Collectors.toList())
+                ).color(NamedTextColor.WHITE);
         context.getSender().sendMessage(
                 Component.text("Users: ").color(NamedTextColor.YELLOW)
-                        .append(
-                                Component.join(
-                                        JoinConfiguration.separator(Component.text(", ")),
-                                        area.getUsers().stream()
-                                                .map(User::asDecoratedComponent)
-                                                .collect(Collectors.toList())
-                                ).color(NamedTextColor.WHITE)
-                        )
-
+                        .append(users.color(NamedTextColor.WHITE))
         );
         context.getSender().sendMessage(
                 Component.text("Flags: ").color(NamedTextColor.YELLOW)

@@ -7,7 +7,7 @@ import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.horse.Horse;
 import com.froobworld.nabsuite.modules.protect.horse.HorseManager;
-import com.froobworld.nabsuite.modules.protect.user.User;
+import com.froobworld.nabsuite.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;

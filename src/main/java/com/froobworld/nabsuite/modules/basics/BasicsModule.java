@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.basics;
 import com.froobworld.nabsuite.NabModule;
 import com.froobworld.nabsuite.NabSuite;
 import com.froobworld.nabsuite.modules.basics.afk.AfkManager;
+import com.froobworld.nabsuite.modules.basics.channel.ChatChannelManager;
 import com.froobworld.nabsuite.modules.basics.command.*;
 import com.froobworld.nabsuite.modules.basics.config.BasicsConfig;
 import com.froobworld.nabsuite.modules.basics.help.HelpManager;
@@ -40,6 +41,7 @@ public class BasicsModule extends NabModule {
     private AfkManager afkManager;
     private SpawnManager spawnManager;
     private RandomTeleportManager randomTeleportManager;
+    private ChatChannelManager chatChannelManager;
 
     public BasicsModule(NabSuite nabSuite) {
         super(nabSuite, "basics");
@@ -71,6 +73,7 @@ public class BasicsModule extends NabModule {
         spawnManager = new SpawnManager(this);
         new AnnouncementCentre(this);
         randomTeleportManager = new RandomTeleportManager(this);
+        chatChannelManager = new ChatChannelManager(this);
 
         Lists.newArrayList(
                 new MessageCommand(this),
@@ -113,7 +116,13 @@ public class BasicsModule extends NabModule {
                 new AfkCommand(this),
                 new SpawnCommand(this),
                 new SetSpawnCommand(this),
-                new RandomTeleportCommand(this)
+                new RandomTeleportCommand(this),
+                new ChannelCommand(this),
+                new JoinChannelCommand(this),
+                new LeaveChannelCommand(this),
+                new MessageChannelCommand(this),
+                new ReplyChannelCommand(this),
+                new ChannelsCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -129,6 +138,7 @@ public class BasicsModule extends NabModule {
         warpManager.shutdown();
         portalManager.shutdown();
         mailCentre.shutdown();
+        chatChannelManager.shutdown();
     }
 
     public BasicsConfig getConfig() {
@@ -189,5 +199,9 @@ public class BasicsModule extends NabModule {
 
     public RandomTeleportManager getRandomTeleportManager() {
         return randomTeleportManager;
+    }
+
+    public ChatChannelManager getChatChannelManager() {
+        return chatChannelManager;
     }
 }

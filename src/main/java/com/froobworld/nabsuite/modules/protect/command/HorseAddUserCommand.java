@@ -8,7 +8,7 @@ import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.command.argument.UserArgument;
 import com.froobworld.nabsuite.modules.protect.horse.Horse;
 import com.froobworld.nabsuite.modules.protect.horse.HorseManager;
-import com.froobworld.nabsuite.modules.protect.user.User;
+import com.froobworld.nabsuite.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -45,7 +45,7 @@ public class HorseAddUserCommand extends NabCommand {
                 new UserArgument<>(
                         true,
                         "user",
-                        protectModule,
+                        protectModule.getPlugin(),
                         true,
                         new ArgumentPredicate<>(
                                 false,

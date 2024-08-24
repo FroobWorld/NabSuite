@@ -8,7 +8,7 @@ import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.area.flag.enforcers.*;
 import com.froobworld.nabsuite.modules.protect.area.visualiser.AreaVisualiser;
-import com.froobworld.nabsuite.modules.protect.user.User;
+import com.froobworld.nabsuite.user.User;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.kyori.adventure.text.Component;
@@ -44,7 +44,7 @@ public class AreaManager {
         areaMap.putAll(DataLoader.loadAll(
                 directory,
                 fileName -> fileNamePattern.matcher(fileName.toLowerCase()).matches(),
-                bytes -> Area.fromJsonString(this, protectModule.getUserManager(), new String(bytes)),
+                bytes -> Area.fromJsonString(this, protectModule.getPlugin().getUserManager(), new String(bytes)),
                 (fileName, area) -> area.getName().toLowerCase()
         ));
         areaSaver.start();
@@ -94,7 +94,7 @@ public class AreaManager {
         if (!areaNamePattern.matcher(name).matches()) {
             throw new IllegalArgumentException("Name does not match pattern: " + areaNamePattern);
         }
-        Area area = new Area(this, protectModule.getUserManager(), parent, creator, name, world, corner1, corner2, owner, approved, defaultFlags);
+        Area area = new Area(this, protectModule.getPlugin().getUserManager(), parent, creator, name, world, corner1, corner2, owner, approved, defaultFlags);
         if (parent != null) {
             parent.addChild(area);
         } else {

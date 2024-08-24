@@ -1,0 +1,4 @@
+[add-field]
+key=chat-channel-format
+value="<gold>\<<channel>\></gold> <display_name><white>: <message></white>"
+comment=# Chat channel formatting

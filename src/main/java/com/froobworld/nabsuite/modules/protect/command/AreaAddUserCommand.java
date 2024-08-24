@@ -9,7 +9,7 @@ import com.froobworld.nabsuite.modules.protect.area.Area;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import com.froobworld.nabsuite.modules.protect.command.argument.AreaArgument;
 import com.froobworld.nabsuite.modules.protect.command.argument.UserArgument;
-import com.froobworld.nabsuite.modules.protect.user.User;
+import com.froobworld.nabsuite.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -64,7 +64,7 @@ public class AreaAddUserCommand extends NabCommand {
                         new UserArgument<>(
                                 true,
                                 "user",
-                                protectModule,
+                                protectModule.getPlugin(),
                                 true,
                                 new ArgumentPredicate<>(
                                         false,

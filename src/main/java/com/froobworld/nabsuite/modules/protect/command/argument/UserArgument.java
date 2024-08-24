@@ -5,14 +5,11 @@ import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
+import com.froobworld.nabsuite.NabSuite;
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.data.identity.PlayerIdentityManager;
-import com.froobworld.nabsuite.modules.protect.ProtectModule;
-import com.froobworld.nabsuite.modules.protect.user.FriendsUser;
-import com.froobworld.nabsuite.modules.protect.user.GroupUser;
-import com.froobworld.nabsuite.modules.protect.user.PlayerUser;
-import com.froobworld.nabsuite.modules.protect.user.User;
+import com.froobworld.nabsuite.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -25,20 +22,20 @@ public class UserArgument<C> extends CommandArgument<C, User> {
     private static final Pattern uuidPattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$");
 
     @SafeVarargs
-    public UserArgument(boolean required, @NonNull String name, ProtectModule protectModule, boolean prioritiseOnline, ArgumentPredicate<C, User>... predicates) {
-        super(required, name, new Parser<>(protectModule, prioritiseOnline, predicates), User.class);
+    public UserArgument(boolean required, @NonNull String name, NabSuite nabSuite, boolean prioritiseOnline, ArgumentPredicate<C, User>... predicates) {
+        super(required, name, new Parser<>(nabSuite, prioritiseOnline, predicates), User.class);
     }
 
     private static final class Parser<C> implements ArgumentParser<C, User> {
-        private final ProtectModule protectModule;
+        private final NabSuite nabSuite;
         private final PlayerIdentityManager playerIdentityManager;
         private final boolean prioritiseOnline;
         private final ArgumentPredicate<C, User>[] predicates;
 
         @SafeVarargs
-        private Parser(ProtectModule protectModule, boolean prioritiseOnline, ArgumentPredicate<C, User>... predicates) {
-            this.protectModule = protectModule;
-            this.playerIdentityManager = protectModule.getPlugin().getPlayerIdentityManager();
+        private Parser(NabSuite nabSuite, boolean prioritiseOnline, ArgumentPredicate<C, User>... predicates) {
+            this.nabSuite = nabSuite;
+            this.playerIdentityManager = nabSuite.getPlayerIdentityManager();
             this.prioritiseOnline = prioritiseOnline;
             this.predicates = predicates;
         }
@@ -52,10 +49,10 @@ public class UserArgument<C> extends CommandArgument<C, User> {
             User user;
             if (input.toLowerCase().startsWith("group:")) {
                 input = input.split(":", 2)[1];
-                if (!protectModule.getGroupUserManager().getAllowableGroups().contains(input.toLowerCase())) {
+                if (!nabSuite.getUserManager().getGroupUserManager().getAllowableGroups().contains(input.toLowerCase())) {
                     return ArgumentParseResult.failure(new IllegalArgumentException("Unknown group '" + input + "'"));
                 }
-                return ArgumentPredicate.testAll(commandContext, new GroupUser(protectModule, input.toLowerCase()), predicates);
+                return ArgumentPredicate.testAll(commandContext, nabSuite.getUserManager().newGroupUser(input.toLowerCase()), predicates);
             } else {
                 boolean friends = false;
                 if (input.toLowerCase().startsWith("friends:")) {
@@ -79,7 +76,7 @@ public class UserArgument<C> extends CommandArgument<C, User> {
                 if (playerIdentity == null) {
                     return ArgumentParseResult.failure(new cloud.commandframework.bukkit.parsers.PlayerArgument.PlayerParseException(input, commandContext));
                 }
-                user = friends ? new FriendsUser(protectModule, playerIdentity.getUuid()) : new PlayerUser(protectModule, playerIdentity.getUuid());
+                user = friends ? nabSuite.getUserManager().newFriendsUser(playerIdentity.getUuid()) : nabSuite.getUserManager().newPlayerUser(playerIdentity.getUuid());
             }
 
             return ArgumentPredicate.testAll(commandContext, user, predicates);
@@ -93,13 +90,13 @@ public class UserArgument<C> extends CommandArgument<C, User> {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (player.getName().toLowerCase().startsWith(input.toLowerCase())) {
                         PlayerIdentity playerIdentity = playerIdentityManager.getPlayerIdentity(player);
-                        if (ArgumentPredicate.testAll(commandContext, new PlayerUser(protectModule, playerIdentity.getUuid()), predicates).getFailure().isEmpty()) {
+                        if (ArgumentPredicate.testAll(commandContext, nabSuite.getUserManager().newPlayerUser(playerIdentity.getUuid()), predicates).getFailure().isEmpty()) {
                             suggestions.add(player.getName());
                         }
                     }
                     if (("friends:" + player.getName().toLowerCase()).startsWith(input.toLowerCase())) {
                         PlayerIdentity playerIdentity = playerIdentityManager.getPlayerIdentity(player);
-                        if (ArgumentPredicate.testAll(commandContext, new FriendsUser(protectModule, playerIdentity.getUuid()), predicates).getFailure().isEmpty()) {
+                        if (ArgumentPredicate.testAll(commandContext, nabSuite.getUserManager().newFriendsUser(playerIdentity.getUuid()), predicates).getFailure().isEmpty()) {
                             backupSuggestions.add("Friends:" + player.getName());
                         }
                     }
@@ -112,34 +109,34 @@ public class UserArgument<C> extends CommandArgument<C, User> {
             }
             suggestions = playerIdentityManager.getAllPlayerIdentities().stream()
                     .filter(playerIdentity -> playerIdentity.getLastName().toLowerCase().startsWith(input.toLowerCase()))
-                    .filter(playerIdentity -> ArgumentPredicate.testAll(commandContext, new PlayerUser(protectModule, playerIdentity.getUuid()), predicates).getFailure().isEmpty())
+                    .filter(playerIdentity -> ArgumentPredicate.testAll(commandContext, nabSuite.getUserManager().newPlayerUser(playerIdentity.getUuid()), predicates).getFailure().isEmpty())
                     .map(PlayerIdentity::getLastName)
                     .collect(Collectors.toList());
             if (suggestions.isEmpty()) {
                 suggestions = playerIdentityManager.getAllPlayerIdentities().stream()
                         .filter(playerIdentity -> playerIdentity.getUuid().toString().toLowerCase().startsWith(input.toLowerCase()))
-                        .filter(playerIdentity -> ArgumentPredicate.testAll(commandContext, new PlayerUser(protectModule, playerIdentity.getUuid()), predicates).getFailure().isEmpty())
+                        .filter(playerIdentity -> ArgumentPredicate.testAll(commandContext, nabSuite.getUserManager().newPlayerUser(playerIdentity.getUuid()), predicates).getFailure().isEmpty())
                         .map(playerIdentity -> playerIdentity.getUuid().toString())
                         .collect(Collectors.toList());
             }
             if (suggestions.isEmpty()) {
                 suggestions = playerIdentityManager.getAllPlayerIdentities().stream()
                         .filter(playerIdentity -> ("friends:" + playerIdentity.getLastName().toLowerCase()).startsWith(input.toLowerCase()))
-                        .filter(playerIdentity -> ArgumentPredicate.testAll(commandContext, new FriendsUser(protectModule, playerIdentity.getUuid()), predicates).getFailure().isEmpty())
+                        .filter(playerIdentity -> ArgumentPredicate.testAll(commandContext, nabSuite.getUserManager().newFriendsUser(playerIdentity.getUuid()), predicates).getFailure().isEmpty())
                         .map(playerIdentity -> "Friends:" + playerIdentity.getLastName())
                         .collect(Collectors.toList());
             }
             if (suggestions.isEmpty()) {
                 suggestions = playerIdentityManager.getAllPlayerIdentities().stream()
                         .filter(playerIdentity -> ("friends:" + playerIdentity.getUuid().toString().toLowerCase()).startsWith(input.toLowerCase()))
-                        .filter(playerIdentity -> ArgumentPredicate.testAll(commandContext, new FriendsUser(protectModule, playerIdentity.getUuid()), predicates).getFailure().isEmpty())
+                        .filter(playerIdentity -> ArgumentPredicate.testAll(commandContext, nabSuite.getUserManager().newFriendsUser(playerIdentity.getUuid()), predicates).getFailure().isEmpty())
                         .map(playerIdentity -> "Friends:" + playerIdentity.getUuid().toString())
                         .collect(Collectors.toList());
             }
             if (suggestions.isEmpty()) {
-                suggestions = protectModule.getGroupUserManager().getAllowableGroups().stream()
+                suggestions = nabSuite.getUserManager().getGroupUserManager().getAllowableGroups().stream()
                         .filter(group -> ("group:" + group).startsWith(input.toLowerCase()))
-                        .filter(group -> ArgumentPredicate.testAll(commandContext, new GroupUser(protectModule, group), predicates).getFailure().isEmpty())
+                        .filter(group -> ArgumentPredicate.testAll(commandContext, nabSuite.getUserManager().newGroupUser(group), predicates).getFailure().isEmpty())
                         .map(group -> "Group:" + group)
                         .collect(Collectors.toList());
             }

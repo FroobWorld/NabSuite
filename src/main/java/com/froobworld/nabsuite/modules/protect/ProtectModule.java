@@ -8,8 +8,8 @@ import com.froobworld.nabsuite.modules.protect.command.*;
 import com.froobworld.nabsuite.modules.protect.config.ProtectConfig;
 import com.froobworld.nabsuite.modules.protect.horse.HorseManager;
 import com.froobworld.nabsuite.modules.protect.lock.LockManager;
-import com.froobworld.nabsuite.modules.protect.user.GroupUserManager;
-import com.froobworld.nabsuite.modules.protect.user.UserManager;
+import com.froobworld.nabsuite.user.GroupUserManager;
+import com.froobworld.nabsuite.user.UserManager;
 import com.froobworld.nabsuite.modules.protect.vehicle.VehicleTracker;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
@@ -17,8 +17,6 @@ import org.bukkit.Bukkit;
 public class ProtectModule extends NabModule {
     private ProtectConfig protectConfig;
     private final PlayerSelectionManager playerSelectionManager = new PlayerSelectionManager();
-    private UserManager userManager;
-    private GroupUserManager groupUserManager;
     private AreaManager areaManager;
     private HorseManager horseManager;
     private LockManager lockManager;
@@ -40,8 +38,6 @@ public class ProtectModule extends NabModule {
             return;
         }
         vehicleTracker = new VehicleTracker(this);
-        userManager = new UserManager(this);
-        groupUserManager = new GroupUserManager(this);
         areaManager = new AreaManager(this);
         horseManager = new HorseManager(this);
         lockManager = new LockManager(this);
@@ -77,14 +73,6 @@ public class ProtectModule extends NabModule {
     @Override
     public void postModulesEnable() {
         areaManager.postStartup();
-    }
-
-    public UserManager getUserManager() {
-        return userManager;
-    }
-
-    public GroupUserManager getGroupUserManager() {
-        return groupUserManager;
     }
 
     public AreaManager getAreaManager() {

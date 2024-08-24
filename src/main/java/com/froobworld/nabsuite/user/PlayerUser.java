@@ -1,35 +1,36 @@
-package com.froobworld.nabsuite.modules.protect.user;
+package com.froobworld.nabsuite.user;
 
-import com.froobworld.nabsuite.modules.protect.ProtectModule;
+import com.froobworld.nabsuite.NabSuite;
 import com.google.gson.stream.JsonWriter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 
-public class GroupUser extends User {
-    private final ProtectModule protectModule;
-    private final String group;
+public class PlayerUser extends User {
+    private final NabSuite nabSuite;
+    private final UUID uuid;
 
-    public GroupUser(ProtectModule protectModule, String group) {
-        this.protectModule = protectModule;
-        this.group = group;
+    public PlayerUser(NabSuite nabSuite, UUID uuid) {
+        this.nabSuite = nabSuite;
+        this.uuid = uuid;
     }
 
     @Override
     public boolean includesPlayer(Player player) {
-        return protectModule.getGroupUserManager().getGroupMemberships(player).contains(group);
+        return player.getUniqueId().equals(uuid);
     }
 
     @Override
     public String asString() {
-        return "Group:" + group;
+        return nabSuite.getPlayerIdentityManager().getPlayerIdentity(uuid).getLastName();
     }
 
     @Override
     public Component asDecoratedComponent() {
-        return Component.text("Group:" + group);
+        return nabSuite.getPlayerIdentityManager().getPlayerIdentity(uuid).displayName();
     }
 
     @Override
@@ -37,9 +38,9 @@ public class GroupUser extends User {
         try {
             jsonWriter.beginObject()
                     .name("type")
-                    .value("group")
+                    .value("player")
                     .name("value")
-                    .value(group)
+                    .value(uuid.toString())
                     .endObject();
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,12 +51,12 @@ public class GroupUser extends User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GroupUser that = (GroupUser) o;
-        return group.equals(that.group);
+        PlayerUser that = (PlayerUser) o;
+        return uuid.equals(that.uuid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(group);
+        return Objects.hash(uuid);
     }
 }

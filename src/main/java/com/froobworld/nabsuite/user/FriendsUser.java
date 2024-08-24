@@ -1,7 +1,7 @@
-package com.froobworld.nabsuite.modules.protect.user;
+package com.froobworld.nabsuite.user;
 
+import com.froobworld.nabsuite.NabSuite;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
-import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.google.gson.stream.JsonWriter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -11,17 +11,17 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class FriendsUser extends User {
-    private final ProtectModule protectModule;
+    private final NabSuite nabSuite;
     private final UUID uuid;
 
-    public FriendsUser(ProtectModule protectModule, UUID uuid) {
-        this.protectModule = protectModule;
+    public FriendsUser(NabSuite nabSuite, UUID uuid) {
+        this.nabSuite = nabSuite;
         this.uuid = uuid;
     }
 
     @Override
     public boolean includesPlayer(Player player) {
-        return protectModule.getPlugin().getModule(BasicsModule.class)
+        return nabSuite.getModule(BasicsModule.class)
                 .getPlayerDataManager()
                 .getFriendManager()
                 .areFriends(player, uuid);
@@ -29,13 +29,13 @@ public class FriendsUser extends User {
 
     @Override
     public String asString() {
-        return "Friends:" + protectModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(uuid).getLastName();
+        return "Friends:" + nabSuite.getPlayerIdentityManager().getPlayerIdentity(uuid).getLastName();
     }
 
     @Override
     public Component asDecoratedComponent() {
         return Component.text("Friends:")
-                .append(protectModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(uuid).displayName());
+                .append(nabSuite.getPlayerIdentityManager().getPlayerIdentity(uuid).displayName());
     }
 
     @Override

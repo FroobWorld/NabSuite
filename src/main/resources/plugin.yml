@@ -97,6 +97,58 @@ permissions:
     description: "Access to the /setspawn command."
   nabsuite.command.rtp:
     description: "Access to the /rtp command."
+  nabsuite.command.channel:
+    description: "Access to the /channel command."
+  nabsuite.command.channel.create:
+    description: "Access to the /channel create command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.channel.delete:
+    description: "Access to the /channel delete command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.channel.info:
+    description: "Access to the /channel info command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.channel.playerlist:
+    description: "Access to the /channel playerlist command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.channel.adduser:
+    description: "Access to the /channel adduser command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.channel.addmanager:
+    description: "Access to the /channel addmanager command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.channel.addowner:
+    description: "Access to the /channel addowner command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.channel.remuser:
+    description: "Access to the /channel remuser command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.channel.remmanager:
+    description: "Access to the /channel remmanager command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.channel.remowner:
+    description: "Access to the /channel remowner command."
+    children:
+      - nabsuite.command.channel
+  nabsuite.command.joinchannel:
+    description: "Access to the /joinchannel command."
+  nabsuite.command.leavechannel:
+    description: "Access to the /leavechannel command."
+  nabsuite.command.msgchannel:
+    description: "Access to the /msgchannel command."
+  nabsuite.command.replychannel:
+    description: "Access to the /replychannel command."
+  nabsuite.command.channels:
+    description: "Access to the /channels command."
 
   # Basics module other permissions
   nabsuite.teleport.all:
