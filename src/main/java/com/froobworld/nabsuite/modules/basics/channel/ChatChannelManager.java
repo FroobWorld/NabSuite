@@ -35,6 +35,7 @@ public class ChatChannelManager {
         channelSaver.start();
         channelSaver.addDataType(ChatChannel.class, channel -> channel.toJsonString().getBytes(), channel -> new File(directory, channel.getName() + ".json"));
         messageCentre = new ChatChannelMessageCentre(basicsModule);
+        new ChannelDeletionPolicyEnforcer(basicsModule);
     }
 
     public void shutdown() {

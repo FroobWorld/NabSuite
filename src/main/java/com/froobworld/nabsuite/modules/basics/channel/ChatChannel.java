@@ -47,6 +47,10 @@ public class ChatChannel {
                     (jsonReader, channel) -> UUID.fromString(jsonReader.nextString()),
                     (uuid, jsonWriter) -> jsonWriter.value(uuid.toString())
             ))
+            .addField("last-message", SchemaEntries.longEntry(
+                    channel -> channel.lastMessage,
+                    (channel, lastMessage) -> channel.lastMessage = lastMessage
+            ))
             .build();
 
     private final UserManager userManager;
@@ -57,6 +61,7 @@ public class ChatChannel {
     private Set<User> managers;
     private Set<User> users;
     private Set<UUID> joinedUsers;
+    private long lastMessage;
 
     public ChatChannel(ChatChannelManager channelManager, UserManager userManager, UUID creator, String name, User owner) {
         this.userManager = userManager;
@@ -67,6 +72,7 @@ public class ChatChannel {
         this.managers = new HashSet<>();
         this.users = new HashSet<>();
         this.joinedUsers = new HashSet<>();
+        this.lastMessage = System.currentTimeMillis();
     }
 
     private ChatChannel(ChatChannelManager channelManager, UserManager userManager) {
@@ -137,6 +143,10 @@ public class ChatChannel {
         return joinedUsers.contains(user);
     }
 
+    public long getLastMessageTime() {
+        return lastMessage;
+    }
+
     public void addUser(User user) {
         users.add(user);
         scheduleSave();
@@ -174,6 +184,11 @@ public class ChatChannel {
 
     public void leave(UUID user) {
         joinedUsers.remove(user);
+        scheduleSave();
+    }
+
+    public void updateLastMessageTime() {
+        lastMessage = System.currentTimeMillis();
         scheduleSave();
     }
 

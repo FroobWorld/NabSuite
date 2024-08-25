@@ -62,6 +62,7 @@ public class ChatChannelMessageCentre implements Listener {
                 player.sendMessage(component);
             }
         }
+        channel.updateLastMessageTime();
         lastChannel.put(sender.getUniqueId(), channel);
     }
 
