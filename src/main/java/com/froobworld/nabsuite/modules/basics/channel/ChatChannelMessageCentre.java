@@ -79,9 +79,11 @@ public class ChatChannelMessageCentre implements Listener {
     public void sendJoinChannelsMessage(Player sender, ChatChannel... channels) {
         Component channelPrefix = Component.empty();
         for (ChatChannel channel : channels) {
-            channelPrefix = channelPrefix.append(Component.text(
-                    "<" + channel.getName() + "> ", NamedTextColor.GOLD
-            ));
+            Component nextPrefix = MiniMessage.miniMessage().deserialize(
+                    basicsModule.getConfig().chatChannelPrefix.get(),
+                    TagResolver.resolver("channel", Tag.inserting(Component.text(channel.getName())))
+            );
+            channelPrefix = channelPrefix.append(nextPrefix);
         }
         Component channelJoinMessage = channelPrefix.append(Component.text(
                 sender.getName() + " joined the channel.", NamedTextColor.WHITE
@@ -99,9 +101,11 @@ public class ChatChannelMessageCentre implements Listener {
     public void sendLeaveChannelsMessage(Player sender, ChatChannel... channels) {
         Component channelPrefix = Component.empty();
         for (ChatChannel channel : channels) {
-            channelPrefix = channelPrefix.append(Component.text(
-                    "<" + channel.getName() + "> ", NamedTextColor.GOLD
-            ));
+            Component nextPrefix = MiniMessage.miniMessage().deserialize(
+                    basicsModule.getConfig().chatChannelPrefix.get(),
+                    TagResolver.resolver("channel", Tag.inserting(Component.text(channel.getName())))
+            );
+            channelPrefix = channelPrefix.append(nextPrefix);
         }
         Component channelJoinMessage = channelPrefix.append(Component.text(
                 sender.getName() + " left the channel.", NamedTextColor.WHITE

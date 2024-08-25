@@ -48,8 +48,11 @@ display-name-formats:
   staff: <aqua><name></aqua>
   admin: <dark_red><name></dark_red>
 
+# Chat channel prefix
+chat-channel-prefix: "<dark_gray><c:<channel>></dark_gray> "
+
 # Chat channel formatting
-chat-channel-format: "<gold>\<<channel>\></gold> <display_name><white>: <message></white>"
+chat-channel-format: "<dark_gray><c:<channel>></dark_gray> <display_name><white>: <message></white>"
 
 # Auto promote users based on their play time.
 auto-promote:

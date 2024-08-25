@@ -70,6 +70,9 @@ public class BasicsConfig extends NabConfiguration {
     @EntryMap(key = "display-name-formats", defaultKey = "default")
     public final ConfigEntryMap<String, String> displayNameFormats = new ConfigEntryMap<>(Function.identity(), ConfigEntry::new, true);
 
+    @Entry(key = "chat-channel-prefix")
+    public final ConfigEntry<String> chatChannelPrefix = new ConfigEntry<>();
+
     @Entry(key = "chat-channel-format")
     public final ConfigEntry<String> chatChannelFormat = new ConfigEntry<>();
 

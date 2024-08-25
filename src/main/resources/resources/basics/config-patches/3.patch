@@ -1,4 +1,9 @@
 [add-field]
 key=chat-channel-format
-value="<gold>\<<channel>\></gold> <display_name><white>: <message></white>"
+value="<dark_gray><c:<channel>></dark_gray> <display_name><white>: <message></white>"
 comment=# Chat channel formatting
+
+[add-field]
+key=chat-channel-prefix
+value="<dark_gray><c:<channel>></dark_gray> "
+comment=# Chat channel prefix
