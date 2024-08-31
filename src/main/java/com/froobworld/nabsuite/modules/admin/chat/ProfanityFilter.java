@@ -40,6 +40,13 @@ public class ProfanityFilter implements Listener {
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
+    public Component filter(Component component) {
+        for (TextReplacementConfig replacementConfig : replacementConfigs) {
+            component = component.replaceText(replacementConfig);
+        }
+        return component;
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     private void onPlayerChat(AsyncChatEvent event) {
         String plainTextMessage = PlainTextComponentSerializer.plainText().serialize(event.message());
@@ -69,14 +76,6 @@ public class ProfanityFilter implements Listener {
         for (int i = 0; i < 4; i++) {
             event.line(i, filter(event.line(i)));
         }
-    }
-
-    private Component filter(Component component) {
-        Component filteredComponent = component;
-        for (TextReplacementConfig replacementConfig : replacementConfigs) {
-            component = component.replaceText(replacementConfig);
-        }
-        return component;
     }
 
     private static String expandPattern(String pattern) {

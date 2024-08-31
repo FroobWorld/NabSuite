@@ -2,16 +2,19 @@ package com.froobworld.nabsuite.modules.basics.channel;
 
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.froobworld.nabsuite.util.ComponentUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,10 +23,12 @@ import java.util.UUID;
 
 public class ChatChannelMessageCentre implements Listener {
     private final BasicsModule basicsModule;
+    private final NamespacedKey lastChannelDataKey;
     private final Map<UUID, ChatChannel> lastChannel = new HashMap<>();
 
     public ChatChannelMessageCentre(BasicsModule basicsModule) {
         this.basicsModule = basicsModule;
+        lastChannelDataKey = NamespacedKey.fromString("last-chat-channel", basicsModule.getPlugin());
         Bukkit.getPluginManager().registerEvents(this, basicsModule.getPlugin());
     }
 
@@ -47,12 +52,16 @@ public class ChatChannelMessageCentre implements Listener {
                     "You do not have permission to message that channel.", NamedTextColor.RED
             ));
         }
+        Component messageComponent = Component.text(message);
+        if (adminModule != null) {
+            messageComponent = adminModule.getProfanityFilter().filter(messageComponent);
+        }
         String format = basicsModule.getConfig().chatChannelFormat.get();
         Component component = MiniMessage.miniMessage().deserialize(
                 format,
                 TagResolver.resolver("display_name", Tag.inserting(sender.displayName())),
                 TagResolver.resolver("channel", Tag.inserting(Component.text(channel.getName()))),
-                TagResolver.resolver("message", Tag.inserting(Component.text(message)))
+                TagResolver.resolver("message", Tag.inserting(ComponentUtils.clickableUrls(messageComponent)))
         );
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (channel.isJoined(player.getUniqueId()) && channel.hasUserRights(player)) {
@@ -63,11 +72,13 @@ public class ChatChannelMessageCentre implements Listener {
             }
         }
         channel.updateLastMessageTime();
+        sender.getPersistentDataContainer().set(lastChannelDataKey, PersistentDataType.STRING, channel.getName());
         lastChannel.put(sender.getUniqueId(), channel);
     }
 
     public void replyChannel(Player sender, String message) {
-        ChatChannel lastChannel = this.lastChannel.get(sender.getUniqueId());
+        String lastChannelName = sender.getPersistentDataContainer().get(lastChannelDataKey, PersistentDataType.STRING);
+        ChatChannel lastChannel = lastChannelName == null ? null : basicsModule.getChatChannelManager().getChannel(lastChannelName);
         if (lastChannel == null) {
             sender.sendMessage(Component.text(
                     "There is no channel to reply to.", NamedTextColor.RED

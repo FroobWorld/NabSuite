@@ -39,6 +39,7 @@ public class AdminModule extends NabModule {
     private SuspiciousActivityMonitor suspiciousActivityMonitor;
     private ContingencyManager contingencyManager;
     private NoteManager noteManager;
+    private ProfanityFilter profanityFilter;
 
     public AdminModule(NabSuite nabSuite) {
         super(nabSuite, "admin");
@@ -62,7 +63,7 @@ public class AdminModule extends NabModule {
         oreStatsManager = new OreStatsManager(this);
         staffTaskManager = new StaffTaskManager(this);
         ticketManager = new TicketManager(this);
-        new ProfanityFilter(this);
+        profanityFilter = new ProfanityFilter(this);
         discordStaffLog = new DiscordStaffLog(this);
         theftPreventionManager = new TheftPreventionManager(this);
         xrayMonitor = new XrayMonitor(this);
@@ -182,5 +183,9 @@ public class AdminModule extends NabModule {
 
     public NoteManager getNoteManager() {
         return noteManager;
+    }
+
+    public ProfanityFilter getProfanityFilter() {
+        return profanityFilter;
     }
 }
