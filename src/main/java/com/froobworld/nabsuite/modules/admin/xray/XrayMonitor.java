@@ -9,6 +9,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.Node;
+import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -56,7 +58,7 @@ public class XrayMonitor implements Listener {
                 PlayerTracker playerTracker = playerTrackers.computeIfAbsent(event.getPlayer(), player -> new PlayerTracker());
                 playerTracker.foundVein();
                 if (playerTracker.suspicious()) {
-                    markAsXrayer(event.getPlayer()).thenAcceptAsync(marked -> {
+                    markAsXrayer(event.getPlayer().getUniqueId(), TimeUnit.DAYS.toMillis(7)).thenAcceptAsync(marked -> {
                         if (marked) {
                             adminModule.getTicketManager().createSystemTicket(
                                     event.getPlayer().getLocation(),
@@ -127,18 +129,18 @@ public class XrayMonitor implements Listener {
         );
     }
 
-    public CompletableFuture<Boolean> markAsXrayer(Player player) {
+    public CompletableFuture<Boolean> markAsXrayer(UUID player, long durationMillis) {
         LuckPerms luckPerms = adminModule.getPlugin().getHookManager().getLuckPermsHook().getLuckPerms();
         if (luckPerms != null) {
             return isMarkedAsXrayer(player).thenApplyAsync(marked -> {
                 if (marked) {
                     return false;
                 }
-                User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+                User user = luckPerms.getUserManager().getUser(player);
                 if (user == null) {
                     return false;
                 }
-                InheritanceNode groupNode = InheritanceNode.builder().group(XRAYER_GROUP).expiry(7, TimeUnit.DAYS).build();
+                InheritanceNode groupNode = InheritanceNode.builder().group(XRAYER_GROUP).expiry(durationMillis, TimeUnit.MILLISECONDS).build();
                 user.data().add(groupNode);
                 luckPerms.getUserManager().saveUser(user).join();
                 return true;
@@ -148,11 +150,31 @@ public class XrayMonitor implements Listener {
         return CompletableFuture.completedFuture(false);
     }
 
-    public CompletableFuture<Boolean> isMarkedAsXrayer(Player player) {
+    public CompletableFuture<Boolean> unmarkAsXrayer(UUID player) {
         LuckPerms luckPerms = adminModule.getPlugin().getHookManager().getLuckPermsHook().getLuckPerms();
         if (luckPerms != null) {
             return CompletableFuture.supplyAsync(() -> {
-                User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+                User user = luckPerms.getUserManager().getUser(player);
+                if (user == null) {
+                    return false;
+                }
+                for (Node node : user.getNodes()) {
+                    if (node.getKey().equalsIgnoreCase("group." + XRAYER_GROUP)) {
+                        user.data().remove(node);
+                    }
+                }
+                luckPerms.getUserManager().saveUser(user).join();
+                return true;
+            });
+        }
+        return CompletableFuture.completedFuture(false);
+    }
+
+    public CompletableFuture<Boolean> isMarkedAsXrayer(UUID player) {
+        LuckPerms luckPerms = adminModule.getPlugin().getHookManager().getLuckPermsHook().getLuckPerms();
+        if (luckPerms != null) {
+            return CompletableFuture.supplyAsync(() -> {
+                User user = luckPerms.getUserManager().getUser(player);
                 if (user == null) {
                     return false;
                 }

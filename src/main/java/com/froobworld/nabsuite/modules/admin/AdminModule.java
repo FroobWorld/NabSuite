@@ -107,7 +107,8 @@ public class AdminModule extends NabModule {
                 new WarnCommand(this),
                 new ConfineCommand(this),
                 new UnconfineCommand(this),
-                new KillWithersCommand(this)
+                new KillWithersCommand(this),
+                new AntixrayCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 

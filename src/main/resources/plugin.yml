@@ -251,6 +251,20 @@ permissions:
     description: "Access to the /warn command."
   nabsuite.command.killwithers:
     description: "Access to the /killwithers command."
+  nabsuite.command.antixray:
+    description: "Access to the /antixray command."
+  nabsuite.command.antixray.enable:
+    description: "Access to the /antixray enable command."
+    children:
+      - nabsuite.command.antixray
+  nabsuite.command.antixray.disable:
+    description: "Access to the /antixray disable command."
+    children:
+      - nabsuite.command.antixray
+  nabsuite.command.antixray.check:
+    description: "Access to the /antixray check command."
+    children:
+      - nabsuite.command.antixray
 
   # Admin module other permissions
   nabsuite.vanish:

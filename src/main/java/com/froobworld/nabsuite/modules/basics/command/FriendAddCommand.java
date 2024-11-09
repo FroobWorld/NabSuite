@@ -37,6 +37,14 @@ public class FriendAddCommand extends NabCommand {
             );
             return;
         }
+        if (friend.getLastName().equalsIgnoreCase("froobynooby")) {
+            if (!basicsModule.getPlayerDataManager().getPlayerData(friend.getUuid()).isFriend(player.getUniqueId())) {
+                player.sendMessage(
+                        Component.text("Your nab index is too high to friend that player.").color(NamedTextColor.RED)
+                );
+                return;
+            }
+        }
 
         playerData.addFriend(friend.getUuid());
         player.sendMessage(
