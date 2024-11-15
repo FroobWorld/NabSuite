@@ -3,11 +3,13 @@ package com.froobworld.nabsuite.modules.admin.vanish;
 import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent;
+import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import io.papermc.paper.event.entity.WardenAngerChangeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -177,6 +179,17 @@ public class VanishEnforcer implements Listener {
     @EventHandler
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerPickupExperience(PlayerPickupExperienceEvent event) {
+        if (event.getExperienceOrb().getSpawnReason() == ExperienceOrb.SpawnReason.FURNACE) {
+            return;
+        }
+        Player player = event.getPlayer();
+        if (vanishManager.isVanished(player) && perkCheck(player)) {
             event.setCancelled(true);
         }
     }
