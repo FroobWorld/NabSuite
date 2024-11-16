@@ -4,6 +4,7 @@ import com.froobworld.nabsuite.modules.protect.area.AreaLike;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
 import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.util.PlayerCauser;
+import io.papermc.paper.event.player.PlayerOpenSignEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -80,6 +81,16 @@ public class NoBuildFlagEnforcer implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
         if (!canBuild(event.getBlock().getLocation(), event.getPlayer(), true)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    private void onSignOpen(PlayerOpenSignEvent event) {
+        if (event.getCause() != PlayerOpenSignEvent.Cause.INTERACT) {
+            return;
+        }
+        if (!canBuild(event.getSign().getLocation(), event.getPlayer(), true)) {
             event.setCancelled(true);
         }
     }

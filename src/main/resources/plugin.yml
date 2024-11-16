@@ -291,6 +291,8 @@ permissions:
   # Mechs module other permissions
   nabsuite.nabmode:
     description: "Allows player access to nab mode."
+  nabsuite.editsigns:
+    description: "Allows player to edit signs"
 
   # Protect module commands
   nabsuite.command.area:
