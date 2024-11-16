@@ -16,6 +16,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import java.time.Duration;
 
 public class SignEditDisabler implements Listener {
+    private final String editSignPerm = "nabsuite.editsigns";
     private final Cache<Location, Location> locationCache = CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(5)).build();
 
     public SignEditDisabler(MechsModule mechsModule) {
@@ -26,8 +27,10 @@ public class SignEditDisabler implements Listener {
     private void onSignOpen(PlayerOpenSignEvent event) {
         if (event.getCause() == PlayerOpenSignEvent.Cause.INTERACT) {
             if (locationCache.getIfPresent(event.getSign().getLocation()) == null) {
-                event.setCancelled(true);
-                event.getPlayer().sendMessage(Component.text("Sign editing is temporarily disabled.", NamedTextColor.RED));
+                if (!event.getPlayer().hasPermission(editSignPerm)) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(Component.text("You do not have permission to edit signs.", NamedTextColor.RED));
+                }
             }
         }
     }
