@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.modules.basics.teleport.home.Homes;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -64,6 +65,12 @@ public class RandomTeleporter {
                         if (block.isSolid()) {
                             Location newLocation = location.clone();
                             newLocation.setY(block.getY() + 1);
+                            for (int i = 0; i < 5; i++) {
+                                Block checkBlock = location.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() + i, newLocation.getBlockZ());
+                                if (checkBlock.getType() == Material.POWDER_SNOW) {
+                                    return CompletableFuture.completedFuture(null);
+                                }
+                            }
                             return CompletableFuture.completedFuture(newLocation);
                         }
                     }
