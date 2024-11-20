@@ -1,14 +1,16 @@
 package com.froobworld.nabsuite.modules.protect.config;
 
 import com.froobworld.nabconfiguration.ConfigEntry;
+import com.froobworld.nabconfiguration.ConfigSection;
 import com.froobworld.nabconfiguration.NabConfiguration;
 import com.froobworld.nabconfiguration.annotations.Entry;
+import com.froobworld.nabconfiguration.annotations.Section;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 
 import java.io.File;
 
 public class ProtectConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 1;
+    private static final int CONFIG_VERSION = 2;
 
     public ProtectConfig(ProtectModule protectModule) {
         super(
@@ -22,5 +24,18 @@ public class ProtectConfig extends NabConfiguration {
     @Entry(key = "map-url")
     public ConfigEntry<String> mapReviewUrl = new ConfigEntry<>();
 
+    @Section(key = "area-near")
+    public final AreaNearSettings areaNearSettings = new AreaNearSettings();
 
+    public static class AreaNearSettings extends ConfigSection {
+
+        @Entry(key = "radius")
+        public ConfigEntry<Integer> radius = new ConfigEntry<>();
+
+        @Entry(key = "max-radius")
+        public ConfigEntry<Integer> maxRadius = new ConfigEntry<>();
+
+        @Entry(key = "limit")
+        public ConfigEntry<Integer> limit = new ConfigEntry<>();
+    }
 }

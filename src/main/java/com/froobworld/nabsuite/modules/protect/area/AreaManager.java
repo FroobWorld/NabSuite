@@ -162,6 +162,16 @@ public class AreaManager {
         return false;
     }
 
+    public Set<Area> getAreasNear(Location location, int radius) {
+        Set<Area> areaSet = new HashSet<>();
+        for (Area area: areaMap.values()) {
+            if (area.isApproved()) {
+                areaSet.addAll(area.getAreasNear(location, radius));
+            }
+        }
+        return areaSet;
+    }
+
     public GlobalAreaManager getGlobalAreaManager() {
         return globalAreaManager;
     }

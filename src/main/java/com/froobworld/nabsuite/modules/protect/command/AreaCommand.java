@@ -17,6 +17,7 @@ public class AreaCommand extends NabParentCommand {
         );
         childCommands.addAll(List.of(
                 new AreaHereCommand(protectModule),
+                new AreaNearCommand(protectModule),
                 new AreaInfoCommand(protectModule),
                 new AreaAddUserCommand(protectModule),
                 new AreaAddManagerCommand(protectModule),

@@ -1,5 +1,16 @@
 # Don't edit this.
-version: 1
+version: 2
 
 # What is the URL of the Dynmap instance?
 map-url: "http://s.froobworld.com:8124/"
+
+# Settings related to /area near command
+area-near:
+  # Default radius
+  radius: 100
+
+  # Maximum allowed radius
+  max-radius: 250
+
+  # Max number of results to display.
+  limit: 20
