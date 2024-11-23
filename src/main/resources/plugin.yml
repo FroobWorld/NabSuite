@@ -361,6 +361,10 @@ permissions:
     description: "Access to the /area visualise command."
     children:
       - nabsuite.command.area
+  nabsuite.command.area.near:
+    description: "Access to the /area near command."
+    children:
+      - nabsuite.command.area
   nabsuite.command.redefinearea:
     description: "Access to the /redefinearea command."
   nabsuite.command.areas:

@@ -317,6 +317,47 @@ public class Area implements AreaLike {
         return subAreas.isEmpty() ? Collections.singleton(this) : subAreas;
     }
 
+    public Location closestLocation(Location location) {
+        if (!location.getWorld().equals(this.world)) {
+            return null;
+        }
+        int minX = Math.min(corner1.getBlockX(), corner2.getBlockX());
+        int maxX = Math.max(corner1.getBlockX(), corner2.getBlockX());
+        int minY = Math.min(corner1.getBlockY(), corner2.getBlockY());
+        int maxY = Math.max(corner1.getBlockY(), corner2.getBlockY());
+        int minZ = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
+        int maxZ = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
+        double x = location.getBlockX() >= minX && location.getBlockX() <= maxX ? location.getX() : (
+                location.getBlockX() < minX ? minX : maxX
+        );
+        double y = location.getBlockY() >= minY && location.getBlockY() <= maxY ? location.getY() : (
+                location.getBlockY() < minY ? minY : maxY
+        );
+        double z = location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ ? location.getZ() : (
+                location.getBlockZ() < minZ ? minZ : maxZ
+        );
+        return new Location(location.getWorld(), x, y, z);
+    }
+
+    public Set<Area> getAreasNear(Location location, int radius) {
+        if (!this.isApproved() || !location.getWorld().equals(this.world)) {
+            return Collections.emptySet();
+        }
+        if (this.containsLocation(location)) {
+            // If player is inside an area that has subareas within the radius, only show those
+            Set<Area> subAreas = new HashSet<>();
+            for (Area area : children) {
+                subAreas.addAll(area.getAreasNear(location, radius));
+            }
+            return subAreas.isEmpty() ? Collections.singleton(this) : subAreas;
+        }
+        Location areaEdge = closestLocation(location);
+        if (areaEdge == null || areaEdge.distanceSquared(location) > radius*radius) {
+            return Collections.emptySet();
+        }
+        return Collections.singleton(this);
+    }
+
     private void scheduleSave() {
         if (parent != null) {
             parent.scheduleSave();

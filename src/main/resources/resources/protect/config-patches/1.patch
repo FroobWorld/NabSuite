@@ -1,0 +1,18 @@
+[add-section]
+key=area-near
+comment=# Settings related to /area near command
+
+[add-field]
+key=area-near.radius
+value=100
+comment=# Default radius
+
+[add-field]
+key=area-near.max-radius
+value=250
+comment=# Maximum allowed radius
+
+[add-field]
+key=area-near.limit
+value=20
+comment=# Max number of results to display.
