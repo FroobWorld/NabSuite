@@ -53,6 +53,9 @@ public class RandomTeleporter {
         }
         for (Homes homes : basicsModule.getHomeManager().getAllHomes()) {
             for (Home home : homes.getHomes()) {
+                if (!location.getWorld().equals(home.getLocation().getWorld())) {
+                    continue;
+                }
                 if (Math.max(Math.abs(home.getLocation().getBlockX() - location.getBlockX()), Math.abs(home.getLocation().getBlockZ() - location.getBlockZ())) < MIN_DISTANCE_FROM_HOME) {
                     return CompletableFuture.completedFuture(null);
                 }
