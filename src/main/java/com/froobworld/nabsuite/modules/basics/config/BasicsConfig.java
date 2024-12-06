@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class BasicsConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 4;
+    private static final int CONFIG_VERSION = 5;
 
     public BasicsConfig(BasicsModule basicsModule) {
         super(
@@ -131,6 +131,15 @@ public class BasicsConfig extends NabConfiguration {
 
             @Entry(key = "exclusion-radius-z")
             public final ConfigEntry<Integer> exclusionRadiusZ = ConfigEntries.integerEntry();
+
+            @Entry(key = "exclude-biomes")
+            public final ConfigEntry<List<String>> excludeBiomes = ConfigEntries.stringListEntry();
+
+            @Entry(key = "pregenerate-max")
+            public final ConfigEntry<Integer> pregenerateMax = ConfigEntries.integerEntry();
+
+            @Entry(key = "pregenerate-interval")
+            public final ConfigEntry<Integer> pregenerateInterval = ConfigEntries.integerEntry();
 
         }
 

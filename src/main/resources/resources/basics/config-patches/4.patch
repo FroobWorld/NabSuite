@@ -1,0 +1,14 @@
+[add-field]
+key=random-teleport.world-settings.default.exclude-biomes
+value=\n      - "ocean"\n      - "frozen_ocean"\n      - "deep_ocean"\n      - "warm_ocean"\n      - "lukewarm_ocean"\n      - "cold_ocean"\n      - "deep_lukewarm_ocean"\n      - "deep_cold_ocean"\n      - "deep_frozen_ocean"
+comment=# Prevent random teleport from selecting one of these biomes
+
+[add-field]
+key=random-teleport.world-settings.default.pregenerate-max
+value=100
+comment=# Pregenerate this amount of random locations (0 to disable)
+
+[add-field]
+key=random-teleport.world-settings.default.pregenerate-interval
+value=100
+comment=# Interval (in ticks) between attempts to pregenerate a new location

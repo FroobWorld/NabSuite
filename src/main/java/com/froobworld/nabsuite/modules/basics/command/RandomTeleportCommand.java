@@ -24,6 +24,7 @@ public class RandomTeleportCommand extends NabCommand {
                 "randomteleport", "randomtp", "wild"
         );
         this.basicsModule = basicsModule;
+        childCommands.add(new RandomTeleportStatusCommand(basicsModule));
     }
 
     @Override
