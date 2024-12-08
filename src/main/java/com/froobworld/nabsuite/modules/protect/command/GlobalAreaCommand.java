@@ -17,6 +17,8 @@ public class GlobalAreaCommand extends NabParentCommand {
                 "garea"
         );
         childCommands.addAll(List.of(
+                new GlobalAreaAddUserCommand(protectModule),
+                new GlobalAreaRemUserCommand(protectModule),
                 new GlobalAreaAddFlagCommand(protectModule),
                 new GlobalAreaRemFlagCommand(protectModule),
                 new GlobalAreaInfoCommand(protectModule),

@@ -385,6 +385,14 @@ permissions:
     description: "Access to the /unclaimhorse command."
   nabsuite.command.globalarea:
     description: "Access to the /globalarea command"
+  nabsuite.command.globalarea.adduser:
+    description: "Access to the /globalarea adduser command."
+    children:
+      - nabsuite.command.globalarea
+  nabsuite.command.globalarea.remuser:
+    description: "Access to the /globalarea remuser command."
+    children:
+      - nabsuite.command.globalarea
   nabsuite.command.globalarea.addflag:
     description: "Access to the /globalarea addflag command."
     children:
