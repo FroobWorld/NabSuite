@@ -97,6 +97,8 @@ permissions:
     description: "Access to the /setspawn command."
   nabsuite.command.rtp:
     description: "Access to the /rtp command."
+  nabsuite.command.rtp.status:
+    description: "Access to the /rtp status command."
   nabsuite.command.channel:
     description: "Access to the /channel command."
   nabsuite.command.channel.create:

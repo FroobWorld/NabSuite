@@ -1,5 +1,5 @@
 # Don't edit this.
-version: 4
+version: 5
 
 # The highest number to check when testing a player's permissions for the maximum number of homes they can set.
 max-home-permission-check: 3
@@ -100,3 +100,21 @@ random-teleport:
 
       # At least how far away on the z-axis should the random teleport be from the centre?
       exclusion-radius-z: 1500
+
+      # Prevent random teleport from selecting one of these biomes
+      exclude-biomes:
+        - "ocean"
+        - "frozen_ocean"
+        - "deep_ocean"
+        - "warm_ocean"
+        - "lukewarm_ocean"
+        - "cold_ocean"
+        - "deep_lukewarm_ocean"
+        - "deep_cold_ocean"
+        - "deep_frozen_ocean"
+
+      # Pregenerate this amount of random locations (0 to disable)
+      pregenerate-max: 100
+
+      # Interval (in ticks) between attempts to pregenerate a new location
+      pregenerate-interval: 100

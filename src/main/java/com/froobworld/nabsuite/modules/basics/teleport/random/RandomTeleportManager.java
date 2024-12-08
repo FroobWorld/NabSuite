@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -42,6 +43,10 @@ public class RandomTeleportManager {
     public long getTimeUntilNextRandomTeleport(Player player) {
         updateAllowance(player);
         return getRegenerationTimestamp(player) + regenerationFrequency - System.currentTimeMillis();
+    }
+
+    public List<RandomTeleporter.WorldStatus> getRandomTeleportStatus() {
+        return randomTeleporter.getStatus();
     }
 
     public CompletableFuture<Location> randomTeleport(Player player) {
