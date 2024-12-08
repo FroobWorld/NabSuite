@@ -41,7 +41,7 @@ public class RandomTeleportStatusCommand extends NabCommand {
                         .color(NamedTextColor.WHITE)
         ).toList();
         context.getSender().sendMessage(
-                Component.text("RTP Pre-generation status: ", NamedTextColor.YELLOW)
+                Component.text("RTP pre-generation status: ", NamedTextColor.YELLOW)
                     .append(
                             status.isEmpty() ?
                                     Component.text("No active worlds").color(NamedTextColor.GRAY) :

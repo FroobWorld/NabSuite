@@ -62,12 +62,12 @@ public class RandomTeleporter {
                             .toList())
             );
 
-            final Integer pregenerateMax = worldSettings.pregenerateMax.get();
-            final Integer pregenerateInterval = worldSettings.pregenerateInterval.get();
-            if (pregenerateMax != null && pregenerateInterval != null && pregenerateMax > 0 && pregenerateInterval > 0) {
+            final int pregenerateMax = worldSettings.pregenerateMax.get();
+            final int pregenerateInterval = worldSettings.pregenerateInterval.get();
+            if (pregenerateMax > 0 && pregenerateInterval > 0) {
                 final Queue<Location> pregeneratedLocations = new ConcurrentLinkedQueue<>();
                 pregenerated.put(world, pregeneratedLocations);
-                Bukkit.getScheduler().runTaskTimerAsynchronously(
+                Bukkit.getScheduler().runTaskTimer(
                         basicsModule.getPlugin(),
                         () -> this.pregenerateTeleports(world, pregeneratedLocations, pregenerateMax),
                         pregenerateInterval + offset,
@@ -162,7 +162,7 @@ public class RandomTeleporter {
         return location;
     }
 
-    private void pregenerateTeleports(World world, Queue<Location> queue, Integer maxLocations) {
+    private void pregenerateTeleports(World world, Queue<Location> queue, int maxLocations) {
         if (queue.size() >= maxLocations) {
             return;
         }
@@ -197,10 +197,10 @@ public class RandomTeleporter {
 
     public static class WorldStatus {
         private final World world;
-        private final Integer pregenerated;
-        private final Integer pregenerateMax;
+        private final int pregenerated;
+        private final int pregenerateMax;
 
-        public WorldStatus(World world, Integer pregenerated, Integer pregenerateMax) {
+        public WorldStatus(World world, int pregenerated, int pregenerateMax) {
             this.world = world;
             this.pregenerated = pregenerated;
             this.pregenerateMax = pregenerateMax;
@@ -210,11 +210,11 @@ public class RandomTeleporter {
             return world;
         }
 
-        public Integer getPregenerated() {
+        public int getPregenerated() {
             return pregenerated;
         }
 
-        public Integer getPregenerateMax() {
+        public int getPregenerateMax() {
             return pregenerateMax;
         }
     }
