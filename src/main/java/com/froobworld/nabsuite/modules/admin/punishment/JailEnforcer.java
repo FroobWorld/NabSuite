@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.jail.Jail;
+import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.froobworld.nabsuite.util.DurationDisplayer;
 import net.kyori.adventure.text.Component;
@@ -85,6 +86,7 @@ public class JailEnforcer implements Listener {
                     .thenAccept(b -> {
                         onlinePlayer.sendMessage(finalMessage);
                     });
+            adminModule.getPlugin().getModule(BasicsModule.class).getNameTagManager().updatePlayer(onlinePlayer);
         }
         return jailPunishment;
     }
@@ -127,6 +129,7 @@ public class JailEnforcer implements Listener {
                         Component.text("You have been unjailed.").color(NamedTextColor.YELLOW)
                 );
             }
+            adminModule.getPlugin().getModule(BasicsModule.class).getNameTagManager().updatePlayer(onlinePlayer);
         }
     }
 

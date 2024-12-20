@@ -10,6 +10,7 @@ import com.froobworld.nabsuite.modules.basics.help.HelpManager;
 import com.froobworld.nabsuite.modules.basics.message.MessageCentre;
 import com.froobworld.nabsuite.modules.basics.motd.AnnouncementCentre;
 import com.froobworld.nabsuite.modules.basics.motd.MotdManager;
+import com.froobworld.nabsuite.modules.basics.nametag.NameTagManager;
 import com.froobworld.nabsuite.modules.basics.permissions.GroupManager;
 import com.froobworld.nabsuite.modules.basics.player.PlayerDataManager;
 import com.froobworld.nabsuite.modules.basics.player.mail.MailCentre;
@@ -42,6 +43,7 @@ public class BasicsModule extends NabModule {
     private SpawnManager spawnManager;
     private RandomTeleportManager randomTeleportManager;
     private ChatChannelManager chatChannelManager;
+    private NameTagManager nameTagManager;
 
     public BasicsModule(NabSuite nabSuite) {
         super(nabSuite, "basics");
@@ -57,6 +59,7 @@ public class BasicsModule extends NabModule {
             Bukkit.getPluginManager().disablePlugin(getPlugin());
             return;
         }
+        nameTagManager = new NameTagManager(this);
         playerDataManager = new PlayerDataManager(this);
         homeManager = new HomeManager(this);
         warpManager = new WarpManager(this);
@@ -129,6 +132,7 @@ public class BasicsModule extends NabModule {
     @Override
     public void postModulesEnable() {
         groupManager.postStartup();
+        afkManager.postStartup();
     }
 
     @Override
@@ -203,5 +207,9 @@ public class BasicsModule extends NabModule {
 
     public ChatChannelManager getChatChannelManager() {
         return chatChannelManager;
+    }
+
+    public NameTagManager getNameTagManager() {
+        return nameTagManager;
     }
 }

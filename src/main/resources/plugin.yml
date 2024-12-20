@@ -152,6 +152,18 @@ permissions:
   nabsuite.command.channels:
     description: "Access to the /channels command."
 
+  # Basics module name tags
+  nabsuite.nametag.afk:
+    description: "Show AFK tag in tab list and name tag"
+  nabsuite.nametag.jailed:
+    description: "Show jailed tag in tab list and name tag"
+  nabsuite.nametag.muted:
+    description: "Show muted tag in tab list and name tag"
+  nabsuite.nametag.restricted:
+    description: "Show restricted tag in tab list and name tag"
+  nabsuite.nametag.vanished:
+    description: "Show vanished tag in tab list and name tag"
+
   # Basics module other permissions
   nabsuite.teleport.all:
     description: "Provides the ability to teleport to all players."
