@@ -4,6 +4,7 @@ import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -14,6 +15,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 public class TreeReplanter implements Listener {
     private final MechsModule mechsModule;
     private final TreeManager treeManager;
+    private final Tag<Material> PALE_OAK_LOGS = Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft("pale_oak_logs"), Material.class);
 
     public TreeReplanter(MechsModule mechsModule, TreeManager treeManager) {
         this.mechsModule = mechsModule;
@@ -62,6 +64,8 @@ public class TreeReplanter implements Listener {
             return Material.JUNGLE_SAPLING;
         } else if (Tag.CHERRY_LOGS.isTagged(woodType)) {
             return Material.CHERRY_SAPLING;
+        } else if (PALE_OAK_LOGS != null && PALE_OAK_LOGS.isTagged(woodType)) {
+            return Material.getMaterial("PALE_OAK_SAPLING");
         }
         return null;
     }

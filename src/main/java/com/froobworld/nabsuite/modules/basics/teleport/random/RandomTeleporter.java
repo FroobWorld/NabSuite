@@ -8,8 +8,8 @@ import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
-import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 
 import java.util.HashMap;
@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
@@ -30,7 +29,7 @@ public class RandomTeleporter {
     private static final double MIN_DISTANCE_FROM_HOME = 300;
     private final BasicsModule basicsModule;
     private final Map<World, Queue<Location>> pregenerated = new HashMap<>();
-    private final Map<World, Set<Biome>> excludeBiomes = new HashMap<>();
+    private final Map<World, Set<NamespacedKey>> excludeBiomes = new HashMap<>();
 
     public RandomTeleporter(BasicsModule basicsModule) {
         this.basicsModule = basicsModule;
@@ -49,16 +48,7 @@ public class RandomTeleporter {
             excludeBiomes.put(world, new HashSet<>(
                     worldSettings.excludeBiomes.get()
                             .stream()
-                            .map(name -> {
-                                for (Biome biome: Biome.values()) {
-                                    if (biome.name().equalsIgnoreCase(name.trim())) {
-                                        return biome;
-                                    }
-                                }
-                                basicsModule.getPlugin().getSLF4JLogger().warn("RandomTeleporter unknown biome in exclude-biomes: " + name);
-                                return null;
-                            })
-                            .filter(Objects::nonNull)
+                            .map(name -> NamespacedKey.fromString(name.toLowerCase().trim()))
                             .toList())
             );
 
@@ -125,7 +115,7 @@ public class RandomTeleporter {
                 .thenCompose(chunk -> {
                     if (chunk != null) {
                         Block block = location.getWorld().getHighestBlockAt(location);
-                        if (excludeBiomes.containsKey(location.getWorld()) && excludeBiomes.get(location.getWorld()).contains(block.getBiome())) {
+                        if (excludeBiomes.containsKey(location.getWorld()) && excludeBiomes.get(location.getWorld()).contains(block.getBiome().getKey())) {
                             return CompletableFuture.completedFuture(null);
                         }
                         if (block.isSolid()) {
