@@ -32,6 +32,10 @@ public class AfkManager implements Listener {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(basicsModule.getPlugin(), this::loop, 20, 20);
     }
 
+    public void postStartup() {
+        basicsModule.getNameTagManager().registerFeature("afk", this::isAfk);
+    }
+
     public void setAfk(Player player, boolean afk, boolean auto) {
         Component message;
         if (afk) {
@@ -47,6 +51,7 @@ public class AfkManager implements Listener {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             onlinePlayer.sendMessage(message);
         }
+        basicsModule.getNameTagManager().updatePlayer(player);
         Bukkit.getConsoleSender().sendMessage(message);
     }
 
