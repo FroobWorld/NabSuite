@@ -11,7 +11,7 @@ import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerUnleashEntityEvent;
-import org.spigotmc.event.entity.EntityMountEvent;
+import org.bukkit.event.entity.EntityMountEvent;
 
 public class HorseClaimEnforcer implements Listener {
     private final HorseManager horseManager;
