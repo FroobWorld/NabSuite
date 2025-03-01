@@ -4,7 +4,7 @@ import com.froobworld.nabsuite.modules.discord.DiscordModule;
 import com.froobworld.nabsuite.modules.discord.utils.DiscordUtils;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -75,7 +75,7 @@ public class Minecraft2DiscordBridge implements Listener {
                 .replace("<message>", PlainTextComponentSerializer.plainText().serialize(event.message()));
 
         channel.sendMessage(DiscordUtils.escapeMarkdown(messageText))
-                .allowedMentions(Collections.emptySet())
+                .setAllowedMentions(Collections.emptySet())
                 .queue();
     }
 

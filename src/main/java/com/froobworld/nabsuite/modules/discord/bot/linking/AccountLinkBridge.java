@@ -2,7 +2,8 @@ package com.froobworld.nabsuite.modules.discord.bot.linking;
 
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.discord.DiscordModule;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +18,10 @@ public class AccountLinkBridge extends ListenerAdapter {
     }
 
     @Override
-    public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event) {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+        if (!event.isFromType(ChannelType.PRIVATE)) {
+            return;
+        }
         try {
             int code = Integer.parseInt(event.getMessage().getContentRaw());
             UUID uuid = accountLinkManager.getUuidForCode(code);

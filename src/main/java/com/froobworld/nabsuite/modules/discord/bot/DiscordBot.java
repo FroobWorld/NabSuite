@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.bukkit.Bukkit;
 
@@ -36,7 +36,7 @@ public class DiscordBot {
         if (jda == null) {
             try {
                 jda = JDABuilder.createDefault(discordModule.getDiscordConfig().botToken.get())
-                        .enableIntents(GatewayIntent.GUILD_MESSAGES)
+                        .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
                         .build();
             } catch (Exception exception) {
                 discordModule.getPlugin().getSLF4JLogger().warn("Failed to start Discord bot, retrying in 30 seconds.");

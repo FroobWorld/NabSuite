@@ -44,7 +44,7 @@ dependencies {
     }
     implementation 'com.froobworld:nab-configuration:1.0.2'
     implementation 'org.jooq:joor-java-8:0.9.14'
-    implementation ('net.dv8tion:JDA:4.3.0_333') {
+    implementation ('net.dv8tion:JDA:5.3.0') {
         exclude module: 'opus-java'
         exclude module: 'lavaplayer'
         exclude group: 'org.slf4j'
