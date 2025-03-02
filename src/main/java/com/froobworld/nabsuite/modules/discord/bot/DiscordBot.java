@@ -1,6 +1,7 @@
 package com.froobworld.nabsuite.modules.discord.bot;
 
 import com.froobworld.nabsuite.modules.discord.DiscordModule;
+import com.froobworld.nabsuite.modules.discord.bot.command.DiscordCommandBridge;
 import com.froobworld.nabsuite.modules.discord.bot.chat.ChatBridge;
 import com.froobworld.nabsuite.modules.discord.bot.linking.AccountLinkManager;
 import com.froobworld.nabsuite.modules.discord.bot.syncer.DiscordSyncer;
@@ -20,6 +21,7 @@ public class DiscordBot {
     private AccountLinkManager accountLinkManager;
     private ChatBridge chatBridge;
     private DiscordSyncer discordSyncer;
+    private DiscordCommandBridge commandBridge;
     private JDA jda;
 
     public DiscordBot(DiscordModule discordModule) throws LoginException {
@@ -51,6 +53,7 @@ public class DiscordBot {
                 accountLinkManager = new AccountLinkManager(discordModule);
                 chatBridge = new ChatBridge(discordModule);
                 discordSyncer = new DiscordSyncer(discordModule);
+                commandBridge = new DiscordCommandBridge(discordModule, accountLinkManager);
             });
         }
     }
