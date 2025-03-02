@@ -1,11 +1,9 @@
 package com.froobworld.nabsuite.modules.discord.config;
 
-import com.froobworld.nabconfiguration.ConfigEntries;
-import com.froobworld.nabconfiguration.ConfigEntry;
-import com.froobworld.nabconfiguration.ConfigSection;
-import com.froobworld.nabconfiguration.NabConfiguration;
+import com.froobworld.nabconfiguration.*;
 import com.froobworld.nabconfiguration.annotations.Entry;
 import com.froobworld.nabconfiguration.annotations.Section;
+import com.froobworld.nabconfiguration.annotations.SectionMap;
 import com.froobworld.nabsuite.modules.discord.DiscordModule;
 
 import java.io.File;
@@ -68,6 +66,29 @@ public class DiscordConfig extends NabConfiguration {
 
         @Entry(key = "sync-roles")
         public final ConfigEntry<List<String>> syncRoles = ConfigEntries.stringListEntry();
+
+    }
+
+    @Section(key = "commands")
+    public final Commands commands = new Commands();
+
+    public static class Commands extends ConfigSection {
+
+        @Entry(key = "enabled")
+        public final ConfigEntry<List<String>> enabled = ConfigEntries.stringListEntry();
+
+        @SectionMap(key = "settings", defaultKey = "default")
+        public final ConfigSectionMap<String, CommandSettings> settings = new ConfigSectionMap<>(String::new, CommandSettings.class, true);
+
+    }
+
+    public static class CommandSettings extends ConfigSection {
+
+        @Entry(key = "override-name")
+        public final ConfigEntry<String> overrideName = new ConfigEntry<>();
+
+        @Entry(key = "public-reply")
+        public final ConfigEntry<Boolean> publicReply = new ConfigEntry<>();
 
     }
 
