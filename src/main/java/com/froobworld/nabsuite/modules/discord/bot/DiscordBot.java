@@ -11,10 +11,12 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.bukkit.Bukkit;
 
 import javax.security.auth.login.LoginException;
+import java.util.List;
 
 public class DiscordBot {
     private final DiscordModule discordModule;
@@ -23,6 +25,7 @@ public class DiscordBot {
     private DiscordSyncer discordSyncer;
     private DiscordCommandBridge commandBridge;
     private JDA jda;
+    private Webhook chatWebhook;
 
     public DiscordBot(DiscordModule discordModule) throws LoginException {
         this.discordModule = discordModule;
@@ -48,6 +51,22 @@ public class DiscordBot {
             try {
                 jda.awaitReady();
             } catch (InterruptedException ignored) {}
+            if (discordModule.getDiscordConfig().useWebhook.get()) {
+                TextChannel chatChannel = getChatChannel();
+                if (chatChannel != null) {
+                    List<Webhook> webhooks = chatChannel.retrieveWebhooks().complete();
+                    if (webhooks != null) {
+                        for (Webhook webhook : webhooks) {
+                            if (webhook.getName().equals("NabsuiteChatBridge")) {
+                                this.chatWebhook = webhook;
+                            }
+                        }
+                        if (chatWebhook == null) {
+                            this.chatWebhook = chatChannel.createWebhook("NabsuiteChatBridge").complete();
+                        }
+                    }
+                }
+            }
             setPresence();
             Bukkit.getScheduler().runTask(discordModule.getPlugin(), () -> {
                 accountLinkManager = new AccountLinkManager(discordModule);
@@ -88,6 +107,10 @@ public class DiscordBot {
             return null;
         }
         return jda.getGuildById(discordModule.getDiscordConfig().guildId.get());
+    }
+
+    public Webhook getChatWebhook() {
+        return chatWebhook;
     }
 
     public TextChannel getChatChannel() {
