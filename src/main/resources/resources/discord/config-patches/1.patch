@@ -1,0 +1,4 @@
+[add-field]
+key=use-webhook
+value=true
+comment=# Use webhook instead of websocket to send chat messages. Allows playername and skin to be shown instead of bot username and avatar

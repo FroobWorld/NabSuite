@@ -16,6 +16,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import net.dv8tion.jda.api.entities.Webhook;
 
 import java.awt.*;
 import java.util.Collections;
@@ -66,17 +67,27 @@ public class Minecraft2DiscordBridge implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onChat(AsyncChatEvent event) {
         TextChannel channel = discordModule.getDiscordBot().getChatChannel();
-        if (channel == null) {
+        Webhook webhook = discordModule.getDiscordBot().getChatWebhook();
+        if (channel == null && webhook == null) {
             return;
         }
-        String messageFormat = discordModule.getDiscordConfig().messageFormats.minecraftToDiscord.get();
-        String messageText = messageFormat
-                .replace("<username>", event.getPlayer().getName())
-                .replace("<message>", PlainTextComponentSerializer.plainText().serialize(event.message()));
+        if (webhook != null) {
+            // Prefer webhook
+            webhook.sendMessage(DiscordUtils.escapeMarkdown(PlainTextComponentSerializer.plainText().serialize(event.message())))
+                    .setUsername(event.getPlayer().getName())
+                    .setAvatarUrl(DiscordUtils.getAvatarUrl(event.getPlayer().getUniqueId(), 64))
+                    .setAllowedMentions(Collections.emptySet())
+                    .queue();
+        } else {
+            String messageFormat = discordModule.getDiscordConfig().messageFormats.minecraftToDiscord.get();
+            String messageText = messageFormat
+                    .replace("<username>", event.getPlayer().getName())
+                    .replace("<message>", PlainTextComponentSerializer.plainText().serialize(event.message()));
 
-        channel.sendMessage(DiscordUtils.escapeMarkdown(messageText))
-                .setAllowedMentions(Collections.emptySet())
-                .queue();
+            channel.sendMessage(DiscordUtils.escapeMarkdown(messageText))
+                    .setAllowedMentions(Collections.emptySet())
+                    .queue();
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

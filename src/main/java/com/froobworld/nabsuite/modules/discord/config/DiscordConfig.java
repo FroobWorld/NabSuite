@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.List;
 
 public class DiscordConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 1;
+    private static final int CONFIG_VERSION = 2;
 
     public DiscordConfig(DiscordModule discordModule) {
         super(
@@ -29,6 +29,9 @@ public class DiscordConfig extends NabConfiguration {
 
     @Entry(key = "invite-url")
     public final ConfigEntry<String> inviteUrl = new ConfigEntry<>();
+
+    @Entry(key = "use-webhook")
+    public final ConfigEntry<Boolean> useWebhook = new ConfigEntry<>();
 
     @Section(key = "channels")
     public final Channels channels = new Channels();
