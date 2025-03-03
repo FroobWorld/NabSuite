@@ -2,3 +2,58 @@
 key=use-webhook
 value=true
 comment=# Use webhook instead of websocket to send chat messages. Allows playername and skin to be shown instead of bot username and avatar
+
+[add-section]
+key=commands
+comment=# Discord Commands
+
+[add-field]
+key=commands.enabled
+value=\n    - "seen"\n    - "firstjoin"\n    - "playerlist"\n    - "ban"\n    - "unban"\n    - "restrict"\n    - "unrestrict"\n    - "confine"\n    - "unconfine"\n    - "jail"\n    - "unjail"\n    - "mute"\n    - "unmute"\n    - "antixray enable"\n    - "antixray disable"\n    - "antixray check"\n    - "punishmenthistory"\n    - "stafftasks"\n    - "ticket read"\n    - "ticket addnote"\n    - "ticket close"\n    - "notes add"\n    - "notes read"\n    - "warn"\n    - "tps"
+comment=# List of commands to expose in Discord
+
+[add-section]
+key=commands.settings
+
+[add-section]
+key=commands.settings.default
+
+[add-field]
+key=commands.settings.default.public-reply
+value=false
+comment=# Show command execution & reply to everyone in channel
+
+[add-field]
+key=commands.settings.default.override-name
+value=""
+comment=# Command name to use in discord, leave empty for same as in-game
+
+[add-section]
+key=commands.settings.ban
+
+[add-field]
+key=commands.settings.ban.override-name
+value=permban
+comment=# /ban conflicts with discord command
+
+[add-section]
+key=commands.settings.seen
+
+[add-field]
+key=commands.settings.seen.public-reply
+value=true
+
+[add-section]
+key=commands.settings.firstjoin
+
+[add-field]
+key=commands.settings.firstjoin.public-reply
+value=true
+
+[add-section]
+key=commands.settings.playerlist
+
+[add-field]
+key=commands.settings.playerlist.public-reply
+value=true
+
