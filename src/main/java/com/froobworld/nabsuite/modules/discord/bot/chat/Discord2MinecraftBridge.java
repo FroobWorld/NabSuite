@@ -9,7 +9,7 @@ import com.froobworld.nabsuite.util.ComponentUtils;
 import com.vdurmont.emoji.EmojiParser;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -32,11 +32,11 @@ public class Discord2MinecraftBridge extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+    public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.isWebhookMessage()) {
             return;
         }
-        if (!event.getChannel().equals(discordModule.getDiscordBot().getChatChannel())) {
+        if (!event.isFromGuild() || !event.getChannel().equals(discordModule.getDiscordBot().getChatChannel())) {
             return;
         }
         if (event.getMessage().getContentRaw().equalsIgnoreCase("playerlist")) {
