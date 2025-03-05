@@ -1,18 +1,16 @@
 package com.froobworld.nabsuite.modules.discord.config;
 
-import com.froobworld.nabconfiguration.ConfigEntries;
-import com.froobworld.nabconfiguration.ConfigEntry;
-import com.froobworld.nabconfiguration.ConfigSection;
-import com.froobworld.nabconfiguration.NabConfiguration;
+import com.froobworld.nabconfiguration.*;
 import com.froobworld.nabconfiguration.annotations.Entry;
 import com.froobworld.nabconfiguration.annotations.Section;
+import com.froobworld.nabconfiguration.annotations.SectionMap;
 import com.froobworld.nabsuite.modules.discord.DiscordModule;
 
 import java.io.File;
 import java.util.List;
 
 public class DiscordConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 1;
+    private static final int CONFIG_VERSION = 2;
 
     public DiscordConfig(DiscordModule discordModule) {
         super(
@@ -31,6 +29,9 @@ public class DiscordConfig extends NabConfiguration {
 
     @Entry(key = "invite-url")
     public final ConfigEntry<String> inviteUrl = new ConfigEntry<>();
+
+    @Entry(key = "use-webhook")
+    public final ConfigEntry<Boolean> useWebhook = new ConfigEntry<>();
 
     @Section(key = "channels")
     public final Channels channels = new Channels();
@@ -68,6 +69,29 @@ public class DiscordConfig extends NabConfiguration {
 
         @Entry(key = "sync-roles")
         public final ConfigEntry<List<String>> syncRoles = ConfigEntries.stringListEntry();
+
+    }
+
+    @Section(key = "commands")
+    public final Commands commands = new Commands();
+
+    public static class Commands extends ConfigSection {
+
+        @Entry(key = "enabled")
+        public final ConfigEntry<List<String>> enabled = ConfigEntries.stringListEntry();
+
+        @SectionMap(key = "settings", defaultKey = "default")
+        public final ConfigSectionMap<String, CommandSettings> settings = new ConfigSectionMap<>(String::new, CommandSettings.class, true);
+
+    }
+
+    public static class CommandSettings extends ConfigSection {
+
+        @Entry(key = "override-name")
+        public final ConfigEntry<String> overrideName = new ConfigEntry<>();
+
+        @Entry(key = "public-reply")
+        public final ConfigEntry<Boolean> publicReply = new ConfigEntry<>();
 
     }
 
