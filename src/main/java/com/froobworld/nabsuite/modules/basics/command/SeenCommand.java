@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.command.argument.arguments.PlayerIdentityArgument
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.player.PlayerData;
+import com.froobworld.nabsuite.modules.discord.bot.command.DiscordCommandSender;
 import com.froobworld.nabsuite.util.DurationDisplayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -40,6 +41,14 @@ public class SeenCommand extends NabCommand {
                     Component.text("That player is online right now, silly.").color(NamedTextColor.YELLOW)
             );
         } else {
+            if (context.getSender() instanceof DiscordCommandSender discordSender) {
+                // Send as discord timestamp
+                discordSender.updateResponse(msg -> msg.editOriginal(
+                    playerIdentity.getLastName() + " last played <t:"+(playerData.getLastPlayed()/1000)+":R>."
+                ));
+                return;
+            }
+
             String lastSeenDate = new SimpleDateFormat("dd MMMM yyyy").format(Date.from(Instant.ofEpochMilli(playerData.getLastPlayed())));
 
             context.getSender().sendMessage(

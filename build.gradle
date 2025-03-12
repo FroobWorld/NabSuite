@@ -38,13 +38,14 @@ dependencies {
     compileOnly 'net.luckperms:api:5.4'
     compileOnly 'us.dynmap:DynmapCoreAPI:3.3'
     compileOnly 'us.dynmap:dynmap-api:3.3'
+    implementation 'net.kyori:adventure-text-serializer-ansi:4.18.0'
     implementation 'cloud.commandframework:cloud-paper:1.6.2'
     implementation ('cloud.commandframework:cloud-minecraft-extras:1.6.2') {
         exclude group: 'net.kyori'
     }
     implementation 'com.froobworld:nab-configuration:1.0.2'
     implementation 'org.jooq:joor-java-8:0.9.14'
-    implementation ('net.dv8tion:JDA:4.3.0_333') {
+    implementation ('net.dv8tion:JDA:5.3.0') {
         exclude module: 'opus-java'
         exclude module: 'lavaplayer'
         exclude group: 'org.slf4j'
@@ -72,6 +73,7 @@ shadowJar {
     relocate 'org.intellij.lang', 'com.froobworld.nabsuite.lib.intellijlang'
     relocate 'org.jetbrains.annotations', 'com.froobworld.nabsuite.lib.jetbrainsannotations'
     relocate 'org.json', 'com.froobworld.nabsuite.lib.json'
+    relocate 'net.kyori.adventure.text.serializer.ansi', 'com.froobworld.nabsuite.lib.ansiserializer'
 }
 
 test {

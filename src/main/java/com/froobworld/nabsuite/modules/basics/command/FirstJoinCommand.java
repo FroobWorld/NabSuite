@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
+import com.froobworld.nabsuite.modules.discord.bot.command.DiscordCommandSender;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -35,6 +36,13 @@ public class FirstJoinCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         PlayerIdentity playerIdentity = context.get("player");
         PlayerData playerData = basicsModule.getPlayerDataManager().getPlayerData(playerIdentity.getUuid());
+        if (context.getSender() instanceof DiscordCommandSender discordSender) {
+            // Send as discord timestamp
+            discordSender.updateResponse(msg -> msg.editOriginal(
+                playerIdentity.getLastName() + " joined <t:"+(playerData.getFirstJoined()/1000)+":R>."
+            ));
+            return;
+        }
         long timeSinceFirstJoin = System.currentTimeMillis() - playerData.getFirstJoined();
 
         String joinDate = new SimpleDateFormat("dd MMMM yyyy").format(Date.from(Instant.ofEpochMilli(playerData.getFirstJoined())));

@@ -1,5 +1,5 @@
 # Don't edit this.
-version: 1
+version: 2
 
 # The bot's token.
 bot-token: ""
@@ -36,3 +36,57 @@ roles:
   sync-roles:
     - "<mc group name1>:<discord role id1>"
     - "<mc group name2>:<discord role id2>"
+
+# Use webhook instead of websocket to send chat messages. Allows playername and skin to be shown instead of bot username and avatar
+use-webhook: true
+
+# Discord Commands
+commands:
+  # List of commands to expose in Discord
+  enabled:
+    - "seen"
+    - "firstjoin"
+    - "playerlist"
+    - "ban"
+    - "unban"
+    - "restrict"
+    - "unrestrict"
+    - "confine"
+    - "unconfine"
+    - "jail"
+    - "unjail"
+    - "mute"
+    - "unmute"
+    - "antixray enable"
+    - "antixray disable"
+    - "antixray check"
+    - "punishmenthistory"
+    - "stafftasks"
+    - "ticket read"
+    - "ticket addnote"
+    - "ticket close"
+    - "notes add"
+    - "notes read"
+    - "warn"
+    - "tps"
+
+  settings:
+    default:
+      # Show command execution & reply to everyone in channel
+      public-reply: false
+
+      # Command name to use in discord, leave empty for same as in-game
+      override-name: ""
+
+    ban:
+      # /ban conflicts with discord command
+      override-name: permban
+
+    seen:
+      public-reply: true
+
+    firstjoin:
+      public-reply: true
+
+    playerlist:
+      public-reply: true
