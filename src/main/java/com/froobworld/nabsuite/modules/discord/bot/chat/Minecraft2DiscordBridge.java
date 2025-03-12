@@ -75,7 +75,7 @@ public class Minecraft2DiscordBridge implements Listener {
             // Prefer webhook
             webhook.sendMessage(DiscordUtils.escapeMarkdown(PlainTextComponentSerializer.plainText().serialize(event.message())))
                     .setUsername(event.getPlayer().getName())
-                    .setAvatarUrl(DiscordUtils.getAvatarUrl(event.getPlayer().getUniqueId(), 64))
+                    .setAvatarUrl(DiscordUtils.getHeadUrl(event.getPlayer().getUniqueId(), 128))
                     .setAllowedMentions(Collections.emptySet())
                     .queue();
         } else {
