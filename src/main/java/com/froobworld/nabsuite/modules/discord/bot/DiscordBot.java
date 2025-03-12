@@ -90,6 +90,9 @@ public class DiscordBot {
             chatBridge.shutdown();
             accountLinkManager.shutdown();
             jda.shutdown();
+            if (chatWebhook != null) {
+                chatWebhook.delete().submit(true).join();
+            }
         }
     }
 

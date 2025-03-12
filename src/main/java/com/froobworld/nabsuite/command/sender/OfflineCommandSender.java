@@ -1,4 +1,4 @@
-package com.froobworld.nabsuite.user;
+package com.froobworld.nabsuite.command.sender;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.froobworld.nabsuite.NabSuite;
@@ -6,11 +6,9 @@ import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.cacheddata.CachedPermissionData;
 import net.luckperms.api.model.user.User;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
@@ -31,11 +29,10 @@ import java.util.*;
  * Abstract CommandSender representing a player that may not be online.
  * Should not be initialized on main thread since a blocking LuckPerms database lookup may be required
  */
-abstract public class OfflineCommandSender extends CommandSender.Spigot implements ConsoleCommandSender, OfflinePlayer {
-
-    final PlayerIdentity player;
-    final OfflinePlayer offlinePlayer;
-    final CachedPermissionData permissionData;
+public abstract class OfflineCommandSender implements ConsoleCommandSender, OfflinePlayer {
+    private final PlayerIdentity player;
+    private final OfflinePlayer offlinePlayer;
+    private final User luckPermsUser;
 
     public OfflineCommandSender(NabSuite plugin, PlayerIdentity player) {
         if (Bukkit.isPrimaryThread()) {
@@ -45,22 +42,14 @@ abstract public class OfflineCommandSender extends CommandSender.Spigot implemen
         this.offlinePlayer = player.asOfflinePlayer();
         LuckPerms luckPerms = plugin.getHookManager().getLuckPermsHook().getLuckPerms();
         if (luckPerms != null) {
-            User user = luckPerms.getUserManager().getUser(player.getUuid());
-            if (user == null) {
-                user = luckPerms.getUserManager().loadUser(player.getUuid()).join();
-            }
-            if (user != null) {
-                this.permissionData = user.getCachedData().getPermissionData();
-            } else {
-                this.permissionData = null;
-            }
+            this.luckPermsUser = luckPerms.getUserManager().loadUser(player.getUuid()).join();
         } else {
-            this.permissionData = null;
+            this.luckPermsUser = null;
         }
     }
 
     @Override
-    abstract public void sendMessage(@NotNull String message);
+    public abstract void sendMessage(@NotNull String message);
 
     @Override
     public void sendMessage(@NotNull String... strings) {
@@ -78,7 +67,7 @@ abstract public class OfflineCommandSender extends CommandSender.Spigot implemen
     }
 
     @Override
-    abstract public void sendRawMessage(@NotNull String s);
+    public abstract void sendRawMessage(@NotNull String s);
 
     @Override
     public void sendRawMessage(@Nullable UUID uuid, @NotNull String s) {
@@ -93,16 +82,6 @@ abstract public class OfflineCommandSender extends CommandSender.Spigot implemen
     @Override
     public void sendMessage(@NotNull BaseComponent... components) {
         sendMessage(BaseComponent.toLegacyText(components));
-    }
-
-    @Override
-    public void sendMessage(@Nullable UUID sender, @NotNull BaseComponent component) {
-        sendMessage(component);
-    }
-
-    @Override
-    public void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components) {
-        sendMessage(components);
     }
 
     @Override
@@ -312,7 +291,7 @@ abstract public class OfflineCommandSender extends CommandSender.Spigot implemen
 
     @Override
     public @NotNull Spigot spigot() {
-        return this;
+        return new Spigot() {};
     }
 
     @Override
@@ -322,7 +301,7 @@ abstract public class OfflineCommandSender extends CommandSender.Spigot implemen
 
     @Override
     public boolean isPermissionSet(@NotNull String s) {
-        return permissionData != null && permissionData.queryPermission(s).node() != null;
+        return luckPermsUser != null && luckPermsUser.getCachedData().getPermissionData().queryPermission(s).node() != null;
     }
 
     @Override
@@ -332,7 +311,7 @@ abstract public class OfflineCommandSender extends CommandSender.Spigot implemen
 
     @Override
     public boolean hasPermission(@NotNull String s) {
-        return permissionData != null && permissionData.checkPermission(s).asBoolean();
+        return luckPermsUser != null && luckPermsUser.getCachedData().getPermissionData().checkPermission(s).asBoolean();
     }
 
     @Override

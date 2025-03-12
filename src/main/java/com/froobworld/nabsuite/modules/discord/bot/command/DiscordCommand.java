@@ -24,15 +24,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Function;
 
 public class DiscordCommand {
-
-    interface OptionGetter {
-        OptionMapping getOption(@Nonnull String name);
-    }
-
     protected final String commandName;
     protected final String description;
     protected final DiscordCommandBridge bridge;
@@ -127,11 +122,11 @@ public class DiscordCommand {
         return data;
     }
 
-    private String getCommandLine(OptionGetter options) {
+    private String getCommandLine(Function<String, OptionMapping> options) {
         return getCommandLine(options, null, null);
     }
 
-    private String getCommandLine(OptionGetter options, String currentField, String currentValue) {
+    private String getCommandLine(Function<String, OptionMapping> options, String currentField, String currentValue) {
         StringBuilder cmd = new StringBuilder(commandName);
         if (cloudCommand != null) {
             for (CommandArgument<CommandSender, ?> arg : cloudCommand.getArguments()) {
@@ -139,7 +134,7 @@ public class DiscordCommand {
                     continue;
                 }
                 cmd.append(" ");
-                OptionMapping opt = options.getOption(arg.getName());
+                OptionMapping opt = options.apply(arg.getName());
                 if (currentField != null && currentField.equals(arg.getName())) {
                     cmd.append(currentValue);
                     break;
@@ -152,7 +147,7 @@ public class DiscordCommand {
             if (currentField != null && currentField.equals("arguments")) {
                 cmd.append(" ").append(currentValue);
             } else {
-                OptionMapping opt = options.getOption("arguments");
+                OptionMapping opt = options.apply("arguments");
                 if (opt != null && !opt.getAsString().isEmpty()) {
                     cmd.append(" ").append(opt.getAsString());
                 }

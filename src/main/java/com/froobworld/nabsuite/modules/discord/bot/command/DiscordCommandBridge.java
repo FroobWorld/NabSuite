@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.discord.DiscordModule;
 import com.froobworld.nabsuite.modules.discord.bot.linking.AccountLinkManager;
 import com.froobworld.nabsuite.modules.discord.config.DiscordConfig;
+import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -21,11 +22,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class DiscordCommandBridge extends ListenerAdapter {
-
-    DiscordModule discordModule;
-    AdminModule adminModule;
-    AccountLinkManager accountLinkManager;
-    Map<String, DiscordCommand> commands = new HashMap<>();
+    final DiscordModule discordModule;
+    private final AdminModule adminModule;
+    private final AccountLinkManager accountLinkManager;
+    private final Map<String, DiscordCommand> commands = new HashMap<>();
 
     public DiscordCommandBridge(DiscordModule discordModule, AccountLinkManager accountLinkManager) {
         this.discordModule = discordModule;
@@ -94,7 +94,7 @@ public class DiscordCommandBridge extends ListenerAdapter {
 
         }
 
-        discordModule.getDiscordBot().getJda().updateCommands()
+        discordModule.getDiscordBot().getGuild().updateCommands()
                 .addCommands(commandMap.entrySet().stream().map(v -> v.getValue().getCommandData(v.getKey())).toList())
                 .queue(commands -> {
                     if (commands != null) {
@@ -105,7 +105,22 @@ public class DiscordCommandBridge extends ListenerAdapter {
                             }
                         }
                     }
+                    // delete any unimplemented commands that are still registered
+                    Bukkit.getScheduler().runTaskAsynchronously(discordModule.getPlugin(), this::deleteUnimplementedCommands);
                 });
+    }
+
+    private void deleteUnimplementedCommands() {
+        ApplicationInfo appInfo = discordModule.getDiscordBot().getJda().retrieveApplicationInfo().complete();
+        for (Command command : discordModule.getDiscordBot().getGuild().retrieveCommands().complete()) {
+            if (!command.getApplicationId().equals(appInfo.getId())) {
+                continue; // it's not our command
+            }
+            if (commands.containsKey(command.getId())) {
+                continue; // the command is implemented
+            }
+            discordModule.getDiscordBot().getGuild().deleteCommandById(command.getId()).queue();
+        }
     }
 
     private DiscordCommand getCommand(String commandId, String subCommandName) {
@@ -141,6 +156,13 @@ public class DiscordCommandBridge extends ListenerAdapter {
                         .queue(msg -> msg.delete().queueAfter(10, TimeUnit.SECONDS));
                 return;
             }
+            if (adminModule != null) {
+                if (adminModule.getPunishmentManager().getBanEnforcer().testBan(player.getUuid()) != null) {
+                    hook.editOriginal("Banned players are unable to use commands.")
+                            .queue(msg -> msg.delete().queueAfter(10, TimeUnit.SECONDS));
+                    return;
+                }
+            }
             DiscordCommandSender sender = new DiscordCommandSender(discordModule.getPlugin(), player, hook);
             Bukkit.getScheduler().runTask(discordModule.getPlugin(), () -> command.execute(sender, event));
         });
@@ -165,6 +187,12 @@ public class DiscordCommandBridge extends ListenerAdapter {
         if (player == null) {
             event.replyChoices().queue();
             return;
+        }
+        if (adminModule != null) {
+            if (adminModule.getPunishmentManager().getBanEnforcer().testBan(player.getUuid()) != null) {
+                event.replyChoices().queue();
+                return;
+            }
         }
         DiscordCommandSender sender = new DiscordCommandSender(discordModule.getPlugin(), player);
         Bukkit.getScheduler().runTask(discordModule.getPlugin(), () -> command.autocomplete(sender, event));
