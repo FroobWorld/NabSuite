@@ -2,6 +2,7 @@ package com.froobworld.nabsuite.modules.admin.punishment;
 
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.util.ConsoleUtils;
 import com.froobworld.nabsuite.util.DurationDisplayer;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -61,6 +62,9 @@ public class MuteEnforcer implements Listener {
             message = message.append(Component.newline());
             onlinePlayer.sendMessage(message);
         }
+        if (onlinePlayer != null) {
+            adminModule.getPlugin().getModule(BasicsModule.class).getNameTagManager().updatePlayer(onlinePlayer);
+        }
         return mutePunishment;
     }
 
@@ -90,6 +94,9 @@ public class MuteEnforcer implements Listener {
             onlinePlayer.sendMessage(
                     Component.text("You have been unmuted.").color(NamedTextColor.YELLOW)
             );
+        }
+        if (onlinePlayer != null) {
+            adminModule.getPlugin().getModule(BasicsModule.class).getNameTagManager().updatePlayer(onlinePlayer);
         }
     }
 

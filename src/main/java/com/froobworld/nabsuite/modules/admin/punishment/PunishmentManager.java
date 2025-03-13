@@ -4,6 +4,8 @@ import com.froobworld.nabsuite.data.DataLoader;
 import com.froobworld.nabsuite.data.DataSaver;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.jail.JailManager;
+import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.froobworld.nabsuite.modules.basics.nametag.NameTagManager;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -40,6 +42,13 @@ public class PunishmentManager {
         jailEnforcer = new JailEnforcer(adminModule, this);
         restrictionEnforcer = new RestrictionEnforcer(adminModule, this);
         punishmentLog = new PunishmentLog(adminModule);
+    }
+
+    public void postStartup() {
+        NameTagManager nameTagManager = adminModule.getPlugin().getModule(BasicsModule.class).getNameTagManager();
+        nameTagManager.registerFeature("jailed", p -> getPunishments(p.getUniqueId()).getJailPunishment() != null);
+        nameTagManager.registerFeature("muted", p -> getPunishments(p.getUniqueId()).getMutePunishment() != null);
+        nameTagManager.registerFeature("restricted", p -> getPunishments(p.getUniqueId()).getRestrictionPunishment() != null);
     }
 
     public void shutdown() {
