@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.admin.theft;
 
+import com.destroystokyo.paper.MaterialTags;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import net.kyori.adventure.text.Component;
@@ -60,7 +61,8 @@ public class TheftPreventionEnforcer implements Listener {
         if (event.getClickedBlock() == null) {
             return;
         }
-        if (event.getClickedBlock().getType() == Material.CHEST || event.getClickedBlock().getType() == Material.TRAPPED_CHEST || event.getClickedBlock().getType() == Material.BARREL) {
+        if (event.getClickedBlock().getType() == Material.CHEST || event.getClickedBlock().getType() == Material.TRAPPED_CHEST
+                || event.getClickedBlock().getType() == Material.BARREL || MaterialTags.SHULKER_BOXES.isTagged(event.getClickedBlock())) {
             if (!tryOpenChest(event.getPlayer())) {
                 event.setCancelled(true);
             }
