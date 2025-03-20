@@ -124,6 +124,8 @@ public class AdminModule extends NabModule {
     @Override
     public void postModulesEnable() {
         ticketManager.postStartup();
+        vanishManager.postStartup();
+        punishmentManager.postStartup();
     }
 
     public AdminConfig getAdminConfig() {

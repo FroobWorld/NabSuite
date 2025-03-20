@@ -38,6 +38,10 @@ public class VanishManager {
         Bukkit.getPluginManager().registerEvents(new VanishEnforcer(adminModule, this), adminModule.getPlugin());
     }
 
+    public void postStartup() {
+        adminModule.getPlugin().getModule(BasicsModule.class).getNameTagManager().registerFeature("vanished", this::isVanished);
+    }
+
     void globalUpdateVanish() {
         Bukkit.getOnlinePlayers().forEach(this::updateVanish);
     }
@@ -68,6 +72,7 @@ public class VanishManager {
             player.setSilent(false);
             player.hideBossBar(vanishBossBar);
         }
+        basicsModule.getNameTagManager().updatePlayer(player);
         DynmapAPI dynmapAPI = adminModule.getPlugin().getHookManager().getDynmapHook().getDynmapAPI();
         if (dynmapAPI != null) {
             dynmapAPI.assertPlayerInvisibility(player, isVanished(player), adminModule.getPlugin());
