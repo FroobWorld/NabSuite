@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class BanEnforcer implements Listener {
     private final AdminModule adminModule;
@@ -87,7 +88,7 @@ public class BanEnforcer implements Listener {
         if (banPunishment == null) {
             return;
         }
-        long autoExpiryTime = adminModule.getAdminConfig().banSettings.autoExpiryTime.get();
+        long autoExpiryTime = TimeUnit.DAYS.toMillis(adminModule.getAdminConfig().banSettings.autoExpiryTime.get());
         long autoExpiryCutoff = adminModule.getAdminConfig().banSettings.autoExpiryCutoff.get().getTime();
         boolean expired = banPunishment.isPermanent() ?
                 System.currentTimeMillis() - banPunishment.getTime() > autoExpiryTime && banPunishment.getTime() < autoExpiryCutoff :
