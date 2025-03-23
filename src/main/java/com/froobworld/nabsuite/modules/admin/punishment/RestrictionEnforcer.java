@@ -67,6 +67,7 @@ public class RestrictionEnforcer implements Listener {
                             .append(Component.text("You will be unrestricted pending staff review."))
                             .color(NamedTextColor.RED)
             );
+            adminModule.getPlugin().getModule(BasicsModule.class).getNameTagManager().updatePlayer(onlinePlayer);
         }
 
         punishments.addPunishmentLogItem(new PunishmentLogItem(
@@ -106,6 +107,7 @@ public class RestrictionEnforcer implements Listener {
             onlinePlayer.sendMessage(
                     Component.text("You have been unrestricted.", NamedTextColor.YELLOW)
             );
+            adminModule.getPlugin().getModule(BasicsModule.class).getNameTagManager().updatePlayer(onlinePlayer);
         }
     }
 
