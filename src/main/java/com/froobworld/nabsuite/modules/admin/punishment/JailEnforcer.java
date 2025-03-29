@@ -188,9 +188,19 @@ public class JailEnforcer implements Listener {
 
     private void containToJail(Player player) {
         verifyJailStatus(player);
-        JailPunishment jailPunishment = punishmentManager.getPunishments(player.getUniqueId()).getJailPunishment();
+        Punishments punishments = punishmentManager.getPunishments(player.getUniqueId());
+        JailPunishment jailPunishment = punishments.getJailPunishment();
         if (jailPunishment != null) {
             Jail jail = jailPunishment.getJail();
+            // use a random jail if the jail does not exist
+            if (jail == null) {
+                jail = punishmentManager.getJailManager().getJails().stream().findAny().orElse(null);
+                if (jail == null) {
+                    return; // no jails, so do nothing
+                }
+                jailPunishment.setJail(jail);
+                punishmentManager.punishmentsSaver.scheduleSave(punishments);
+            }
             if (player.getLocation().getWorld() != jail.getLocation().getWorld() || player.getLocation().distanceSquared(jail.getLocation()) > jail.getRadius() * jail.getRadius()) {
                 player.teleportAsync(jail.getLocation())
                         .thenAccept(b -> {

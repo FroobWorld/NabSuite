@@ -45,6 +45,10 @@ public class JailPunishment {
         return jailManager.getJail(jailName);
     }
 
+    void setJail(Jail jail) {
+        this.jailName = jail.getName();
+    }
+
     public String getReason() {
         return reason;
     }
