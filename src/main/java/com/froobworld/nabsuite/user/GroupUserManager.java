@@ -1,10 +1,12 @@
 package com.froobworld.nabsuite.user;
 
 import com.froobworld.nabsuite.NabSuite;
+import com.google.common.collect.Sets;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.NodeType;
 import net.luckperms.api.query.QueryMode;
 import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
@@ -53,14 +55,20 @@ public class GroupUserManager implements Listener {
         if (user == null) {
             return;
         }
-        Group primaryGroup =  luckPerms.getGroupManager().getGroup(user.getPrimaryGroup());
-        if (primaryGroup == null) {
-            return;
-        }
-        Set<String> groupMemberships = primaryGroup.getInheritedGroups(QueryOptions.builder(QueryMode.NON_CONTEXTUAL).build()).stream()
-                .map(Group::getName)
-                .collect(Collectors.toSet());
-        groupMemberships.add(primaryGroup.getName());
+        // get a list of all group memberships (including inherited groups)
+        Set<String> groupMemberships = user.getNodes(NodeType.INHERITANCE).stream()
+                .map(inheritanceNode -> luckPerms.getGroupManager().getGroup(inheritanceNode.getGroupName()))
+                .filter(Objects::nonNull)
+                .map(group -> {
+                    Set<String> subGroups = new HashSet<>();
+                    subGroups.add(group.getName());
+                    // add inherited groups
+                    group.getInheritedGroups(QueryOptions.builder(QueryMode.NON_CONTEXTUAL).build()).stream()
+                            .map(Group::getName)
+                            .forEach(subGroups::add);
+                    return subGroups;
+                })
+                .reduce(new HashSet<>(), Sets::union);
         groupMembershipsMap.put(uuid, groupMemberships);
     }
 
