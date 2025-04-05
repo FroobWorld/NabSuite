@@ -37,9 +37,24 @@ public class SeenCommand extends NabCommand {
         PlayerData playerData = basicsModule.getPlayerDataManager().getPlayerData(playerIdentity.getUuid());
         long timeSinceLastPlay = System.currentTimeMillis() - playerData.getLastPlayed();
         if (playerIdentity.asPlayer() != null) {
-            context.getSender().sendMessage(
-                    Component.text("That player is online right now, silly.").color(NamedTextColor.YELLOW)
-            );
+            Long afkTimestamp = basicsModule.getAfkManager().getAfkTimestamp(playerIdentity.asPlayer());
+            if (afkTimestamp == null) {
+                context.getSender().sendMessage(
+                        Component.text("That player is online right now, silly.").color(NamedTextColor.YELLOW)
+                );
+            } else {
+                if (context.getSender() instanceof DiscordCommandSender discordSender) {
+                    // Send as discord timestamp
+                    discordSender.updateResponse(msg -> msg.editOriginal(
+                            playerIdentity.getLastName() + " went afk <t:"+(afkTimestamp/1000)+":R>."
+                    ));
+                    return;
+                }
+                context.getSender().sendMessage(
+                        Component.text(playerIdentity.getLastName() + " went afk " + DurationDisplayer.asDurationString(System.currentTimeMillis()-afkTimestamp) + " ago.").color(NamedTextColor.YELLOW)
+                );
+            }
+
         } else {
             if (context.getSender() instanceof DiscordCommandSender discordSender) {
                 // Send as discord timestamp
