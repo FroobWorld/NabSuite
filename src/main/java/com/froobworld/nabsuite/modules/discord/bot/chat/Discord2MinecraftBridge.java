@@ -18,6 +18,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.dynmap.DynmapAPI;
 
 import java.awt.*;
 import java.util.Collection;
@@ -103,6 +104,10 @@ public class Discord2MinecraftBridge extends ListenerAdapter {
                 player.sendMessage(message);
             }
             Bukkit.getConsoleSender().sendMessage(message);
+            DynmapAPI dynmapAPI = discordModule.getPlugin().getHookManager().getDynmapHook().getDynmapAPI();
+            if (dynmapAPI != null) {
+                dynmapAPI.sendBroadcastToWeb("[Discord] " + linkedAccount.getLastName(), messageText);
+            }
         });
     }
 
