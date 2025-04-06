@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class BasicsConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 5;
+    private static final int CONFIG_VERSION = 6;
 
     public BasicsConfig(BasicsModule basicsModule) {
         super(
@@ -141,6 +141,29 @@ public class BasicsConfig extends NabConfiguration {
             @Entry(key = "pregenerate-interval")
             public final ConfigEntry<Integer> pregenerateInterval = ConfigEntries.integerEntry();
 
+        }
+
+    }
+
+    @SectionMap(key = "name-tag", defaultKey = "default")
+    public ConfigSectionMap<String, NameTagSettings> nameTag = new ConfigSectionMap<>(s -> s, NameTagSettings.class,  true);
+
+    public static class NameTagSettings extends ConfigSection {
+
+        @Entry(key = "priority")
+        public final ConfigEntry<Integer> priority = ConfigEntries.integerEntry();
+
+        @Entry(key = "prefix")
+        public final ConfigEntry<String> prefix = new ConfigEntry<>();
+
+        @Entry(key = "suffix")
+        public final ConfigEntry<String> suffix = new ConfigEntry<>();
+
+        @Entry(key = "color")
+        public final ConfigEntry<String> color = new ConfigEntry<>();
+
+        public boolean isEmpty() {
+            return prefix.get().isEmpty() && suffix.get().isEmpty() && color.get().isEmpty();
         }
 
     }

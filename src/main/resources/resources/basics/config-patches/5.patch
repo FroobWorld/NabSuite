@@ -1,0 +1,71 @@
+[add-section]
+key=name-tag
+comment=# Name tag settings
+
+[add-section]
+key=name-tag.default
+comment=# Defaults for name tag
+
+[add-field]
+key=name-tag.default.priority
+value=5
+comment=# Priority, higher is applied last
+
+[add-field]
+key=name-tag.default.prefix
+value=""
+comment=# Name tag prefix
+
+[add-field]
+key=name-tag.default.suffix
+value=""
+comment=# Name tag suffix
+
+[add-field]
+key=name-tag.default.color
+value=""
+comment=# Name tag color
+
+[add-section]
+key=name-tag.afk
+comment=# Settings for AFK name tag
+
+[add-field]
+key=name-tag.afk.color
+value=gray
+
+[add-section]
+key=name-tag.muted
+comment=# Settings for muted name tag
+
+[add-field]
+key=name-tag.muted.suffix
+value=" <red>🔇</red>"
+
+[add-section]
+key=name-tag.restricted
+comment=# Settings for restricted name tag
+
+[add-field]
+key=name-tag.restricted.suffix
+value=" <gold>⛓</gold>"
+
+[add-section]
+key=name-tag.jailed
+comment=# Settings for jailed name tag
+
+[add-field]
+key=name-tag.jailed.suffix
+value=" <yellow>🔒</yellow>"
+
+[add-section]
+key=name-tag.vanished
+comment=# Settings for vanished name tag
+
+[add-field]
+key=name-tag.vanished.priority
+value=10
+
+[add-field]
+key=name-tag.vanished.suffix
+value=" <yellow>(vanished)</yellow>"
