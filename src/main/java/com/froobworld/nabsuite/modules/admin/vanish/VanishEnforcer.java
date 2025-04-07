@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.admin.vanish;
 
+import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
 import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent;
@@ -12,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -45,7 +47,7 @@ public class VanishEnforcer implements Listener {
 
     private boolean perkCheck(Player player) {
         for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
-            if (!otherPlayer.canSee(player) && otherPlayer.getWorld() == player.getWorld()) {
+            if (player.canSee(otherPlayer) && !otherPlayer.canSee(player) && otherPlayer.getWorld() == player.getWorld()) {
                 if (otherPlayer.getLocation().distanceSquared(player.getLocation()) <= PERK_DISTANCE * PERK_DISTANCE) {
                     lastSuccessfulPerkCheck.put(player, System.currentTimeMillis());
                     return true;
@@ -259,4 +261,29 @@ public class VanishEnforcer implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityTeleport(EntityTeleportEvent event) {
+        if (!(event.getEntity() instanceof Tameable tameable)) {
+            return;
+        }
+        if (!(tameable.getOwner() instanceof Player player)) {
+            return;
+        }
+        if (vanishManager.isVanished(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityPathfind(EntityPathfindEvent event) {
+        if (!(event.getEntity() instanceof Tameable)) {
+            return;
+        }
+        if (!(event.getTargetEntity() instanceof Player player)) {
+            return;
+        }
+        if (vanishManager.isVanished(player)) {
+            event.setCancelled(true);
+        }
+    }
 }
