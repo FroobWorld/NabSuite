@@ -1,6 +1,7 @@
 package com.froobworld.nabsuite.modules.protect.command;
 
 import cloud.commandframework.Command;
+import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
@@ -13,6 +14,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class AreaApproveCommand extends NabCommand {
@@ -31,17 +33,22 @@ public class AreaApproveCommand extends NabCommand {
     @Override
     public void execute(CommandContext<CommandSender> context) {
         Area area = context.get("area");
+        Optional<String> message = context.getOptional("message");
         area.setApproved(true);
         context.getSender().sendMessage(
                 Component.text("Area approved.").color(NamedTextColor.YELLOW)
         );
         UUID creator = area.getCreator();
         if (creator != null) {
-            protectModule.getPlugin().getModule(BasicsModule.class).getMailCentre().sendSystemMail(creator, "Your area '" + area.getName() + "' was approved. You can use the /area command to manage your area.");
+            protectModule.getPlugin().getModule(BasicsModule.class).getMailCentre().sendSystemMail(creator,
+                    message.isPresent() && !message.get().isEmpty() ?
+                    "Your area '" + area.getName() + "' was approved with message: '" + message.get() + "'. You can use the /area command to manage your area." :
+                    "Your area '" + area.getName() + "' was approved. You can use the /area command to manage your area."
+            );
         }
         AdminModule adminModule = protectModule.getPlugin().getModule(AdminModule.class);
         if (adminModule != null) {
-            adminModule.getDiscordStaffLog().sendAreaRequestHandleNotification(context.getSender(), area, true, null);
+            adminModule.getDiscordStaffLog().sendAreaRequestHandleNotification(context.getSender(), area, true, message.orElse(null));
         }
     }
 
@@ -59,11 +66,15 @@ public class AreaApproveCommand extends NabCommand {
                                         "This area has already been approved."
                                 )
                         )
+                )
+                .argument(StringArgument.<CommandSender>newBuilder("message")
+                        .greedy()
+                        .asOptional()
                 );
     }
 
     @Override
     public String getUsage() {
-        return "/area approve <area>";
+        return "/area approve <area> [message]";
     }
 }
