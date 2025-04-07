@@ -54,6 +54,14 @@ public class AfkManager implements Listener {
         return afkStatusMap.containsKey(player);
     }
 
+    public Long getAfkTimestamp(Player player) {
+        AfkStatus afkStatus = afkStatusMap.get(player);
+        if (afkStatus == null) {
+            return null;
+        }
+        return afkStatus.getTimestamp();
+    }
+
     private void loop() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             lastActivityMap.putIfAbsent(player, System.currentTimeMillis());
