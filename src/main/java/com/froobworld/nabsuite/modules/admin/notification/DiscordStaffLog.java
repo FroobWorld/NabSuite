@@ -136,7 +136,7 @@ public class DiscordStaffLog {
                     .addField("Reviewer", DiscordUtils.escapeMarkdown(handlerName), true)
                     .addField("Area name", DiscordUtils.escapeMarkdown(area.getName()), true);
             if (reason != null) {
-                embedBuilder.addField("Reason", DiscordUtils.escapeMarkdown(reason), true);
+                embedBuilder.addField(approved ? "Message" : "Reason", DiscordUtils.escapeMarkdown(reason), true);
             }
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
