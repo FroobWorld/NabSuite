@@ -1,5 +1,5 @@
 # Don't edit this.
-version: 5
+version: 6
 
 # The highest number to check when testing a player's permissions for the maximum number of homes they can set.
 max-home-permission-check: 3
@@ -118,3 +118,42 @@ random-teleport:
 
       # Interval (in ticks) between attempts to pregenerate a new location
       pregenerate-interval: 100
+
+# Name tag settings
+name-tag:
+  # Defaults for name tag
+  default:
+    # Priority, higher is applied last
+    priority: 5
+
+    # Name tag prefix
+    prefix: ""
+
+    # Name tag suffix
+    suffix: ""
+
+    # Name tag color
+    color: ""
+
+  # Settings for AFK name tag
+  afk:
+    color: gray
+
+  # Settings for muted name tag
+  muted:
+    suffix: " <red>🔇</red>"
+
+  # Settings for restricted name tag
+  restricted:
+    suffix: " <gold>⛓</gold>"
+
+  # Settings for jailed name tag
+  jailed:
+    suffix: " <yellow>🔒</yellow>"
+
+  # Settings for vanished name tag
+  vanished:
+    priority: 10
+
+    suffix: " <yellow>(vanished)</yellow>"
+
