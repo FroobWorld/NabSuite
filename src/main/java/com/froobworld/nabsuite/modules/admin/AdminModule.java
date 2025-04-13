@@ -93,6 +93,7 @@ public class AdminModule extends NabModule {
                 //new GreylistCheckCommand(this),
                 //new GreylistRequestsCommand(this),
                 new OreStatsCommand(this),
+                new OreIgnoreCommand(this),
                 new StaffTasksCommand(this),
                 new PunishmentLogCommand(this),
                 new ModReqCommand(this),

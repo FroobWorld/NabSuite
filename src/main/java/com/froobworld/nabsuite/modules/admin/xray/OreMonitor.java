@@ -36,7 +36,7 @@ public class OreMonitor implements Listener {
                     .append(Component.text(" found " + NumberDisplayer.numberToString(veinSize, false) + " ", NamedTextColor.WHITE))
                     .append(oreName)
                     .append(Component.text(".", NamedTextColor.WHITE));
-            adminModule.getNotificationCentre().sendNotification("ore-alert", notification);
+            adminModule.getNotificationCentre().sendNotification("ore-alert", notification, miner.getUniqueId());
         }
     }
 

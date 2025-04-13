@@ -197,6 +197,8 @@ permissions:
     description: "Access to the /mute command."
   nabsuite.command.orestats:
     description: "Access to the /orestats command."
+  nabsuite.command.oreignore:
+    description: "Access to the /oreignore command."
   nabsuite.command.punishmenthistory:
     description: "Access to the /punishmenthistory command."
   nabsuite.command.setjail:
