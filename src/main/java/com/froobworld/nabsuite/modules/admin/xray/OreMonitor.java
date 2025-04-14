@@ -36,7 +36,10 @@ public class OreMonitor implements Listener {
                     .append(Component.text(" found " + NumberDisplayer.numberToString(veinSize, false) + " ", NamedTextColor.WHITE))
                     .append(oreName)
                     .append(Component.text(".", NamedTextColor.WHITE));
-            adminModule.getNotificationCentre().sendNotification("ore-alert", notification, miner.getUniqueId());
+            adminModule.getNotificationCentre().sendNotification("ore-alert", notification, miner.getUniqueId(),
+                    // Don't send ore alerts to the player themselves, as it would reveal how many ores they're expected to find
+                    target -> !miner.equals(target)
+            );
         }
     }
 
