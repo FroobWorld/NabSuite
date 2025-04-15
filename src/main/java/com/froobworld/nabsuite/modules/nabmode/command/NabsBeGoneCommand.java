@@ -16,6 +16,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +32,7 @@ public class NabsBeGoneCommand extends NabCommand {
     public NabsBeGoneCommand(NabModeModule nabModeModule) {
         super(
                 "nabsbegone",
-                "Remove player(s) from nabworld.",
+                "Remove players from nabworld.",
                 "nabsuite.command.nabsbegone",
                 CommandSender.class
         );
@@ -42,6 +44,9 @@ public class NabsBeGoneCommand extends NabCommand {
     private void sendAway(Player player) {
         Location backLocation = basicsModule.getBackManager().getBackLocation(player);
         if (backLocation == null || nabDimensionManager.getNabWorld().equals(backLocation.getWorld())) {
+            backLocation = player.getRespawnLocation();
+        }
+        if (backLocation == null) {
             backLocation = basicsModule.getSpawnManager().getSpawnLocation();
         }
         basicsModule.getPlayerTeleporter().teleportAsync(player, backLocation).thenAccept(location -> {
@@ -49,8 +54,9 @@ public class NabsBeGoneCommand extends NabCommand {
             if (newBackLocation != null && nabDimensionManager.getNabWorld().equals(newBackLocation.getWorld())) {
                 basicsModule.getBackManager().setBackLocation(player, null);
             }
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 4 * 20, 0));
             player.sendMessage(
-                    Component.text("Teleported to your previous location.").color(NamedTextColor.YELLOW)
+                    Component.text("You wake up... It was all just a dream. There is no nabworld.").color(NamedTextColor.YELLOW)
             );
         });
     }
@@ -81,12 +87,11 @@ public class NabsBeGoneCommand extends NabCommand {
             context.getSender().sendMessage(Component.text("The nabs are already gone.").color(NamedTextColor.YELLOW));
         } else {
             context.getSender().sendMessage(
-                    Component.text(NumberDisplayer.toStringWithModifier(nabNames.size(), " nab has", " nabs have", true) + " been removed: ").color(NamedTextColor.YELLOW)
+                    Component.text("Banished " + NumberDisplayer.toStringWithModifier(nabNames.size(), " nab", " nabs", false) + ": ").color(NamedTextColor.YELLOW)
                             .append(Component.join(
-                                    JoinConfiguration.separator(Component.text(", ").color(NamedTextColor.YELLOW)),
+                                    JoinConfiguration.separator(Component.text(", ").color(NamedTextColor.WHITE)),
                                     nabNames
                             ))
-                            .append(Component.text("."))
             );
         }
 
