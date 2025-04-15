@@ -299,6 +299,8 @@ permissions:
   #  description: "Access to the /togglevd command."
   nabsuite.command.nabmode:
     description: "Access to the /nabmode command."
+  nabsuite.command.nabsbegone:
+    description: "Access to the /nabsbegone command."
   nabsuite.command.effectivevd:
     description: "Access to the /effectivevd command."
   nabsuite.command.borderwarning:
