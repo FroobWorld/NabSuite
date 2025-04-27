@@ -46,6 +46,7 @@ public class AutoGroupChecker {
             if (daysRequired > 0 && daysPlayed > daysRequired) {
                 track.promote(user, luckPerms.getContextManager().getStaticContext());
                 luckPerms.getUserManager().saveUser(user);
+                playerData.updateLastGroupChange();
             }
 
         });

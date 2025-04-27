@@ -1,0 +1,32 @@
+[add-section]
+key=auto-demote
+comment=# Auto demote users due to inactivity
+
+[add-field]
+key=auto-demote.groups
+value=\n    - "trusted"\n    - "staff"
+comment=# Groups that should be checked for inactivity
+
+[add-section]
+key=auto-demote.inactive-time
+comment=# How long (in days) does the user need to be inactive to get demoted from this group?
+
+[add-field]
+key=auto-demote.inactive-time.default
+value=365
+
+[add-field]
+key=auto-demote.inactive-time.staff
+value=730
+
+[add-section]
+key=auto-demote.demote-to-group
+comment=# Which group the user should get demoted to
+
+[add-field]
+key=auto-demote.demote-to-group.default
+value=veteran
+
+[add-field]
+key=auto-demote.demote-to-group.staff
+value=trusted

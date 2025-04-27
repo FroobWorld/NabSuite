@@ -55,6 +55,8 @@ permissions:
     description: "Access to the /rules command."
   nabsuite.command.seen:
     description: "Access to the /seen command."
+  nabsuite.command.setgroup:
+    description: "Access to the /setgroup command."
   nabsuite.command.sethome:
     description: "Access to the /sethome command."
   nabsuite.command.setwarp:
@@ -169,6 +171,10 @@ permissions:
     description: "Provides the ability to teleport to all players."
   nabsuite.changegroupalert:
     description: "Alerts when a user changes group."
+  nabsuite.setgroup.immune:
+    description: "Immune to group changes through /setgroup or auto-demote"
+  nabsuite.setgroup.group.*:
+    description: "Allow group to be used in /setgroup"
 
   # Admin module commands
   #nabsuite.command.accept:

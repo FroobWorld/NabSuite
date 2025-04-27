@@ -1,5 +1,5 @@
 # Don't edit this.
-version: 6
+version: 7
 
 # The highest number to check when testing a player's permissions for the maximum number of homes they can set.
 max-home-permission-check: 3
@@ -157,3 +157,21 @@ name-tag:
 
     suffix: " <yellow>(vanished)</yellow>"
 
+# Auto demote users due to inactivity
+auto-demote:
+  # Groups that should be checked for inactivity
+  groups:
+    - "trusted"
+    - "staff"
+
+  # How long (in days) does the user need to be inactive to get demoted from this group?
+  inactive-time:
+    default: 365
+
+    staff: 730
+
+  # Which group the user should get demoted to
+  demote-to-group:
+    default: veteran
+
+    staff: trusted
