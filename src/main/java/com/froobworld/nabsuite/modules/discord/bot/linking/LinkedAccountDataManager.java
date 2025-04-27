@@ -39,7 +39,7 @@ public class LinkedAccountDataManager {
 
     public void addLinkedAccount(UUID minecraftUuid, String discordId) {
         // remove any conflicting linked accounts
-        linkedAccountDataList.removeIf(linkedAccountData -> linkedAccountData.getMinecraftUuid().equals(minecraftUuid) || linkedAccountData.getDiscordId() == discordId);
+        linkedAccountDataList.removeIf(linkedAccountData -> linkedAccountData.getMinecraftUuid().equals(minecraftUuid) || linkedAccountData.getDiscordId().equals(discordId));
 
         linkedAccountDataList.add(new LinkedAccountData(minecraftUuid, discordId));
         dataSaver.scheduleSave(this);
