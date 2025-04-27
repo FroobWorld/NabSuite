@@ -23,6 +23,10 @@ public class PlayerData {
                     playerData -> playerData.lastPlayed,
                     (playerData, lastPlayed) -> playerData.lastPlayed = lastPlayed
             ))
+            .addField("last-group-change", SchemaEntries.longEntry(
+                    playerData -> playerData.lastGroupChange,
+                    (playerData, lastGroupChange) -> playerData.lastGroupChange = lastGroupChange
+            ))
             .addField("friends", SchemaEntries.setEntry(
                     playerData -> playerData.friends,
                     (playerData, uuids) -> playerData.friends = uuids,
@@ -47,6 +51,7 @@ public class PlayerData {
     private final PlayerDataManager playerDataManager;
     private UUID uuid;
     private long lastPlayed;
+    private long lastGroupChange;
     private long firstJoined;
     private Set<UUID> ignored;
     private Set<UUID> friends;
@@ -78,6 +83,10 @@ public class PlayerData {
 
     public long getLastPlayed() {
         return lastPlayed;
+    }
+
+    public long getLastGroupChange() {
+        return lastGroupChange;
     }
 
     public Set<UUID> getIgnored() {
@@ -136,6 +145,11 @@ public class PlayerData {
 
     void updateLastPlayedTime() {
         lastPlayed = System.currentTimeMillis();
+        playerDataManager.playerDataSaver.scheduleSave(this);
+    }
+
+    public void updateLastGroupChange() {
+        lastGroupChange = System.currentTimeMillis();
         playerDataManager.playerDataSaver.scheduleSave(this);
     }
 

@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.admin.notification;
 
+import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.note.PlayerNote;
 import com.froobworld.nabsuite.modules.admin.punishment.PunishmentLogItem;
@@ -98,6 +99,26 @@ public class DiscordStaffLog {
                     .addField("Closed by", DiscordUtils.escapeMarkdown(resolverName), true)
                     .addField("Id", ticket.getId() + "", true)
                     .addField("Resolution", DiscordUtils.escapeMarkdown(closureMessage), true);
+
+            channel.sendMessageEmbeds(embedBuilder.build()).queue();
+        }
+    }
+
+    public void sendGroupChangeNotification(CommandSender sender, PlayerIdentity player, String newGroup) {
+        if (discordModule == null) {
+            return;
+        }
+
+        TextChannel channel = discordModule.getDiscordBot().getStaffLogChannel();
+        if (channel != null) {
+            String resolverName = sender instanceof OfflinePlayer ? sender.getName() : "Console";
+
+            EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Player group changed")
+                    .setColor(Color.GREEN)
+                    .setThumbnail(getSkinUrl(player.getUuid()))
+                    .addField("Changed by", DiscordUtils.escapeMarkdown(resolverName), true)
+                    .addField("Player", player.getLastName(), true)
+                    .addField("New Group", newGroup, true);
 
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }

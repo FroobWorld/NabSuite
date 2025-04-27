@@ -125,7 +125,8 @@ public class BasicsModule extends NabModule {
                 new LeaveChannelCommand(this),
                 new MessageChannelCommand(this),
                 new ReplyChannelCommand(this),
-                new ChannelsCommand(this)
+                new ChannelsCommand(this),
+                new SetGroupCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -211,5 +212,9 @@ public class BasicsModule extends NabModule {
 
     public NameTagManager getNameTagManager() {
         return nameTagManager;
+    }
+
+    public GroupManager getGroupManager() {
+        return groupManager;
     }
 }
