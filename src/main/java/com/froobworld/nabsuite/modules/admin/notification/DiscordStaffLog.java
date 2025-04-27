@@ -114,11 +114,11 @@ public class DiscordStaffLog {
             String resolverName = sender instanceof OfflinePlayer ? sender.getName() : "Console";
 
             EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Player group changed")
-                    .setColor(Color.GREEN)
+                    .setColor(Color.YELLOW)
                     .setThumbnail(getSkinUrl(player.getUuid()))
                     .addField("Changed by", DiscordUtils.escapeMarkdown(resolverName), true)
-                    .addField("Player", player.getLastName(), true)
-                    .addField("New Group", newGroup, true);
+                    .addField("Player", DiscordUtils.escapeMarkdown(player.getLastName()), true)
+                    .addField("New Group", DiscordUtils.escapeMarkdown(newGroup), true);
 
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
