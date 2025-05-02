@@ -12,12 +12,20 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.event.user.track.UserTrackEvent;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.matcher.NodeMatcher;
+import net.luckperms.api.node.types.InheritanceNode;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class GroupManager implements Listener {
     private final BasicsModule basicsModule;
@@ -94,5 +102,37 @@ public class GroupManager implements Listener {
         player.displayName(MiniMessage.miniMessage().deserialize(format, TagResolver.resolver("name", Tag.inserting(Component.text(player.getName())))));
     }
 
+    public final CompletableFuture<Set<UUID>> getUsersInGroup(String group) {
+        return getUsersInGroup(group, null);
+    }
+
+    public final CompletableFuture<Set<UUID>> getUsersInGroup(String group, Predicate<User> userPredicate) {
+        if (luckPerms == null) {
+            return CompletableFuture.completedFuture(Collections.emptySet());
+        }
+        CompletableFuture<Map<UUID, Collection<InheritanceNode>>> future = luckPerms.getUserManager()
+                .searchAll(NodeMatcher.key(InheritanceNode.builder(group).build()));
+
+        if (userPredicate == null) {
+            return future.thenApply(Map::keySet);
+        }
+
+        return future.thenCompose(users -> {
+            if (users.isEmpty()) {
+                return CompletableFuture.completedFuture(Collections.emptySet());
+            }
+            List<CompletableFuture<User>> futures = users.keySet().stream()
+                    .map(uuid -> luckPerms.getUserManager().loadUser(uuid))
+                    .toList();
+            return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]))
+                    .thenApply(v -> futures.stream()
+                            .map(CompletableFuture::join)
+                            .filter(Objects::nonNull)
+                            .filter(userPredicate)
+                            .map(User::getUniqueId)
+                            .collect(Collectors.toSet())
+                    );
+        });
+    }
 
 }

@@ -24,3 +24,37 @@ word-filters:
 
 # Players who use these words will be shadow muted and a ticket will be opened.
 highly-offensive-words: []
+
+# Available deputy levels
+deputy-levels:
+  - "staff"
+  - "admin"
+
+deputy-settings:
+  default:
+    # Group that the deputy is added to during deputation
+    deputy-group: ""
+
+    # List of groups that a deputy can be selected from
+    candidate-groups: []
+
+    # Duration of deputation if not specified in command
+    default-duration: 7d
+
+    # Maximum allowed duration of deputation
+    maximum-duration: 30d
+
+    # How long before expiry should notification ticket be created and mail sent?
+    expiry-notification-time: 12h
+
+  staff:
+    deputy-group: staff-deputy
+
+    candidate-groups:
+      - trusted
+
+  admin:
+    deputy-group: admin-deputy
+
+    candidate-groups:
+      - staff

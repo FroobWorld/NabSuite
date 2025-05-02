@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.modules.admin.chat.ProfanityFilter;
 import com.froobworld.nabsuite.modules.admin.command.*;
 import com.froobworld.nabsuite.modules.admin.config.AdminConfig;
 import com.froobworld.nabsuite.modules.admin.contingency.ContingencyManager;
+import com.froobworld.nabsuite.modules.admin.deputy.DeputyManager;
 import com.froobworld.nabsuite.modules.admin.greylist.GreylistManager;
 import com.froobworld.nabsuite.modules.admin.inventory.InvSeeManager;
 import com.froobworld.nabsuite.modules.admin.jail.JailManager;
@@ -39,6 +40,7 @@ public class AdminModule extends NabModule {
     private SuspiciousActivityMonitor suspiciousActivityMonitor;
     private ContingencyManager contingencyManager;
     private NoteManager noteManager;
+    private DeputyManager deputyManager;
     private ProfanityFilter profanityFilter;
 
     public AdminModule(NabSuite nabSuite) {
@@ -70,6 +72,7 @@ public class AdminModule extends NabModule {
         this.suspiciousActivityMonitor = new SuspiciousActivityMonitor(this);
         this.contingencyManager = new ContingencyManager(this);
         this.noteManager = new NoteManager(this);
+        this.deputyManager = new DeputyManager(this);
         new InvSeeManager(this);
 
         Lists.newArrayList(
@@ -109,7 +112,8 @@ public class AdminModule extends NabModule {
                 new ConfineCommand(this),
                 new UnconfineCommand(this),
                 new KillWithersCommand(this),
-                new AntixrayCommand(this)
+                new AntixrayCommand(this),
+                new DeputyCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -185,6 +189,10 @@ public class AdminModule extends NabModule {
 
     public NoteManager getNoteManager() {
         return noteManager;
+    }
+
+    public DeputyManager getDeputyManager() {
+        return deputyManager;
     }
 
     public ProfanityFilter getProfanityFilter() {

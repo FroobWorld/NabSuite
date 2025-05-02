@@ -1,6 +1,8 @@
 package com.froobworld.nabsuite.modules.admin.notification;
 
+import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
+import com.froobworld.nabsuite.modules.admin.deputy.DeputyPlayer;
 import com.froobworld.nabsuite.modules.admin.note.PlayerNote;
 import com.froobworld.nabsuite.modules.admin.punishment.PunishmentLogItem;
 import com.froobworld.nabsuite.modules.admin.ticket.Ticket;
@@ -98,6 +100,43 @@ public class DiscordStaffLog {
                     .addField("Closed by", DiscordUtils.escapeMarkdown(resolverName), true)
                     .addField("Id", ticket.getId() + "", true)
                     .addField("Resolution", DiscordUtils.escapeMarkdown(closureMessage), true);
+
+            channel.sendMessageEmbeds(embedBuilder.build()).queue();
+        }
+    }
+
+    public void sendDeputyChangeNotification(CommandSender sender, DeputyPlayer previous, DeputyPlayer current) {
+        if (discordModule == null) {
+            return;
+        }
+
+        TextChannel channel = discordModule.getDiscordBot().getStaffLogChannel();
+        if (channel != null && (previous != null || current != null)) {
+            String resolverName = sender instanceof OfflinePlayer ? sender.getName() : "Console";
+            DeputyPlayer deputy = previous == null ? current : previous;
+
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+                    .setThumbnail(getSkinUrl(deputy.getUuid()))
+                    .addField("Player", DiscordUtils.escapeMarkdown(deputy.getPlayerIdentity().getLastName()), true)
+                    .addField("Deputy Level", DiscordUtils.escapeMarkdown(deputy.getDeputyLevel().getName()), true)
+                    .addField("Mediator", DiscordUtils.escapeMarkdown(resolverName), true);
+
+            if (current == null) {
+                embedBuilder.setColor(Color.RED)
+                        .setTitle("Deputy Removed")
+                        .addField("Reason", DiscordUtils.escapeMarkdown(previous.getExpiry() < System.currentTimeMillis() ?
+                                "Deputation expired" :
+                                "Manually Removed"
+                        ), true);
+            } else {
+                String durationString = DurationDisplayer.asDurationString(
+                        // Round up to the nearest minute
+                        Math.ceilDiv(current.getExpiry() - System.currentTimeMillis(), 60000) * 60000
+                );
+                embedBuilder.setColor(Color.GREEN)
+                        .setTitle(previous == null ? "Deputy Added" : "Deputy Renewed")
+                        .addField("Duration", DiscordUtils.escapeMarkdown("For " + durationString + " - expires on " + "<t:" + current.getExpiry() / 1000 + ":f>"), true);
+            }
 
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
         }

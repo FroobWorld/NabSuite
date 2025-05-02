@@ -23,6 +23,10 @@ public class PlayerData {
                     playerData -> playerData.lastPlayed,
                     (playerData, lastPlayed) -> playerData.lastPlayed = lastPlayed
             ))
+            .addField("last-deputy-expire-notification", SchemaEntries.longEntry(
+                    playerData -> playerData.lastDeputyExpireNotification,
+                    (playerData, lastDeputyExpireNotification) -> playerData.lastDeputyExpireNotification = lastDeputyExpireNotification
+            ))
             .addField("friends", SchemaEntries.setEntry(
                     playerData -> playerData.friends,
                     (playerData, uuids) -> playerData.friends = uuids,
@@ -47,6 +51,7 @@ public class PlayerData {
     private final PlayerDataManager playerDataManager;
     private UUID uuid;
     private long lastPlayed;
+    private long lastDeputyExpireNotification;
     private long firstJoined;
     private Set<UUID> ignored;
     private Set<UUID> friends;
@@ -78,6 +83,11 @@ public class PlayerData {
 
     public long getLastPlayed() {
         return lastPlayed;
+    }
+
+
+    public long getLastDeputyExpireNotification() {
+        return lastDeputyExpireNotification;
     }
 
     public Set<UUID> getIgnored() {
@@ -136,6 +146,11 @@ public class PlayerData {
 
     void updateLastPlayedTime() {
         lastPlayed = System.currentTimeMillis();
+        playerDataManager.playerDataSaver.scheduleSave(this);
+    }
+
+    public void setLastDeputyExpireNotification(long timestamp) {
+        lastDeputyExpireNotification = timestamp;
         playerDataManager.playerDataSaver.scheduleSave(this);
     }
 
