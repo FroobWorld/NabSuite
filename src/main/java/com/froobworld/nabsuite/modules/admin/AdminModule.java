@@ -8,6 +8,7 @@ import com.froobworld.nabsuite.modules.admin.config.AdminConfig;
 import com.froobworld.nabsuite.modules.admin.contingency.ContingencyManager;
 import com.froobworld.nabsuite.modules.admin.deputy.DeputyManager;
 import com.froobworld.nabsuite.modules.admin.greylist.GreylistManager;
+import com.froobworld.nabsuite.modules.admin.group.GroupManager;
 import com.froobworld.nabsuite.modules.admin.inventory.InvSeeManager;
 import com.froobworld.nabsuite.modules.admin.jail.JailManager;
 import com.froobworld.nabsuite.modules.admin.note.NoteManager;
@@ -42,6 +43,7 @@ public class AdminModule extends NabModule {
     private NoteManager noteManager;
     private DeputyManager deputyManager;
     private ProfanityFilter profanityFilter;
+    private GroupManager groupManager;
 
     public AdminModule(NabSuite nabSuite) {
         super(nabSuite, "admin");
@@ -57,6 +59,7 @@ public class AdminModule extends NabModule {
             Bukkit.getPluginManager().disablePlugin(getPlugin());
             return;
         }
+        this.groupManager = new GroupManager(this);
         notificationCentre = new NotificationCentre();
         jailManager = new JailManager(this);
         punishmentManager = new PunishmentManager(this);
@@ -197,5 +200,9 @@ public class AdminModule extends NabModule {
 
     public ProfanityFilter getProfanityFilter() {
         return profanityFilter;
+    }
+
+    public GroupManager getGroupManager() {
+        return groupManager;
     }
 }

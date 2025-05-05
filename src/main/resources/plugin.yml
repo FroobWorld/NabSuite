@@ -281,6 +281,24 @@ permissions:
     description: "Access to the /antixray check command."
     children:
       - nabsuite.command.antixray
+  nabsuite.command.deputy:
+    description: "Access to the /deputy command."
+  nabsuite.command.deputy.add:
+    description: "Access to the /deputy add command."
+    children:
+      - nabsuite.command.deputy
+  nabsuite.command.deputy.remove:
+    description: "Access to the /deputy remove command."
+    children:
+      - nabsuite.command.deputy
+  nabsuite.command.deputy.renew:
+    description: "Access to the /deputy renew command."
+    children:
+      - nabsuite.command.deputy
+  nabsuite.command.deputy.list:
+    description: "Access to the /deputy list command."
+    children:
+      - nabsuite.command.deputy
 
   # Admin module other permissions
   nabsuite.vanish:

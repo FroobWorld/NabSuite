@@ -39,6 +39,10 @@ public class PlayerIdentityManager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
+    public void shutdown() {
+        playerIdentitySaver.stop();
+    }
+
     public PlayerIdentity getPlayerIdentity(UUID uuid) {
         return playerIdentityMap.get(uuid);
     }

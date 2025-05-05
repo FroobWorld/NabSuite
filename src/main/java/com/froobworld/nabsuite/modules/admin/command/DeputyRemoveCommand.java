@@ -10,12 +10,10 @@ import com.froobworld.nabsuite.modules.admin.deputy.DeputyManager;
 import com.froobworld.nabsuite.modules.admin.deputy.DeputyPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 public class DeputyRemoveCommand extends NabCommand {
 
-    private AdminModule adminModule;
     private DeputyManager deputyManager;
 
     public DeputyRemoveCommand(AdminModule adminModule) {
@@ -25,26 +23,17 @@ public class DeputyRemoveCommand extends NabCommand {
                 "nabsuite.command.deputy.remove",
                 CommandSender.class
         );
-        this.adminModule = adminModule;
         this.deputyManager = adminModule.getDeputyManager();
     }
 
     @Override
     public void execute(CommandContext<CommandSender> context) {
         DeputyPlayer target = context.get("player");
-        deputyManager.removeDeputy(target.getDeputyLevel(), target.getUuid()).handleAsync((v, exception) -> {
-            if (exception != null) {
-                adminModule.getPlugin().getSLF4JLogger().error("Failed to remove deputy", exception);
-                context.getSender().sendMessage(Component.text("An error occurred.").color(NamedTextColor.RED));
-            } else {
-                context.getSender().sendMessage(
-                        Component.text("Player " + target.getPlayerIdentity().getLastName() + " is no longer a deputy.")
-                                .color(NamedTextColor.YELLOW)
-                );
-                adminModule.getDiscordStaffLog().sendDeputyChangeNotification(context.getSender(), target, null);
-            }
-            return null;
-        }, Bukkit.getScheduler().getMainThreadExecutor(adminModule.getPlugin()));
+        deputyManager.removeDeputy(context.getSender(), target.getDeputyLevel(), target.getUuid());
+        context.getSender().sendMessage(
+                Component.text("Player " + target.getPlayerIdentity().getLastName() + " is no longer a deputy.")
+                        .color(NamedTextColor.YELLOW)
+        );
     }
 
     @Override

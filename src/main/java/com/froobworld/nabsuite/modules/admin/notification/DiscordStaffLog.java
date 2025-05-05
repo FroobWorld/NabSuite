@@ -118,15 +118,15 @@ public class DiscordStaffLog {
             EmbedBuilder embedBuilder = new EmbedBuilder()
                     .setThumbnail(getSkinUrl(deputy.getUuid()))
                     .addField("Player", DiscordUtils.escapeMarkdown(deputy.getPlayerIdentity().getLastName()), true)
-                    .addField("Deputy Level", DiscordUtils.escapeMarkdown(deputy.getDeputyLevel().getName()), true)
+                    .addField("Deputy level", DiscordUtils.escapeMarkdown(deputy.getDeputyLevel().getName()), true)
                     .addField("Mediator", DiscordUtils.escapeMarkdown(resolverName), true);
 
             if (current == null) {
                 embedBuilder.setColor(Color.RED)
-                        .setTitle("Deputy Removed")
+                        .setTitle("Deputy removed")
                         .addField("Reason", DiscordUtils.escapeMarkdown(previous.getExpiry() < System.currentTimeMillis() ?
-                                "Deputation expired" :
-                                "Manually Removed"
+                                "Expired" :
+                                "Manually removed"
                         ), true);
             } else {
                 String durationString = DurationDisplayer.asDurationString(
@@ -134,8 +134,8 @@ public class DiscordStaffLog {
                         Math.ceilDiv(current.getExpiry() - System.currentTimeMillis(), 60000) * 60000
                 );
                 embedBuilder.setColor(Color.GREEN)
-                        .setTitle(previous == null ? "Deputy Added" : "Deputy Renewed")
-                        .addField("Duration", DiscordUtils.escapeMarkdown("For " + durationString + " - expires on " + "<t:" + current.getExpiry() / 1000 + ":f>"), true);
+                        .setTitle(previous == null ? "Deputy added" : "Deputy renewed")
+                        .addField("Duration", DiscordUtils.escapeMarkdown(durationString + " (expires " + "<t:" + current.getExpiry() / 1000 + ":f>)"), true);
             }
 
             channel.sendMessageEmbeds(embedBuilder.build()).queue();

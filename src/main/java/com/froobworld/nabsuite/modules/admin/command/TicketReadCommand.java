@@ -45,11 +45,13 @@ public class TicketReadCommand extends NabCommand {
                 Component.text("Created: ", NamedTextColor.YELLOW)
                         .append(Component.text(DurationDisplayer.asDurationString(System.currentTimeMillis() - ticket.getTimestamp()) + " ago", NamedTextColor.WHITE))
         );
-        context.getSender().sendMessage(
-                Component.text("Location: ", NamedTextColor.YELLOW)
-                        .append(Component.text(ticket.getLocation().getWorld().getName() + " (" + VectorDisplayer.vectorToString(ticket.getLocation().toVector(), true) + ")", NamedTextColor.WHITE))
-                        .append(Component.text(" [Teleport]", NamedTextColor.GRAY, TextDecoration.ITALIC).clickEvent(ClickEvent.runCommand("/ticket teleport " + ticket.getId())))
-        );
+        if (ticket.getLocation() != null) {
+            context.getSender().sendMessage(
+                    Component.text("Location: ", NamedTextColor.YELLOW)
+                            .append(Component.text(ticket.getLocation().getWorld().getName() + " (" + VectorDisplayer.vectorToString(ticket.getLocation().toVector(), true) + ")", NamedTextColor.WHITE))
+                            .append(Component.text(" [Teleport]", NamedTextColor.GRAY, TextDecoration.ITALIC).clickEvent(ClickEvent.runCommand("/ticket teleport " + ticket.getId())))
+            );
+        }
         context.getSender().sendMessage(
                 Component.text("Message: ", NamedTextColor.YELLOW)
                         .append(ComponentUtils.clickableUrls(Component.text(ticket.getMessage(), NamedTextColor.WHITE)))

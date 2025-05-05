@@ -2,6 +2,7 @@ package com.froobworld.nabsuite;
 
 import com.froobworld.nabsuite.command.NabCommandManager;
 import com.froobworld.nabsuite.data.identity.PlayerIdentityManager;
+import com.froobworld.nabsuite.data.playervar.PlayerVarsManager;
 import com.froobworld.nabsuite.hook.HookManager;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
@@ -19,6 +20,7 @@ public class NabSuite extends JavaPlugin {
     private final Map<Class<?>, NabModule> modules = new LinkedHashMap<>();
     private NabCommandManager commandManager;
     private PlayerIdentityManager playerIdentityManager;
+    private PlayerVarsManager playerVarsManager;
     private HookManager hookManager;
     private UserManager userManager;
 
@@ -33,6 +35,7 @@ public class NabSuite extends JavaPlugin {
         }
         hookManager = new HookManager();
         playerIdentityManager = new PlayerIdentityManager(this);
+        playerVarsManager = new PlayerVarsManager(this);
         userManager = new UserManager(this);
         if (modules.isEmpty()) {
             addModule(new BasicsModule(this));
@@ -53,6 +56,8 @@ public class NabSuite extends JavaPlugin {
         for (int i = modulesList.size() - 1; i >= 0; i--) {
             modulesList.get(i).onDisable();
         }
+        this.playerVarsManager.shutdown();
+        this.playerIdentityManager.shutdown();
     }
 
     public NabCommandManager getCommandManager() {
@@ -61,6 +66,10 @@ public class NabSuite extends JavaPlugin {
 
     public PlayerIdentityManager getPlayerIdentityManager() {
         return playerIdentityManager;
+    }
+
+    public PlayerVarsManager getPlayerVarsManager() {
+        return playerVarsManager;
     }
 
     public HookManager getHookManager() {

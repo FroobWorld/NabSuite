@@ -19,7 +19,6 @@ import java.util.List;
 
 public class DeputyListCommand extends NabCommand {
 
-    private AdminModule adminModule;
     private DeputyManager deputyManager;
     private final static int ITEMS_PER_PAGE = 5;
 
@@ -30,13 +29,13 @@ public class DeputyListCommand extends NabCommand {
                 "nabsuite.command.deputy.list",
                 CommandSender.class
         );
-        this.adminModule = adminModule;
         this.deputyManager = adminModule.getDeputyManager();
     }
 
     @Override
     public void execute(CommandContext<CommandSender> context) {
         List<DeputyPlayer> players = deputyManager.getDeputies().stream()
+                .filter(deputyPlayer -> System.currentTimeMillis() < deputyPlayer.getExpiry())
                 .filter(deputy -> context.getSender().hasPermission(DeputyManager.LIST_DEPUTY_PREFIX + deputy.getDeputyLevel().getName()))
                 .sorted()
                 .toList();

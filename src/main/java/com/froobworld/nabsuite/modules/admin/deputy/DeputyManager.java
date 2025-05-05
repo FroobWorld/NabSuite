@@ -1,26 +1,25 @@
 package com.froobworld.nabsuite.modules.admin.deputy;
 
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
+import com.froobworld.nabsuite.data.playervar.PlayerVars;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
-import com.froobworld.nabsuite.modules.basics.player.PlayerData;
 import com.froobworld.nabsuite.util.DurationDisplayer;
-import com.google.common.collect.Sets;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.cacheddata.Result;
 import net.luckperms.api.event.node.NodeMutateEvent;
 import net.luckperms.api.event.node.NodeRemoveEvent;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
-import net.luckperms.api.node.matcher.NodeMatcher;
+import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
 import net.luckperms.api.util.Tristate;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.stream.Stream;
 
 public class DeputyManager {
 
@@ -31,29 +30,45 @@ public class DeputyManager {
     private final AdminModule adminModule;
     private final LuckPerms luckPerms;
 
-    private List<DeputyPlayer> deputies;
+    private final List<DeputyPlayer> deputies = new ArrayList<>();
     private final List<DeputyLevel> levels;
-    private boolean updatePending = false;
 
     public DeputyManager(AdminModule adminModule) {
         this.adminModule = adminModule;
         this.basicsModule = adminModule.getPlugin().getModule(BasicsModule.class);
-        deputies = Collections.emptyList();
         levels = adminModule.getAdminConfig().deputyLevels.get().stream()
                 .map(level -> new DeputyLevel(level, adminModule.getAdminConfig().deputySettings.of(level)))
                 .toList();
         luckPerms = basicsModule.getPlugin().getHookManager().getLuckPermsHook().getLuckPerms();
         if (luckPerms != null) {
-            luckPerms.getEventBus().subscribe(NodeMutateEvent.class, event -> this.scheduleUpdate());
+            luckPerms.getEventBus().subscribe(NodeMutateEvent.class, this::onNodeMutate);
             luckPerms.getEventBus().subscribe(NodeRemoveEvent.class, this::onNodeRemoved);
-            scheduleUpdate();
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), this::runExpiryCheckTask, 200, 12000);
+            updateAllDeputies();
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), this::runExpiryCheckTask, 200, 600);
         }
     }
 
-    private void sendDeputyExpiredNotification(DeputyPlayer deputyPlayer) {
-        adminModule.getDiscordStaffLog().sendDeputyChangeNotification(Bukkit.getConsoleSender(), deputyPlayer, null);
-        basicsModule.getMailCentre().sendSystemMail(deputyPlayer.getUuid(), "Your deputation as a " + deputyPlayer.getDeputyLevel().getName() + " deputy has expired.");
+    private void sendDeputyAddNotification(CommandSender sender, DeputyPlayer previous, DeputyPlayer current, long duration) {
+        adminModule.getDiscordStaffLog().sendDeputyChangeNotification(sender == null ? Bukkit.getConsoleSender() : sender, previous, current);
+        if (previous == null) {
+            basicsModule.getMailCentre().sendSystemMail(current.getUuid(), "You have been appointed " + current.getDeputyLevel().getName() + " deputy for " +
+                    DurationDisplayer.asDurationString(duration) + ". Please review the responsibilities and powers associated with this role on the wiki."
+            );
+        } else {
+            basicsModule.getMailCentre().sendSystemMail(
+                    current.getUuid(),
+                    "Your appointment as " + current.getDeputyLevel().getName() + " deputy has been renewed and is valid for " + DurationDisplayer.asDurationString(duration) + "."
+            );
+        }
+    }
+
+    private void sendDeputyRemovedNotification(CommandSender sender, DeputyPlayer deputyPlayer, boolean expired) {
+        adminModule.getDiscordStaffLog().sendDeputyChangeNotification(sender == null ? Bukkit.getConsoleSender() : sender, deputyPlayer, null);
+        if (expired) {
+            basicsModule.getMailCentre().sendSystemMail(deputyPlayer.getUuid(), "Your appointment as " + deputyPlayer.getDeputyLevel().getName() + " deputy has expired.");
+        } else {
+            basicsModule.getMailCentre().sendSystemMail(deputyPlayer.getUuid(), "Your appointment as " + deputyPlayer.getDeputyLevel().getName() + " deputy was revoked.");
+        }
     }
 
     private void sendDeputyExpiryWarning(DeputyPlayer deputyPlayer) {
@@ -61,10 +76,9 @@ public class DeputyManager {
         long expiryTime = Math.ceilDiv(deputyPlayer.getExpiry() - System.currentTimeMillis(), 3600000) * 3600000;
         String duration = DurationDisplayer.asDurationString(expiryTime);
         adminModule.getTicketManager().createSystemTicket(
-                basicsModule.getSpawnManager().getSpawnLocation(),
-                "A deputation for player " + deputyPlayer.getPlayerIdentity().getLastName() + " (" + deputyPlayer.getDeputyLevel().getName() + " deputy) expires in less than " + duration + ". Please determine if the deputation should be renewed, if another deputy should be appointed or if no action is needed."
+                "Appointment of " + deputyPlayer.getPlayerIdentity().getLastName() + " as " + deputyPlayer.getDeputyLevel().getName() + " deputy expires in less than " + duration + ". Please determine if it should be renewed, if another deputy should be appointed, or if no action is needed."
         );
-        basicsModule.getMailCentre().sendSystemMail(deputyPlayer.getUuid(), "Your deputation as a " + deputyPlayer.getDeputyLevel().getName() + " deputy will expire in less than " + duration + ".");
+        basicsModule.getMailCentre().sendSystemMail(deputyPlayer.getUuid(), "Your appointment as " + deputyPlayer.getDeputyLevel().getName() + " deputy will expire in less than " + duration + ".");
     }
 
     public List<DeputyLevel> getDeputyLevels() {
@@ -92,79 +106,47 @@ public class DeputyManager {
         if (event.getTarget() instanceof User user && event.getNode() instanceof InheritanceNode node) {
             DeputyPlayer deputyPlayer = deputyFromNode(user.getUniqueId(), node);
             if (deputyPlayer != null && node.hasExpired()) {
-                sendDeputyExpiredNotification(deputyPlayer);
+                sendDeputyRemovedNotification(null, deputyPlayer, true);
             }
         }
     }
 
-    private void scheduleUpdate() {
-        Bukkit.getScheduler().runTaskLater(adminModule.getPlugin(), () -> {
-            if (!updatePending) {
-                updatePending = true;
-                this.updateDeputies()
-                        .thenCompose(v -> this.updateCandidates())
-                        .thenRunAsync(
-                                () -> updatePending = false,
-                                Bukkit.getScheduler().getMainThreadExecutor(adminModule.getPlugin())
-                        );
-            }
-        }, 20L);
+    private void onNodeMutate(NodeMutateEvent event) {
+        if (event.getTarget() instanceof User user) {
+            updateDeputy(user, true);
+        }
     }
 
-    private CompletableFuture<Void> updateDeputies() {
-        List<CompletableFuture<Stream<DeputyPlayer>>> futures = getDeputyLevels().stream().map(deputyLevel -> {
-                if (deputyLevel.getDeputyGroup().isEmpty()) {
-                    return null;
+    private void updateAllDeputies() {
+        this.deputies.clear();
+        for (User user : adminModule.getGroupManager().getUsers()) {
+            updateDeputy(user, false);
+        }
+    }
+
+    private void updateDeputy(User user, boolean removeExisting) {
+        if (removeExisting) {
+            // remove existing entries for player
+            this.deputies.removeIf(deputyPlayer -> deputyPlayer.getUuid().equals(user.getUniqueId()));
+        }
+        for (DeputyLevel deputyLevel : levels) {
+            if (deputyLevel.getDeputyGroup().isEmpty()) {
+                continue;
+            }
+            for (InheritanceNode node : user.getNodes(NodeType.INHERITANCE)) {
+                if (!node.getGroupName().equalsIgnoreCase(deputyLevel.getDeputyGroup())) {
+                    continue;
                 }
-                return luckPerms.getUserManager()
-                        .searchAll(NodeMatcher.key(InheritanceNode.builder(deputyLevel.getDeputyGroup()).build()))
-                        .thenApply(users -> users.entrySet().stream().map(entry -> {
-                            long expiry = 0;
-                            Iterator<InheritanceNode> it = entry.getValue().iterator();
-                            if (it.hasNext()) {
-                                InheritanceNode node = it.next();
-                                if (node != null && node.getExpiry() != null) {
-                                    expiry = node.getExpiry().toEpochMilli();
-                                }
-                            }
-                            PlayerIdentity playerIdentity = adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(entry.getKey());
-                            if (playerIdentity != null) {
-                                return new DeputyPlayer(deputyLevel, playerIdentity, expiry);
-                            }
-                            return null;
-                        }));
-        }).toList();
-        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).thenRunAsync(
-                () -> deputies = futures.stream()
-                        .map(CompletableFuture::join)
-                        .filter(Objects::nonNull)
-                        .flatMap(stream -> stream)
-                        .filter(Objects::nonNull)
-                        .toList(),
-                Bukkit.getScheduler().getMainThreadExecutor(adminModule.getPlugin())
-        );
-    }
-
-    private CompletableFuture<Void> updateCandidates() {
-        if (getDeputyLevels().isEmpty()) {
-            return CompletableFuture.completedFuture((Void) null);
-        }
-        return CompletableFuture.allOf(getDeputyLevels().stream().map(deputyLevel -> {
-            if (!deputyLevel.getCandidateGroups().isEmpty()) {
-                List<CompletableFuture<Set<UUID>>> futures = deputyLevel.getCandidateGroups().stream()
-                        .map(groupName -> basicsModule.getGroupManager().getUsersInGroup(groupName,user -> user.getPrimaryGroup().equalsIgnoreCase(groupName)))
-                        .toList();
-
-                return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
-                        .thenRunAsync(() -> deputyLevel.setCandidates(futures.stream()
-                                        .map(CompletableFuture::join)
-                                        .reduce(Sets::union)
-                                        .orElse(Collections.emptySet())),
-                                Bukkit.getScheduler().getMainThreadExecutor(adminModule.getPlugin())
-                        );
+                PlayerIdentity playerIdentity = adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(user.getUniqueId());
+                long expiry = 0;
+                if (node.getExpiry() != null) {
+                    expiry = node.getExpiry().toEpochMilli();
+                }
+                if (playerIdentity != null) {
+                    this.deputies.add(new DeputyPlayer(deputyLevel, playerIdentity, expiry));
+                }
             }
-            return CompletableFuture.completedFuture((Void) null);
-        }).toArray(CompletableFuture[]::new));
+        }
     }
 
     private void runExpiryCheckTask() {
@@ -172,15 +154,20 @@ public class DeputyManager {
                 .filter(deputyPlayer -> deputyPlayer.getExpiry() > 0 &&
                         deputyPlayer.getDeputyLevel().getExpiryNotificationTime() > 0 &&
                         deputyPlayer.getExpiry() < (System.currentTimeMillis() + deputyPlayer.getDeputyLevel().getExpiryNotificationTime()))
-                .forEach(deputyPlayer -> luckPerms.getUserManager().loadUser(deputyPlayer.getUuid())
-                        .thenAcceptAsync(user -> {
-                            PlayerData playerData = basicsModule.getPlayerDataManager().getPlayerData(user.getUniqueId());
-                            if (playerData != null && playerData.getLastDeputyExpireNotification() < deputyPlayer.getExpiry()) {
-                                playerData.setLastDeputyExpireNotification(deputyPlayer.getExpiry());
-                                sendDeputyExpiryWarning(deputyPlayer);
-                            }
-                        }, Bukkit.getScheduler().getMainThreadExecutor(adminModule.getPlugin())
-                ));
+                .forEach(deputyPlayer -> {
+                    if (deputyPlayer.getExpiry() < System.currentTimeMillis()) {
+                        // load user to force expiry of node
+                        if (!luckPerms.getUserManager().isLoaded(deputyPlayer.getUuid())) {
+                            luckPerms.getUserManager().loadUser(deputyPlayer.getUuid());
+                        }
+                    } else {
+                        PlayerVars playerVars = adminModule.getPlugin().getPlayerVarsManager().getVars(deputyPlayer.getUuid());
+                        if (playerVars.getOrDefault("last-deputy-expire-notification", long.class, 0L) < deputyPlayer.getExpiry()) {
+                            playerVars.put("last-deputy-expire-notification", deputyPlayer.getExpiry());
+                            sendDeputyExpiryWarning(deputyPlayer);
+                        }
+                    }
+                });
     }
 
     public List<DeputyPlayer> getDeputies() {
@@ -196,36 +183,37 @@ public class DeputyManager {
         return null;
     }
 
-    public CompletableFuture<DeputyPlayer> addDeputy(DeputyLevel deputyLevel, UUID uuid, long duration) {
-        if (luckPerms == null) {
-            return CompletableFuture.failedFuture(new IllegalStateException("LuckPerms is not loaded"));
+    public DeputyPlayer addDeputy(CommandSender sender, DeputyLevel deputyLevel, UUID uuid, long duration) {
+        DeputyPlayer previous = getDeputy(uuid);
+        User user = adminModule.getGroupManager().getUser(uuid);
+        if (user.getCachedData().getPermissionData().queryPermission("group." + deputyLevel.getDeputyGroup()).node() instanceof InheritanceNode oldNode) {
+            user.data().remove(oldNode);
         }
-        return luckPerms.getUserManager().loadUser(uuid).thenCompose(user -> {
-            if (user.getCachedData().getPermissionData().queryPermission("group." + deputyLevel.getDeputyGroup()).node() instanceof InheritanceNode oldNode) {
-                user.data().remove(oldNode);
-            }
-            InheritanceNode node = InheritanceNode.builder(deputyLevel.getDeputyGroup())
-                    .expiry(duration, TimeUnit.MILLISECONDS)
-                    .build();
-            user.data().add(node);
-            return luckPerms.getUserManager().saveUser(user).thenApply(v -> new DeputyPlayer(
-                    deputyLevel,
-                    adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(uuid),
-                    node.getExpiry() != null ? node.getExpiry().toEpochMilli() : 0
-            ));
-        });
+        InheritanceNode node = InheritanceNode.builder(deputyLevel.getDeputyGroup())
+                .expiry(duration, TimeUnit.MILLISECONDS)
+                .build();
+        user.data().add(node);
+        luckPerms.getUserManager().saveUser(user);
+        DeputyPlayer deputyPlayer = new DeputyPlayer(
+                deputyLevel,
+                adminModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(uuid),
+                node.getExpiry() != null ? node.getExpiry().toEpochMilli() : 0
+        );
+        sendDeputyAddNotification(sender, previous, deputyPlayer, duration);
+        return deputyPlayer;
     }
 
-    public CompletableFuture<Void> removeDeputy(DeputyLevel deputyLevel, UUID uuid) {
-        if (luckPerms == null) {
-            return CompletableFuture.failedFuture(new IllegalStateException("LuckPerms is not loaded"));
-        }
-        return luckPerms.getUserManager().modifyUser(uuid, user -> {
-            Result<Tristate, Node> result = user.getCachedData().getPermissionData().queryPermission("group." + deputyLevel.getDeputyGroup());
-            if (result.result().equals(Tristate.TRUE) && result.node() instanceof InheritanceNode node) {
-                user.data().remove(node);
+    public void removeDeputy(CommandSender sender, DeputyLevel deputyLevel, UUID uuid) {
+        User user = adminModule.getGroupManager().getUser(uuid);
+        DeputyPlayer deputyPlayer = getDeputy(uuid);
+        Result<Tristate, Node> result = user.getCachedData().getPermissionData().queryPermission("group." + deputyLevel.getDeputyGroup());
+        if (result.result().equals(Tristate.TRUE) && result.node() instanceof InheritanceNode node) {
+            user.data().remove(node);
+            luckPerms.getUserManager().saveUser(user);
+            if (deputyPlayer != null) {
+                sendDeputyRemovedNotification(sender, deputyPlayer, false);
             }
-        });
+        }
     }
 
 }

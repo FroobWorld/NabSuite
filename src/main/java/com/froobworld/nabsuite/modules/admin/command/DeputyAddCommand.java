@@ -12,11 +12,8 @@ import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.command.argument.DeputyLevelArgument;
 import com.froobworld.nabsuite.modules.admin.deputy.DeputyLevel;
 import com.froobworld.nabsuite.modules.admin.deputy.DeputyManager;
-import com.froobworld.nabsuite.modules.basics.BasicsModule;
-import com.froobworld.nabsuite.util.DurationDisplayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.Optional;
@@ -24,7 +21,6 @@ import java.util.Optional;
 public class DeputyAddCommand extends NabCommand {
 
     private AdminModule adminModule;
-    private BasicsModule basicsModule;
     private DeputyManager deputyManager;
 
     public DeputyAddCommand(AdminModule adminModule) {
@@ -35,7 +31,6 @@ public class DeputyAddCommand extends NabCommand {
                 CommandSender.class
         );
         this.adminModule = adminModule;
-        this.basicsModule = adminModule.getPlugin().getModule(BasicsModule.class);
         this.deputyManager = adminModule.getDeputyManager();
     }
 
@@ -45,19 +40,8 @@ public class DeputyAddCommand extends NabCommand {
         PlayerIdentity target = context.get("player");
         Optional<Long> duration = context.getOptional("duration");
         long durationMillis = duration.orElse(deputyLevel.getDefaultDuration());
-        deputyManager.addDeputy(deputyLevel, target.getUuid(), durationMillis).handleAsync((deputy, exception) -> {
-            if (exception != null) {
-                adminModule.getPlugin().getSLF4JLogger().error("Failed to add deputy", exception);
-                context.getSender().sendMessage(Component.text("An error occurred.").color(NamedTextColor.RED));
-            } else {
-                context.getSender().sendMessage(Component.text("Player " + target.getLastName() + " has been deputised.").color(NamedTextColor.YELLOW));
-                adminModule.getDiscordStaffLog().sendDeputyChangeNotification(context.getSender(), null, deputy);
-                basicsModule.getMailCentre().sendSystemMail(target.getUuid(), "You have been appointed as a " + deputyLevel.getName() + " deputy for " +
-                        DurationDisplayer.asDurationString(durationMillis) + ". Please review the responsibilities and powers associated with this role on the wiki."
-                );
-            }
-            return null;
-        }, Bukkit.getScheduler().getMainThreadExecutor(adminModule.getPlugin()));
+        deputyManager.addDeputy(context.getSender(), deputyLevel, target.getUuid(), durationMillis);
+        context.getSender().sendMessage(Component.text("Player " + target.getLastName() + " has been deputised.").color(NamedTextColor.YELLOW));
     }
 
     @Override
@@ -80,7 +64,7 @@ public class DeputyAddCommand extends NabCommand {
                         true,
                         new ArgumentPredicate<>(
                                 false,
-                                (context, player) -> ((DeputyLevel)context.get("deputyLevel")).getCandidates().contains(player.getUuid()),
+                                (context, player) ->((DeputyLevel)context.get("deputyLevel")).isEligible(adminModule.getGroupManager().getUser(player.getUuid())),
                                 "That player is not a valid deputy candidate."
                         ),
                         new ArgumentPredicate<>(

@@ -1,6 +1,9 @@
 package com.froobworld.nabsuite.modules.admin.deputy;
 
 import com.froobworld.nabsuite.modules.admin.config.AdminConfig;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.query.Flag;
+import net.luckperms.api.query.QueryOptions;
 import org.bukkit.permissions.Permissible;
 
 import java.util.*;
@@ -9,12 +12,10 @@ public class DeputyLevel {
 
     private final String name;
     private final AdminConfig.DeputySettings settings;
-    private Set<UUID> candidates;
 
     public DeputyLevel(String name, AdminConfig.DeputySettings settings) {
         this.name = name;
         this.settings = settings;
-        this.candidates = Collections.emptySet();
     }
 
     public String getName() {
@@ -41,12 +42,10 @@ public class DeputyLevel {
         return settings.expiryNotificationTime.get();
     }
 
-    public Set<UUID> getCandidates() {
-        return candidates;
-    }
-
-    public void setCandidates(Set<UUID> candidates) {
-        this.candidates = candidates;
+    public boolean isEligible(User user) {
+        QueryOptions queryOptions = QueryOptions.nonContextual().toBuilder().flag(Flag.RESOLVE_INHERITANCE, false).build();
+        return user.getInheritedGroups(queryOptions).stream()
+                .anyMatch(group -> getCandidateGroups().contains(group.getName()));
     }
 
     public boolean checkManagePermission(Permissible sender) {
