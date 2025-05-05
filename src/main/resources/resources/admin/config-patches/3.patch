@@ -1,0 +1,57 @@
+[add-field]
+key=deputy-levels
+value=\n  - "staff"\n  - "admin"
+comment=# Available deputy levels
+
+[add-section]
+key=deputy-settings
+
+[add-section]
+key=deputy-settings.default
+
+[add-field]
+key=deputy-settings.default.deputy-group
+value=""
+comment=# Group that the deputy is added to during deputation
+
+[add-field]
+key=deputy-settings.default.candidate-groups
+value=[]
+comment=# List of groups that a deputy can be selected from
+
+[add-field]
+key=deputy-settings.default.default-duration
+value=7d
+comment=# Duration of deputation if not specified in command
+
+[add-field]
+key=deputy-settings.default.maximum-duration
+value=30d
+comment=# Maximum allowed duration of deputation
+
+[add-field]
+key=deputy-settings.default.expiry-notification-time
+value=12h
+comment=# How long before expiry should notification ticket be created and mail sent?
+
+[add-section]
+key=deputy-settings.staff
+
+[add-field]
+key=deputy-settings.staff.deputy-group
+value=staff-deputy
+
+[add-field]
+key=deputy-settings.staff.candidate-groups
+value=\n      - trusted
+
+[add-section]
+key=deputy-settings.admin
+
+[add-field]
+key=deputy-settings.admin.deputy-group
+value=admin-deputy
+
+[add-field]
+key=deputy-settings.admin.candidate-groups
+value=\n      - staff

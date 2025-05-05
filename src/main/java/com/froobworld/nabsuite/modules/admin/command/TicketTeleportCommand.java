@@ -41,7 +41,12 @@ public class TicketTeleportCommand extends NabCommand {
                 .argument(new TicketArgument<>(
                         true,
                         "ticket",
-                        adminModule.getTicketManager()
+                        adminModule.getTicketManager(),
+                        new ArgumentPredicate<>(
+                                true,
+                                (sender, ticket) -> ticket.getLocation() != null,
+                                "Ticket does not have a location."
+                        )
                 ));
     }
 

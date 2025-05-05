@@ -30,6 +30,8 @@ public class SimpleDataSchema<T> {
             SchemaEntry<T> schemaEntry = schemaEntryMap.get(jsonReader.nextName());
             if (schemaEntry != null) {
                 schemaEntry.parseToPopulate.accept(jsonReader, data);
+            } else {
+                jsonReader.skipValue();
             }
         }
         jsonReader.endObject();

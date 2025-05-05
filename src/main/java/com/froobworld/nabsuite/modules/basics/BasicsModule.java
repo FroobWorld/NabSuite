@@ -212,4 +212,8 @@ public class BasicsModule extends NabModule {
     public NameTagManager getNameTagManager() {
         return nameTagManager;
     }
+
+    public GroupManager getGroupManager() {
+        return groupManager;
+    }
 }

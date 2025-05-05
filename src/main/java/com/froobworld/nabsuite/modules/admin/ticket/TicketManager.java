@@ -95,6 +95,10 @@ public class TicketManager {
         return ticket;
     }
 
+    public Ticket createSystemTicket(String message) {
+        return createSystemTicket(null, message);
+    }
+
     public Ticket getTicket(int id) {
         return ticketMap.get(id);
     }
