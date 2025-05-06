@@ -103,7 +103,7 @@ public class DiscordCommand {
     }
 
     private OptionData buildOption(CommandArgument<CommandSender, ?> arg) {
-        OptionData data = new OptionData(OptionType.STRING, arg.getName(), arg.getName(), arg.isRequired(), true);
+        OptionData data = new OptionData(OptionType.STRING, arg.getName().toLowerCase(), arg.getName(), arg.isRequired(), true);
 
         if (JailArgument.class.equals(arg.getClass())) {
             // List of jails doesn't change often enough for dynamic autocomplete.
@@ -134,8 +134,8 @@ public class DiscordCommand {
                     continue;
                 }
                 cmd.append(" ");
-                OptionMapping opt = options.apply(arg.getName());
-                if (currentField != null && currentField.equals(arg.getName())) {
+                OptionMapping opt = options.apply(arg.getName().toLowerCase());
+                if (currentField != null && currentField.equals(arg.getName().toLowerCase())) {
                     cmd.append(currentValue);
                     break;
                 }

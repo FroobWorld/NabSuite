@@ -20,6 +20,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockReceiveGameEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -150,6 +151,16 @@ public class VanishEnforcer implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (vanishManager.isVanished(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockForm(EntityBlockFormEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+        if (vanishManager.isVanished(player)) {
             event.setCancelled(true);
         }
     }

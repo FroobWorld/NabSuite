@@ -55,6 +55,17 @@ public class NoBuildFlagEnforcer implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onBlockForm(EntityBlockFormEvent event) {
+        Player causer = PlayerCauser.getPlayerCauser(event.getEntity());
+        if (causer == null) {
+            return;
+        }
+        if (!canBuild(event.getBlock().getLocation(), causer, false)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
         if (!canBuild(event.getBlock().getLocation(), event.getPlayer(), true)) {
             event.setCancelled(true);
