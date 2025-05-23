@@ -12,6 +12,7 @@ import com.froobworld.nabsuite.modules.admin.command.argument.JailArgument;
 import com.froobworld.nabsuite.modules.admin.jail.Jail;
 import com.froobworld.nabsuite.modules.admin.punishment.JailPunishment;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
@@ -38,6 +39,11 @@ public class ConfineCommand extends NabCommand {
         adminModule.getPunishmentManager().getJailEnforcer().jail(player, context.getSender(), jail, reason, TimeUnit.DAYS.toMillis(1), true);
         context.getSender().sendMessage(
                 Component.text(player.getLastName() + " has been confined.", NamedTextColor.YELLOW)
+        );
+        context.getSender().sendMessage(Component.newline());
+        context.getSender().sendMessage(
+                Component.text("Remember to open a /modreq to alert Staff.", NamedTextColor.YELLOW)
+                        .clickEvent(ClickEvent.suggestCommand("/modreq confined " + player.getLastName() + " for "))
         );
     }
 

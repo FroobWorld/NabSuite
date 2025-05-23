@@ -9,6 +9,7 @@ import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
@@ -32,6 +33,11 @@ public class RestrictCommand extends NabCommand {
         adminModule.getPunishmentManager().getRestrictionEnforcer().restrict(player, context.getSender(), reason);
         context.getSender().sendMessage(
                 Component.text(player.getLastName() + " has been restricted.", NamedTextColor.YELLOW)
+        );
+        context.getSender().sendMessage(Component.newline());
+        context.getSender().sendMessage(
+                Component.text("Remember to open a /modreq to alert Staff.", NamedTextColor.YELLOW)
+                        .clickEvent(ClickEvent.suggestCommand("/modreq restricted " + player.getLastName() + " for "))
         );
     }
 
