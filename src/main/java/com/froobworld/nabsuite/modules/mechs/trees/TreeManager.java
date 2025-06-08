@@ -7,12 +7,15 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
 import java.util.regex.Pattern;
@@ -22,8 +25,10 @@ public class TreeManager implements Listener {
     protected final DataSaver regionDataSaver;
     private final BiMap<UnnaturalLogRegion.Key, UnnaturalLogRegion> logRegionMap = HashBiMap.create();
     private final File directory;
+    private final NamespacedKey replantPdcKey;
 
     public TreeManager(MechsModule mechsModule) {
+        this.replantPdcKey = new NamespacedKey(mechsModule.getPlugin(), "tree-replanter-enabled");
         directory = new File(mechsModule.getDataFolder(), "unnatural-logs/");
         regionDataSaver = new DataSaver(mechsModule.getPlugin(), 1200 * 5);
         logRegionMap.putAll(DataLoader.loadAll(
@@ -70,6 +75,19 @@ public class TreeManager implements Listener {
         if (Tag.LOGS.isTagged(event.getBlock().getType())) {
             Location location = event.getBlock().getLocation();
             getLogRegionData(location).addLocation(location);
+        }
+    }
+
+    public Boolean replantEnabled(Player player) {
+        if (player == null) {
+            return true;
+        }
+        return player.getPersistentDataContainer().getOrDefault(replantPdcKey, PersistentDataType.BOOLEAN, true);
+    }
+
+    public void setReplantEnabled(Player player, boolean replant) {
+        if (player != null) {
+            player.getPersistentDataContainer().set(replantPdcKey, PersistentDataType.BOOLEAN, replant);
         }
     }
 
