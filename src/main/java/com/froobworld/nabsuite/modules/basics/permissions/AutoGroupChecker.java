@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.basics.permissions;
 
+import com.froobworld.nabsuite.data.playervar.PlayerVars;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.player.PlayerData;
 import net.luckperms.api.LuckPerms;
@@ -46,6 +47,8 @@ public class AutoGroupChecker {
             if (daysRequired > 0 && daysPlayed > daysRequired) {
                 track.promote(user, luckPerms.getContextManager().getStaticContext());
                 luckPerms.getUserManager().saveUser(user);
+                PlayerVars playerVars = basicsModule.getPlugin().getPlayerVarsManager().getVars(user.getUniqueId());
+                playerVars.put("last-group-change", System.currentTimeMillis());
             }
 
         });
