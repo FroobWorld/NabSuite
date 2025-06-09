@@ -323,6 +323,8 @@ permissions:
     description: "Access to the /effectivevd command."
   nabsuite.command.borderwarning:
     description: "Access to the /borderwarning command."
+  nabsuite.command.noreplant:
+    description: "Access to the /noreplant command."
 
   # Mechs module other permissions
   nabsuite.nabmode:

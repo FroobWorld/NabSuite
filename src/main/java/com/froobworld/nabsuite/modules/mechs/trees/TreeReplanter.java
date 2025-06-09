@@ -1,10 +1,7 @@
 package com.froobworld.nabsuite.modules.mechs.trees;
 
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Tag;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,13 +15,12 @@ public class TreeReplanter implements Listener {
     public TreeReplanter(MechsModule mechsModule, TreeManager treeManager) {
         this.mechsModule = mechsModule;
         this.treeManager = treeManager;
-
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     private void onBlockBreak(BlockBreakEvent event) {
         if (Tag.LOGS.isTagged(event.getBlock().getType())) {
-            if (treeManager.isNaturalLog(event.getBlock().getLocation())) {
+            if (treeManager.replantEnabled(event.getPlayer()) && treeManager.isNaturalLog(event.getBlock().getLocation())) {
                 Material saplingMaterial = saplingTypeForWood(event.getBlock().getType());
                 if (saplingMaterial != null) {
                     schedulePlantTask(event.getBlock().getLocation(), saplingMaterial);
