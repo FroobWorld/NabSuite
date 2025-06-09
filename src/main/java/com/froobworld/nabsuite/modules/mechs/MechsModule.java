@@ -5,10 +5,9 @@ import com.froobworld.nabsuite.NabSuite;
 import com.froobworld.nabsuite.modules.mechs.border.WorldBorderManager;
 import com.froobworld.nabsuite.modules.mechs.chat.ClickableLinkReplacer;
 import com.froobworld.nabsuite.modules.mechs.command.BorderWarningCommand;
-import com.froobworld.nabsuite.modules.mechs.command.EffectiveViewDistanceCommand;
 import com.froobworld.nabsuite.modules.mechs.command.PvpCommand;
 import com.froobworld.nabsuite.modules.mechs.command.ToggleViewDistanceCommand;
-import com.froobworld.nabsuite.modules.mechs.command.AutoReplantCommand;
+import com.froobworld.nabsuite.modules.mechs.command.NoReplantCommand;
 import com.froobworld.nabsuite.modules.mechs.config.MechsConfig;
 import com.froobworld.nabsuite.modules.mechs.signedit.SignEditDisabler;
 import com.froobworld.nabsuite.modules.mechs.mobgriefing.MobGriefingManager;
@@ -52,7 +51,7 @@ public class MechsModule extends NabModule {
                 new ToggleViewDistanceCommand(this),
                 //new EffectiveViewDistanceCommand(),
                 new BorderWarningCommand(this),
-                new AutoReplantCommand(this)
+                new NoReplantCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 

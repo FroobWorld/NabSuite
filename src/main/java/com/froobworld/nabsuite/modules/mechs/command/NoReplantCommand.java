@@ -9,14 +9,14 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class AutoReplantCommand extends NabCommand {
+public class NoReplantCommand extends NabCommand {
     private final MechsModule mechsModule;
 
-    public AutoReplantCommand(MechsModule mechsModule) {
+    public NoReplantCommand(MechsModule mechsModule) {
         super(
-                "autoreplant",
+                "noreplant",
                 "Toggle automatic tree replanting.",
-                "nabsuite.command.autoreplant",
+                "nabsuite.command.noreplant",
                 Player.class
         );
         this.mechsModule = mechsModule;
@@ -29,7 +29,7 @@ public class AutoReplantCommand extends NabCommand {
 
         mechsModule.getTreeManager().setReplantEnabled(sender, !current);
         if (current) {
-            sender.sendMessage(Component.text("Automatic tree replanting disabled.", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Automatic tree replanting disabled temporarily.", NamedTextColor.YELLOW));
         } else {
             sender.sendMessage(Component.text("Automatic tree replanting enabled.", NamedTextColor.YELLOW));
         }
