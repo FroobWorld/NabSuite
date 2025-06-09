@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.command.argument.HomeArgument;
 import com.froobworld.nabsuite.modules.basics.teleport.home.Home;
+import com.froobworld.nabsuite.modules.basics.event.TeleportHomeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
@@ -28,11 +29,14 @@ public class HomeCommand extends NabCommand {
     public void execute(CommandContext<CommandSender> context) {
         Player player = (Player) context.getSender();
         Home home = context.get("home");
-        basicsModule.getPlayerTeleporter().teleportAsync(player, home.getLocation()).thenAccept(v -> {
-            player.sendMessage(
-                    Component.text("There's no place like home...").color(NamedTextColor.YELLOW)
-            );
-        });
+        TeleportHomeEvent event = new TeleportHomeEvent(player, home);
+        if (event.callEvent()) {
+            basicsModule.getPlayerTeleporter().teleportAsync(player, home.getLocation()).thenAccept(v -> {
+                player.sendMessage(
+                        Component.text("There's no place like home...").color(NamedTextColor.YELLOW)
+                );
+            });
+        }
     }
 
     @Override
