@@ -14,8 +14,12 @@ public class AreaNotificationManager {
     private final Map<Player, Long> lastNotifyMap = new WeakHashMap<>();
 
     public void notifyProtected(Player player) {
+        notifyProtected(player, AREA_PROTECTED_MESSAGE);
+    }
+
+    public void notifyProtected(Player player, Component message) {
         if (System.currentTimeMillis() - lastNotifyMap.getOrDefault(player, -1L) > NOTIFICATION_RATE_LIMIT) {
-            player.sendMessage(AREA_PROTECTED_MESSAGE);
+            player.sendMessage(message);
             lastNotifyMap.put(player, System.currentTimeMillis());
         }
     }

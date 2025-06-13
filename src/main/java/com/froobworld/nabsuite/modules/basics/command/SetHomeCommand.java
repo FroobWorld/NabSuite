@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.command.NabCommand;
 import com.froobworld.nabsuite.command.argument.arguments.StringArgument;
 import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.command.argument.predicate.predicates.PatternArgumentPredicate;
+import com.froobworld.nabsuite.modules.basics.event.CreateHomeEvent;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.teleport.home.Home;
 import com.froobworld.nabsuite.modules.basics.teleport.home.HomeManager;
@@ -41,10 +42,13 @@ public class SetHomeCommand extends NabCommand {
             return;
         }
 
-        Home home = basicsModule.getHomeManager().createHome(player, homeName);
-        player.sendMessage(
-                Component.text("Created home '" + home.getName() + "' at your location.").color(NamedTextColor.YELLOW)
-        );
+        CreateHomeEvent event = new CreateHomeEvent(player, player.getLocation(), homeName);
+        if (event.callEvent()) {
+            Home home = basicsModule.getHomeManager().createHome(player, homeName);
+            player.sendMessage(
+                    Component.text("Created home '" + home.getName() + "' at your location.").color(NamedTextColor.YELLOW)
+            );
+        }
     }
 
     @Override
