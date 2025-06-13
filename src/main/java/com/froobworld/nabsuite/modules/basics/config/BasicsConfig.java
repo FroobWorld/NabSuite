@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class BasicsConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 6;
+    private static final int CONFIG_VERSION = 7;
 
     public BasicsConfig(BasicsModule basicsModule) {
         super(
@@ -86,6 +86,22 @@ public class BasicsConfig extends NabConfiguration {
 
         @EntryMap(key = "required-time", defaultKey = "other")
         public final ConfigEntryMap<String, Integer> requiredTime = new ConfigEntryMap<>(Function.identity(), ConfigEntries::integerEntry, true);
+
+    }
+
+    @Section(key = "auto-demote")
+    public final AutoDemote autoDemote = new AutoDemote();
+
+    public static class AutoDemote extends ConfigSection {
+
+        @Entry(key = "groups")
+        public final ConfigEntry<List<String>> groups = ConfigEntries.stringListEntry();
+
+        @EntryMap(key = "inactive-time", defaultKey = "default")
+        public final ConfigEntryMap<String, Integer> inactiveTime = new ConfigEntryMap<>(Function.identity(), ConfigEntries::integerEntry, true);
+
+        @EntryMap(key = "demote-to-group", defaultKey = "default")
+        public final ConfigEntryMap<String, String> demoteToGroup = new ConfigEntryMap<>(Function.identity(), ConfigEntry::new, true);
 
     }
 

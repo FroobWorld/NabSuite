@@ -142,6 +142,26 @@ public class DiscordStaffLog {
         }
     }
 
+    public void sendGroupChangeNotification(CommandSender sender, PlayerIdentity player, String newGroup) {
+        if (discordModule == null) {
+            return;
+        }
+
+        TextChannel channel = discordModule.getDiscordBot().getStaffLogChannel();
+        if (channel != null) {
+            String resolverName = sender instanceof OfflinePlayer ? sender.getName() : "Console";
+
+            EmbedBuilder embedBuilder = new EmbedBuilder().setTitle("Player group changed")
+                    .setColor(Color.YELLOW)
+                    .setThumbnail(getSkinUrl(player.getUuid()))
+                    .addField("Changed by", DiscordUtils.escapeMarkdown(resolverName), true)
+                    .addField("Player", DiscordUtils.escapeMarkdown(player.getLastName()), true)
+                    .addField("New Group", DiscordUtils.escapeMarkdown(newGroup), true);
+
+            channel.sendMessageEmbeds(embedBuilder.build()).queue();
+        }
+    }
+
     public void sendAreaRequestNotification(Area area) {
         if (discordModule == null) {
             return;
