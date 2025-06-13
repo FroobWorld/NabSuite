@@ -18,7 +18,6 @@ public class TeleportHomeEvent extends PlayerEvent implements Cancellable {
 
     public TeleportHomeEvent(Player player, Home home) {
         super(player);
-        this.player = player;
         this.home = home;
     }
 
