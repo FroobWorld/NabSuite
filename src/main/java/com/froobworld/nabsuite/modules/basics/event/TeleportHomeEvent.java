@@ -3,14 +3,13 @@ package com.froobworld.nabsuite.modules.basics.event;
 import com.froobworld.nabsuite.modules.basics.teleport.home.Home;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerEvent;
 
-public class TeleportHomeEvent extends Event implements Cancellable {
+public class TeleportHomeEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
     private boolean cancelled = false;
-    private final Player player;
     private final Home home;
 
     public static HandlerList getHandlerList() {
@@ -18,7 +17,7 @@ public class TeleportHomeEvent extends Event implements Cancellable {
     }
 
     public TeleportHomeEvent(Player player, Home home) {
-        super();
+        super(player);
         this.player = player;
         this.home = home;
     }
@@ -36,10 +35,6 @@ public class TeleportHomeEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean cancel) {
         this.cancelled = cancel;
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     public Home getHome() {
