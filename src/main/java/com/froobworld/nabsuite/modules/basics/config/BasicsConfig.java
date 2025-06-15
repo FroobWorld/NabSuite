@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class BasicsConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 6;
+    private static final int CONFIG_VERSION = 7;
 
     public BasicsConfig(BasicsModule basicsModule) {
         super(
@@ -38,6 +38,9 @@ public class BasicsConfig extends NabConfiguration {
 
         @Entry(key = "afk-kick-time")
         public final ConfigEntry<Long> afkKickTime = ConfigEntries.longEntry();
+
+        @Entry(key = "afk-warn-time")
+        public final ConfigEntry<Long> afkWarnTime = ConfigEntries.longEntry();
 
     }
 
