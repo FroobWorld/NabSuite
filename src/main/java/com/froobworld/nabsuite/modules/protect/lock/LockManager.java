@@ -1,10 +1,14 @@
 package com.froobworld.nabsuite.modules.protect.lock;
 
 import com.destroystokyo.paper.MaterialTags;
+import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.modules.basics.player.PlayerDataManager;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,6 +19,7 @@ import org.bukkit.block.data.type.*;
 import org.bukkit.block.data.type.Bed.Part;
 import org.bukkit.block.data.type.Chest.Type;
 import org.bukkit.block.data.type.Door.Hinge;
+import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -34,8 +39,10 @@ public class LockManager {
     public Map<Player, Location> selectedSigns = new HashMap<>();
     private final Map<Location, CacheItem> lockCache = new HashMap<>();
     private final PlayerDataManager playerDataManager;
+    private final ProtectModule protectModule;
 
     public LockManager(ProtectModule protectModule) {
+        this.protectModule = protectModule;
         playerDataManager = protectModule.getPlugin().getModule(BasicsModule.class).getPlayerDataManager();
         Bukkit.getPluginManager().registerEvents(new LockListener(this), protectModule.getPlugin());
     }
@@ -52,55 +59,78 @@ public class LockManager {
             }
         }
 
-        for (Sign sign : getAllRelevantSigns(location.getBlock())) {
-            if (sign.getLine(0).equalsIgnoreCase(LOCK_HEADER)) {
-                return SignUtils.decodeUUID(sign.getLine(1));
+        ArrayList<Sign> relevantSigns = getAllRelevantSigns(location.getBlock());
+        for (Sign sign : relevantSigns) {
+            if (SignUtils.getLine(sign, 0).equalsIgnoreCase(LOCK_HEADER)) {
+                UUID owner = SignUtils.decodePlayer(sign.getSide(Side.FRONT).line(1));
+                if (owner == null) {
+                    // Sign might have been rolled back, try to populate uuids from names again for all signs
+                    for (Sign sign2 : relevantSigns) {
+                        if (isLockSign(sign2)) {
+                            restoreSignUuids(sign2);
+                        }
+                    }
+                    owner = SignUtils.decodePlayer(sign.getSide(Side.FRONT).line(1));
+                }
+                return owner;
             }
         }
 
         return null;
     }
 
-    public boolean isUser(Location location, Player player) {
-        ArrayList<Sign> relevantSigns = getAllRelevantSigns(location.getBlock());
-        for (Sign sign : relevantSigns) {
-            if (sign.getLine(0).equalsIgnoreCase(LOCK_HEADER) || sign.getLine(0).equalsIgnoreCase(MORE_HEADER)) {
-                for (int i = 1; i <= 3; i++) {
-                    if (sign.getLine(i).contains("�")) {
-                        sign.setLine(i, sign.getLine(i).replaceAll("�", "§"));
-                        sign.update(true);
-                    }
-                }
+    private void restoreSignUuids(Sign sign) {
+        boolean save = false;
+        for (int i = 1; i <= 3; i++) {
+            TextComponent row = (TextComponent)sign.getSide(Side.FRONT).line(i);
+            if (row.content().equalsIgnoreCase(FRIENDS) || row.content().equalsIgnoreCase(EVERYONE)) {
+                continue;
+            }
+            HoverEvent<?> hoverEvent = row.hoverEvent();
+            if (hoverEvent != null && hoverEvent.value() instanceof HoverEvent.ShowEntity) {
+                continue;
+            }
+            Set<PlayerIdentity> players = protectModule.getPlugin().getPlayerIdentityManager().getPlayerIdentity(row.content());
+            if (players.size() == 1) {
+                PlayerIdentity player = players.stream().findFirst().get();
+                sign.getSide(Side.FRONT).line(i, SignUtils.encodePlayer(player));
+                save = true;
             }
         }
+        if (save) {
+            sign.update(true);
+        }
+    }
 
+    public boolean isUser(Location location, Player player) {
+        ArrayList<Sign> relevantSigns = getAllRelevantSigns(location.getBlock());
         UUID owner = getOwner(location, false);
         if (owner == null) {
             return true;
         }
         for (Sign sign : relevantSigns) {
-            if (sign.getLine(0).equalsIgnoreCase(LOCK_HEADER) || sign.getLine(0).equalsIgnoreCase(MORE_HEADER)) {
+            if (isLockSign(sign)) {
                 for (int i = 1; i <= 3; i++) {
-                    if (sign.getLine(i).equalsIgnoreCase(EVERYONE)) {
+                    if (SignUtils.getLine(sign, i).equalsIgnoreCase(EVERYONE)) {
                         return true;
                     }
-                    if (sign.getLine(i).equalsIgnoreCase(FRIENDS)) {
+                    if (SignUtils.getLine(sign, i).equalsIgnoreCase(FRIENDS)) {
                         if (playerDataManager.getFriendManager().areFriends(player, owner)) {
                             return true;
                         }
                     }
-                    String name = SignUtils.decodeName(sign.getLine(i));
-                    UUID uuid = SignUtils.decodeUUID(sign.getLine(i));
+                    String name = SignUtils.getLine(sign, i);
+                    UUID uuid = SignUtils.decodePlayer(sign.getSide(Side.FRONT).line(i));
                     if (player.getUniqueId().equals(uuid)) {
                         if (!Objects.equals(name, player.getName())) {
-                            sign.setLine(i, SignUtils.encodeName(player.getName(), player.getUniqueId()));
-                            sign.update();
+                            sign.getSide(Side.FRONT).line(i, SignUtils.encodePlayer(player));
+                            sign.update(true);
                         }
                         return true;
                     }
                     if (uuid == null && name.equalsIgnoreCase(player.getName())) {
-                        sign.setLine(i, SignUtils.encodeName(player.getName(), player.getUniqueId()));
-                        sign.update();
+                        sign.getSide(Side.FRONT).line(i, SignUtils.encodePlayer(player));
+                        sign.update(true);
                         return true;
                     }
                 }
@@ -239,7 +269,16 @@ public class LockManager {
     }
 
     public boolean isLockSign(Sign sign) {
-        return sign.getLine(0).equalsIgnoreCase(LOCK_HEADER) || sign.getLine(0).equalsIgnoreCase(MORE_HEADER);
+        return SignUtils.getLine(sign, 0).equalsIgnoreCase(LOCK_HEADER) || SignUtils.getLine(sign, 0).equalsIgnoreCase(MORE_HEADER);
+    }
+
+    public boolean isLockSign(SignChangeEvent sign) {
+        return SignUtils.getLine(sign, 0).equalsIgnoreCase(LOCK_HEADER) || SignUtils.getLine(sign, 0).equalsIgnoreCase(MORE_HEADER);
+    }
+
+    public void updateUser(Sign sign, int index, String name, UUID uuid) {
+        sign.getSide(Side.FRONT).line(index, SignUtils.encodePlayer(name, uuid));
+        sign.update();
     }
 
     public void onBlockBreak(BlockBreakEvent event) {
@@ -258,7 +297,7 @@ public class LockManager {
             if (getAttachedLockables(connected).isEmpty()) {
                 return;
             }
-            if (sign.getLine(0).equalsIgnoreCase(LOCK_HEADER) || sign.getLine(0).equalsIgnoreCase(MORE_HEADER)) {
+            if (isLockSign(sign)) {
                 UUID owner = getOwner(connected.getLocation(), false);
                 if (!event.getPlayer().hasPermission(PERM_BYPASS_LOCKS) && !event.getPlayer().getUniqueId().equals(owner)) {
                     event.setCancelled(true);
@@ -273,7 +312,7 @@ public class LockManager {
             if (isLockSign(sign)) {
                 if (!selectedSigns.containsKey(event.getPlayer()) || selectedSigns.get(event.getPlayer()) != event.getClickedBlock().getLocation()) {
                     selectedSigns.put(event.getPlayer(), event.getClickedBlock().getLocation());
-                    event.getPlayer().sendMessage(ChatColor.YELLOW + "Sign selected. Use /lock to edit it.");
+                    event.getPlayer().sendMessage(Component.text("Sign selected. Use /lock to edit it.").color(NamedTextColor.YELLOW));
                 }
 
             }
@@ -291,7 +330,7 @@ public class LockManager {
         for (Block b : event.blockList()) {
             if (b.getBlockData() instanceof WallSign) {
                 Sign sign = (Sign) b.getState();
-                if (sign.getLine(0).equalsIgnoreCase(LOCK_HEADER) || sign.getLine(0).equalsIgnoreCase(MORE_HEADER)) {
+                if (isLockSign(sign)) {
                     toRemove.add(b);
                 }
                 continue;
@@ -311,7 +350,7 @@ public class LockManager {
         for (Block b : event.blockList()) {
             if (b.getBlockData() instanceof WallSign) {
                 Sign sign = (Sign) b.getState();
-                if (sign.getLine(0).equalsIgnoreCase(LOCK_HEADER) || sign.getLine(0).equalsIgnoreCase(MORE_HEADER)) {
+                if (isLockSign(sign)) {
                     toRemove.add(b);
                 }
                 continue;
@@ -339,32 +378,32 @@ public class LockManager {
         if (!(event.getBlock().getBlockData() instanceof WallSign)) {
             return;
         }
-        if (!event.getLine(0).equalsIgnoreCase(LOCK_HEADER) && !event.getLine(0).equalsIgnoreCase(MORE_HEADER) && !(event.getLine(0).isEmpty() && event.getLine(1).isEmpty() && event.getLine(2).isEmpty() && event.getLine(3).isEmpty())) {
+        if (!isLockSign(event) && !(SignUtils.getLine(event, 0).isEmpty() && SignUtils.getLine(event, 1).isEmpty() && SignUtils.getLine(event, 2).isEmpty() && SignUtils.getLine(event, 3).isEmpty())) {
             return;
         }
         WallSign wallSign = (WallSign) event.getBlock().getBlockData();
         Block connected = event.getBlock().getRelative(wallSign.getFacing().getOppositeFace());
 
         if (getAttachedLockables(connected).isEmpty()) {
-            if (event.getLine(0).equalsIgnoreCase(LOCK_HEADER) || event.getLine(0).equalsIgnoreCase(MORE_HEADER)) {
-                event.setLine(0, ERROR_HEADER);
-                event.getPlayer().sendMessage(ChatColor.RED + "This cannot be locked.");
+            if (isLockSign(event)) {
+                event.line(0, Component.text(ERROR_HEADER));
+                event.getPlayer().sendMessage(Component.text("This cannot be locked.").color(NamedTextColor.RED));
             }
             return;
         }
 
         UUID owner = getOwner(connected.getLocation(), false);
         if (owner != null && !owner.equals(event.getPlayer().getUniqueId())) {
-            event.setLine(0, ERROR_HEADER);
-            event.getPlayer().sendMessage(ChatColor.RED + "This is already locked.");
+            event.line(0, Component.text(ERROR_HEADER));
+            event.getPlayer().sendMessage(Component.text("This is already locked.").color(NamedTextColor.RED));
             return;
         }
         if (owner == null) {
-            event.setLine(0, LOCK_HEADER);
-            event.setLine(1, SignUtils.encodeName(event.getPlayer().getName(), event.getPlayer().getUniqueId()));
+            event.line(0, Component.text(LOCK_HEADER));
+            event.line(1, SignUtils.encodePlayer(event.getPlayer().getName(), event.getPlayer().getUniqueId()));
         } else {
-            event.setLine(0, MORE_HEADER);
-            event.setLine(1, FRIENDS);
+            event.line(0, Component.text(MORE_HEADER));
+            event.line(1, Component.text(FRIENDS));
         }
     }
 

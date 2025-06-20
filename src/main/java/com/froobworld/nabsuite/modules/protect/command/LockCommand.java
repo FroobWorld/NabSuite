@@ -70,18 +70,20 @@ public class LockCommand extends NabCommand {
             return;
         }
         Sign sign = (Sign) block.getState();
-        if (sign.getLine(0).equalsIgnoreCase(LockManager.LOCK_HEADER) && line == 2 && !sender.hasPermission(LockManager.PERM_BYPASS_LOCKS)) {
+        if (SignUtils.getLine(sign, 0).equalsIgnoreCase(LockManager.LOCK_HEADER) && line == 2 && !sender.hasPermission(LockManager.PERM_BYPASS_LOCKS)) {
             sender.sendMessage(Component.text("You can't change the owner of the sign.", NamedTextColor.RED));
             return;
         }
-        String string;
-        if (input instanceof PlayerIdentity) {
-            string = SignUtils.encodeName(((PlayerIdentity) input).getLastName(), ((PlayerIdentity) input).getUuid());
+        if (input instanceof PlayerIdentity playerIdentity) {
+            lockManager.updateUser(sign, line - 1, playerIdentity.getLastName(), playerIdentity.getUuid());
         } else {
-            string = input.toString();
+            if (SignUtils.getLine(sign, 0).equalsIgnoreCase(LockManager.LOCK_HEADER) && line == 2) {
+                // Don't allow null uuid for owner
+                sender.sendMessage(Component.text("New owner must be a known player.", NamedTextColor.RED));
+                return;
+            }
+            lockManager.updateUser(sign, line - 1, input.toString(), null);
         }
-        sign.setLine(line - 1, string);
-        sign.update(true);
     }
 
     @Override

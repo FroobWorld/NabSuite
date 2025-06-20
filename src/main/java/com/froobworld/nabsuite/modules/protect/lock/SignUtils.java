@@ -1,8 +1,17 @@
 package com.froobworld.nabsuite.modules.protect.lock;
 
+import com.froobworld.nabsuite.data.identity.PlayerIdentity;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.block.sign.Side;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.SignChangeEvent;
 
 import java.util.UUID;
 
@@ -19,6 +28,30 @@ public final class SignUtils {
         };
 
         return faces;
+    }
+
+    public static TextComponent encodePlayer(String name, UUID uuid) {
+        TextComponent data = Component.text(name);
+        if (uuid != null) {
+            data = data.hoverEvent(HoverEvent.showEntity(Key.key("player"), uuid, Component.text(name)));
+        }
+        return data;
+    }
+
+    public static TextComponent encodePlayer(Player player) {
+        return encodePlayer(player.getName(), player.getUniqueId());
+    }
+
+    public static TextComponent encodePlayer(PlayerIdentity player) {
+        return encodePlayer(player.getLastName(), player.getUuid());
+    }
+
+    public static UUID decodePlayer(Component row) {
+        HoverEvent<?> hoverEvent = row.hoverEvent();
+        if (hoverEvent != null && hoverEvent.value() instanceof HoverEvent.ShowEntity showEntity) {
+            return showEntity.id();
+        }
+        return null;
     }
 
     public static Block getAttachedBlock(Block sb) {
@@ -46,121 +79,20 @@ public final class SignUtils {
         return null;
     }
 
-    public static String encodeUUID(UUID uuid) {
-        String str = uuid.toString();
-        String concat = "";
-        for (char c : str.toCharArray()) {
-            concat += "§" + getEncoding(c);
+    public static String getLine(Sign sign, int index) {
+        Component line = sign.getSide(Side.FRONT).line(index);
+        if (line instanceof TextComponent textLine) {
+            return textLine.content();
         }
-
-        return concat;
+        return "";
     }
 
-    public static UUID decodeUUID(String line) {
-        String[] split = line.split("§=");
-
-        if (split.length < 2) {
-            return null;
+    public static String getLine(SignChangeEvent event, int index) {
+        Component line = event.line(index);
+        if (line instanceof TextComponent textLine) {
+            return textLine.content();
         }
-        String decoded = "";
-        for (String s : split[1].replaceFirst("§", "").split("§")) {
-            decoded += getDecoded(s);
-        }
-
-        return UUID.fromString(decoded);
-    }
-
-    public static String decodeName(String line) {
-        String[] split = line.split("§=");
-
-        return split[0];
-    }
-
-    public static String encodeName(String name, UUID uuid) {
-
-        return name + "§=" + encodeUUID(uuid);
-    }
-
-    private static char getEncoding(char c) {
-        switch (c) {
-            case '0':
-                return ')';
-            case '1':
-                return '!';
-            case '2':
-                return '@';
-            case '3':
-                return '#';
-            case '4':
-                return '$';
-            case '5':
-                return '%';
-            case '6':
-                return '^';
-            case '7':
-                return '&';
-            case '8':
-                return '*';
-            case '9':
-                return '(';
-            case 'a':
-                return '_';
-            case 'b':
-                return '+';
-            case 'c':
-                return '[';
-            case 'd':
-                return ']';
-            case 'e':
-                return '{';
-            case 'f':
-                return '}';
-            case '-':
-                return '-';
-        }
-
-        return c;
-    }
-
-    private static char getDecoded(String s) {
-        switch (s) {
-            case ")":
-                return '0';
-            case "!":
-                return '1';
-            case "@":
-                return '2';
-            case "#":
-                return '3';
-            case "$":
-                return '4';
-            case "%":
-                return '5';
-            case "^":
-                return '6';
-            case "&":
-                return '7';
-            case "*":
-                return '8';
-            case "(":
-                return '9';
-            case "_":
-                return 'a';
-            case "+":
-                return 'b';
-            case "[":
-                return 'c';
-            case "]":
-                return 'd';
-            case "{":
-                return 'e';
-            case "}":
-                return 'f';
-            case "-":
-                return '-';
-        }
-
-        return 'x';
+        return "";
     }
 
 }
