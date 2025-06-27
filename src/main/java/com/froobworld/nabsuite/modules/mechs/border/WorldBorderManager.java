@@ -1,28 +1,25 @@
 package com.froobworld.nabsuite.modules.mechs.border;
 
+import com.froobworld.nabsuite.data.playervar.PlayerVars;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import com.froobworld.nabsuite.modules.mechs.border.loot.LootLimitManager;
 import com.froobworld.nabsuite.modules.mechs.config.MechsConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 public class WorldBorderManager implements Listener {
+    private static final String ACCEPTS_WARNING_KEY = "accepts-border-region-warning";
     private final MechsModule mechsModule;
     private final Map<World, WorldBorder> worldBorderMap = new HashMap<>();
     private final LootLimitManager lootLimitManager;
-    private final Map<Player, Boolean> borderRegionWarningMap = new WeakHashMap<>();
-    private final NamespacedKey borderRegionWarningKey;
 
     public WorldBorderManager(MechsModule mechsModule) {
         this.mechsModule = mechsModule;
@@ -32,7 +29,6 @@ public class WorldBorderManager implements Listener {
         lootLimitManager = new LootLimitManager(mechsModule, this);
         new WorldBorderDynmapHook(mechsModule, this);
         new BorderRegionWarning(mechsModule, this);
-        this.borderRegionWarningKey = NamespacedKey.fromString("border-region-warning", mechsModule.getPlugin());
     }
 
     public void shutdown() {
@@ -64,12 +60,13 @@ public class WorldBorderManager implements Listener {
     }
 
     public boolean acceptedBorderRegionWarning(Player player) {
-        return borderRegionWarningMap.computeIfAbsent(player, p -> player.getPersistentDataContainer().has(borderRegionWarningKey));
+        PlayerVars playerVars = mechsModule.getPlugin().getPlayerVarsManager().getVars(player.getUniqueId());
+        return playerVars.getOrDefault(ACCEPTS_WARNING_KEY, boolean.class, false);
     }
 
     public void acceptBorderRegionWarning(Player player) {
-        borderRegionWarningMap.put(player, true);
-        player.getPersistentDataContainer().set(borderRegionWarningKey, PersistentDataType.BYTE, (byte) 1);
+        PlayerVars playerVars = mechsModule.getPlugin().getPlayerVarsManager().getVars(player.getUniqueId());
+        playerVars.put(ACCEPTS_WARNING_KEY, true);
     }
 
     @EventHandler(ignoreCancelled = true)

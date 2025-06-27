@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.basics.channel;
 
+import com.froobworld.nabsuite.data.playervar.PlayerVars;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.util.ComponentUtils;
@@ -9,26 +10,19 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class ChatChannelMessageCentre implements Listener {
+    private static final String LAST_CHANNEL_KEY = "last-chat-channel";
     private final BasicsModule basicsModule;
-    private final NamespacedKey lastChannelDataKey;
-    private final Map<UUID, ChatChannel> lastChannel = new HashMap<>();
 
     public ChatChannelMessageCentre(BasicsModule basicsModule) {
         this.basicsModule = basicsModule;
-        lastChannelDataKey = NamespacedKey.fromString("last-chat-channel", basicsModule.getPlugin());
         Bukkit.getPluginManager().registerEvents(this, basicsModule.getPlugin());
     }
 
@@ -72,12 +66,13 @@ public class ChatChannelMessageCentre implements Listener {
             }
         }
         channel.updateLastMessageTime();
-        sender.getPersistentDataContainer().set(lastChannelDataKey, PersistentDataType.STRING, channel.getName());
-        lastChannel.put(sender.getUniqueId(), channel);
+        PlayerVars playerVars = basicsModule.getPlugin().getPlayerVarsManager().getVars(sender.getUniqueId());
+        playerVars.put(LAST_CHANNEL_KEY, channel.getName());
     }
 
     public void replyChannel(Player sender, String message) {
-        String lastChannelName = sender.getPersistentDataContainer().get(lastChannelDataKey, PersistentDataType.STRING);
+        PlayerVars playerVars = basicsModule.getPlugin().getPlayerVarsManager().getVars(sender.getUniqueId());
+        String lastChannelName = playerVars.get(LAST_CHANNEL_KEY, String.class);
         ChatChannel lastChannel = lastChannelName == null ? null : basicsModule.getChatChannelManager().getChannel(lastChannelName);
         if (lastChannel == null) {
             sender.sendMessage(Component.text(

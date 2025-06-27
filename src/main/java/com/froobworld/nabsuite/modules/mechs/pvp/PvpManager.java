@@ -1,34 +1,27 @@
 package com.froobworld.nabsuite.modules.mechs.pvp;
 
+import com.froobworld.nabsuite.data.playervar.PlayerVars;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataType;
-
-import java.util.Map;
-import java.util.WeakHashMap;
 
 public class PvpManager {
-    private final NamespacedKey pdcKey;
-    private final Map<Player, Boolean> pvpEnabledCache = new WeakHashMap<>();
+    private static final String PVP_ENABLED_KEY = "pvp-enabled";
+    private final MechsModule mechsModule;
 
     public PvpManager(MechsModule mechsModule) {
-        this.pdcKey = new NamespacedKey(mechsModule.getPlugin(), "pvp-enabled");
+        this.mechsModule = mechsModule;
         Bukkit.getPluginManager().registerEvents(new PvpEnforcer(this, mechsModule), mechsModule.getPlugin());
     }
 
     public boolean pvpEnabled(Player player) {
-        return pvpEnabledCache.computeIfAbsent(player, p -> p.getPersistentDataContainer().has(pdcKey));
+        PlayerVars playerVars = mechsModule.getPlugin().getPlayerVarsManager().getVars(player.getUniqueId());
+        return playerVars.getOrDefault(PVP_ENABLED_KEY, boolean.class, false);
     }
 
-    public void setPvpEanbled(Player player, boolean enabled) {
-        if (enabled) {
-            player.getPersistentDataContainer().set(pdcKey, PersistentDataType.BYTE, (byte) 1);
-        } else {
-            player.getPersistentDataContainer().remove(pdcKey);
-        }
-        pvpEnabledCache.put(player, enabled);
+    public void setPvpEnabled(Player player, boolean enabled) {
+        PlayerVars playerVars = mechsModule.getPlugin().getPlayerVarsManager().getVars(player.getUniqueId());
+        playerVars.put(PVP_ENABLED_KEY, enabled);
     }
 
 }

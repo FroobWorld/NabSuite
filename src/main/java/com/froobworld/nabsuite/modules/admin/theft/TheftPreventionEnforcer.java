@@ -47,8 +47,9 @@ public class TheftPreventionEnforcer implements Listener {
     @EventHandler(ignoreCancelled = true)
     private void onJoin(PlayerJoinEvent event) {
         if (!event.getPlayer().hasPlayedBefore()) {
-            if (adminModule.getPlugin().getModule(BasicsModule.class).getPlayerDataManager().getPlayerData(event.getPlayer()).getFirstJoined() == event.getPlayer().getFirstPlayed()) {
-                theftPreventionManager.setNotUnderstands(event.getPlayer());
+            // don't show to returning players
+            if (adminModule.getPlugin().getModule(BasicsModule.class).getPlayerDataManager().getPlayerData(event.getPlayer()).getFirstJoined() != event.getPlayer().getFirstPlayed()) {
+                theftPreventionManager.setUnderstands(event.getPlayer());
             }
         }
     }

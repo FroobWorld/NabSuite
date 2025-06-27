@@ -1,5 +1,6 @@
 package com.froobworld.nabsuite.modules.admin.xray;
 
+import com.froobworld.nabsuite.data.playervar.PlayerVars;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.util.OreUtils;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
@@ -10,10 +11,8 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
-import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,7 +20,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -32,16 +30,14 @@ public class XrayMonitor implements Listener {
     private static final long COLLECTION_PERIOD = TimeUnit.MINUTES.toMillis(4);
     private static final int MINIMUM_VEIN_COUNT = 5;
     private static final int MINIMUM_VEIN_SIZE = 3;
-    private final NamespacedKey firstDiamondWarningKey;
+    private static final String XRAY_RULE_ACCEPTED = "xray-rule-accepted";
     private final AdminModule adminModule;
     private final VeinTracker diamondVeinTracker;
     private final Map<Player, PlayerTracker> playerTrackers = new WeakHashMap<>();
-    private final Map<UUID, Boolean> understandsCache = new HashMap<>();
 
     public XrayMonitor(AdminModule adminModule) {
         this.adminModule = adminModule;
         this.diamondVeinTracker = new VeinTracker();
-        this.firstDiamondWarningKey = new NamespacedKey(adminModule.getPlugin(), "first-diamond-warning");
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
@@ -85,19 +81,21 @@ public class XrayMonitor implements Listener {
     @EventHandler(ignoreCancelled = true)
     private void onJoin(PlayerJoinEvent event) {
         if (!event.getPlayer().hasPlayedBefore()) {
-            if (adminModule.getPlugin().getModule(BasicsModule.class).getPlayerDataManager().getPlayerData(event.getPlayer()).getFirstJoined() == event.getPlayer().getFirstPlayed()) {
-                event.getPlayer().getPersistentDataContainer().set(firstDiamondWarningKey, PersistentDataType.BYTE, (byte) 1);
+            // don't show warning to returning players
+            if (adminModule.getPlugin().getModule(BasicsModule.class).getPlayerDataManager().getPlayerData(event.getPlayer()).getFirstJoined() != event.getPlayer().getFirstPlayed()) {
+                setUnderstandsRules(event.getPlayer());
             }
         }
     }
 
     public boolean understandsRules(Player player) {
-        return understandsCache.computeIfAbsent(player.getUniqueId(), k -> !player.getPersistentDataContainer().has(firstDiamondWarningKey));
+        PlayerVars playerVars = adminModule.getPlugin().getPlayerVarsManager().getVars(player.getUniqueId());
+        return playerVars.getOrDefault(XRAY_RULE_ACCEPTED, boolean.class, false);
     }
 
     public void setUnderstandsRules(Player player) {
-        player.getPersistentDataContainer().remove(firstDiamondWarningKey);
-        understandsCache.put(player.getUniqueId(), true);
+        PlayerVars playerVars = adminModule.getPlugin().getPlayerVarsManager().getVars(player.getUniqueId());
+        playerVars.put(XRAY_RULE_ACCEPTED, true);
     }
 
     private void sendFirstDiamondWarning(Player player) {
