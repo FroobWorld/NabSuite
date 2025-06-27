@@ -1,0 +1,4 @@
+[add-field]
+key=afk-settings.afk-warn-time
+value=30
+comment=# Time in seconds to warn the player before automatic afk or kick

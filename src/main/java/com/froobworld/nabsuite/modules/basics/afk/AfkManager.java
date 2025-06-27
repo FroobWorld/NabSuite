@@ -5,6 +5,8 @@ import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -63,14 +65,18 @@ public class AfkManager implements Listener {
     }
 
     private void loop() {
+        final long afkTime = TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkTime.get());
+        final long afkKickTime = TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkKickTime.get());
+        final long afkWarnTime = TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkWarnTime.get());
         for (Player player : Bukkit.getOnlinePlayers()) {
             lastActivityMap.putIfAbsent(player, System.currentTimeMillis());
             if (isAfk(player)) {
                 AfkStatus afkStatus = afkStatusMap.get(player);
                 if (!player.getLocation().getWorld().equals(afkStatus.getAfkLocation().getWorld()) || player.getLocation().distance(afkStatus.getAfkLocation()) > 1) {
                     setAfk(player, false, true);
-                } else {
-                    if (afkStatus.isAuto() && System.currentTimeMillis() - afkStatus.getTimestamp() > TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkKickTime.get())) {
+                } else if (afkStatus.isAuto()) {
+                    long afkDuration = System.currentTimeMillis() - afkStatus.getTimestamp();
+                    if (afkDuration > afkKickTime) {
                         player.kick(
                                 Component.text("Kicked - AFK too long.", NamedTextColor.WHITE)
                                         .append(Component.newline())
@@ -78,11 +84,21 @@ public class AfkManager implements Listener {
                                         .append(Component.text("Use /afk to avoid being kicked.", NamedTextColor.WHITE))
                         );
                         afkStatusMap.remove(player);
+                    } else if (afkWarnTime > 0 && afkDuration > (afkKickTime - afkWarnTime) && (afkKickTime - afkDuration) >= 1000) {
+                        player.showTitle(Title.title(
+                                Component.text("AFK Warning").color(NamedTextColor.RED),
+                                Component.text("You will be kicked in " + (afkKickTime - afkDuration) / 1000 + "s").color(NamedTextColor.WHITE),
+                                // Show for 40 ticks to avoid flashing when TPS is low
+                                Title.Times.times(Ticks.duration(0), Ticks.duration(40), Ticks.duration(0))
+                        ));
                     }
                 }
             } else {
-                if (System.currentTimeMillis() - lastActivityMap.get(player) > TimeUnit.SECONDS.toMillis(basicsModule.getConfig().afkSettings.afkTime.get())) {
+                long inactiveTime = System.currentTimeMillis() - lastActivityMap.get(player);
+                if (inactiveTime > afkTime) {
                     setAfk(player, true, true);
+                } else if (afkWarnTime > 0 && inactiveTime > (afkTime - afkWarnTime) && (afkTime - inactiveTime) >= 1000) {
+                    player.sendActionBar(Component.text("Auto-AFK in " + (afkTime - inactiveTime) / 1000 + "s").color(NamedTextColor.WHITE));
                 }
             }
         }
