@@ -132,6 +132,7 @@ public class AdminModule extends NabModule {
     @Override
     public void postModulesEnable() {
         ticketManager.postStartup();
+        discordStaffLog.postStartup();
     }
 
     public AdminConfig getAdminConfig() {

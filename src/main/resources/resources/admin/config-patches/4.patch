@@ -1,0 +1,65 @@
+[add-field]
+key=ticket-levels
+value=\n  - "deputy"\n  - "default"\n  - "admin"
+comment=# Available ticket levels, ordered by lowest to highest
+
+[add-section]
+key=ticket-types
+comment=# Default values for different ticket types
+
+[add-section]
+key=ticket-types.default
+
+[add-field]
+key=ticket-types.default.level
+value="default"
+comment=# Default ticket level
+
+[add-field]
+key=ticket-types.default.allow-delegate
+value=true
+comment=# Allow ticket delegation by default
+
+[add-section]
+key=ticket-types.deputy-expiry-staff
+comment=# Staff deputy expiry ticket
+
+[add-field]
+key=ticket-types.deputy-expiry-staff.allow-delegate
+value=false
+
+[add-section]
+key=ticket-types.deputy-expiry-admin
+comment=# Admin deputy expiry ticket
+
+[add-field]
+key=ticket-types.deputy-expiry-admin.level
+value="admin"
+
+[add-field]
+key=ticket-types.deputy-expiry-admin.allow-delegate
+value=false
+
+[add-section]
+key=ticket-types.suspicion
+comment=# Grief/theft/lava cast suspicion
+
+[add-field]
+key=ticket-types.suspicion.level
+value="deputy"
+
+[add-section]
+key=ticket-types.modreq
+comment=# Player created tickets
+
+[add-section]
+key=ticket-types.profanity
+comment=# Highly offensive language
+
+[add-section]
+key=ticket-types.xray
+comment=# Suspicious mining activity
+
+[add-field]
+key=ticket-types.xray.level
+value="deputy"

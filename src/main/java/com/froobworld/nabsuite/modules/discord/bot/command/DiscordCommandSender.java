@@ -24,13 +24,19 @@ public class DiscordCommandSender extends OfflineCommandSender {
 
     public DiscordCommandSender(NabSuite plugin, PlayerIdentity player, InteractionHook event) {
         this(plugin, player);
-        this.hook = event;
-        this.replyBuffer = new StringBuilder();
-        replyBuffer.append("```ansi\n");
+        setHook(event);
     }
 
     public DiscordCommandSender(NabSuite plugin, PlayerIdentity player) {
         super(plugin, player);
+    }
+
+    public void setHook(InteractionHook hook) {
+        this.hook = hook;
+        if (this.replyBuffer == null) {
+            this.replyBuffer = new StringBuilder();
+            replyBuffer.append("```ansi\n");
+        }
     }
 
     @Override

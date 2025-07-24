@@ -5,12 +5,16 @@ import cloud.commandframework.arguments.StaticArgument;
 import com.froobworld.nabsuite.data.identity.PlayerIdentity;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.discord.DiscordModule;
+import com.froobworld.nabsuite.modules.discord.bot.DiscordBot;
 import com.froobworld.nabsuite.modules.discord.bot.linking.AccountLinkManager;
 import com.froobworld.nabsuite.modules.discord.config.DiscordConfig;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -19,6 +23,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DiscordCommandBridge extends ListenerAdapter {
@@ -198,4 +204,43 @@ public class DiscordCommandBridge extends ListenerAdapter {
         Bukkit.getScheduler().runTask(discordModule.getPlugin(), () -> command.autocomplete(sender, event));
     }
 
+    private <T extends IReplyCallback> void callInteractionHandler(String id, Function<String, BiConsumer<DiscordCommandSender, T>> supplier, T event) {
+        String action = id;
+        if (id.contains(":")) {
+            String[] parts = id.split(":", 2);
+            action = parts[0];
+        }
+        BiConsumer<DiscordCommandSender, T> consumer = supplier.apply(action);
+        if (consumer == null) {
+            event.reply("Unknown action: " + action)
+                    .setEphemeral(true)
+                    .queue(msg -> msg.deleteOriginal().queueAfter(10, TimeUnit.SECONDS));
+        } else {
+            PlayerIdentity player = accountLinkManager.getLinkedMinecraftAccount(event.getUser());
+            if (player == null) {
+                event.reply("User is not linked")
+                        .setEphemeral(true)
+                        .queue(msg -> msg.deleteOriginal().queueAfter(10, TimeUnit.SECONDS));
+            } else if (adminModule != null && adminModule.getPunishmentManager().getBanEnforcer().testBan(player.getUuid()) != null) {
+                event.reply("You cannot execute commands while banned")
+                        .setEphemeral(true)
+                        .queue(msg -> msg.deleteOriginal().queueAfter(10, TimeUnit.SECONDS));
+            } else {
+                DiscordCommandSender sender = new DiscordCommandSender(discordModule.getPlugin(), player);
+                consumer.accept(sender, event);
+            }
+        }
+    }
+
+    @Override
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+        DiscordBot bot = discordModule.getDiscordBot();
+        callInteractionHandler(event.getComponentId(), bot::getButtonHandler, event);
+    }
+
+    @Override
+    public void onModalInteraction(@NotNull ModalInteractionEvent event) {
+        DiscordBot bot = discordModule.getDiscordBot();
+        callInteractionHandler(event.getModalId(), bot::getModalHandler, event);
+    }
 }

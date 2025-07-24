@@ -13,7 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -55,13 +57,16 @@ public class StaffTaskManager implements Listener {
                 .collect(Collectors.toList());
     }
 
-    public void notifyNewTask(String permission) {
+    @SafeVarargs
+    public final void notifyNewTask(String permission, Predicate<Player>... playerPredicates) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(permission)) {
-                player.sendMessage(
-                        Component.text("There is a new staff task requiring action (/stafftasks).", NamedTextColor.YELLOW)
-                                .clickEvent(ClickEvent.runCommand("/stafftasks"))
-                );
+                if (playerPredicates.length == 0 || Arrays.stream(playerPredicates).allMatch(predicate -> predicate.test(player))) {
+                    player.sendMessage(
+                            Component.text("There is a new staff task requiring action (/stafftasks).", NamedTextColor.YELLOW)
+                                    .clickEvent(ClickEvent.runCommand("/stafftasks"))
+                    );
+                }
             }
         }
     }

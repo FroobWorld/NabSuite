@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.admin.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
+import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.command.argument.TicketArgument;
 import com.froobworld.nabsuite.modules.admin.ticket.Ticket;
@@ -73,7 +74,12 @@ public class TicketReadCommand extends NabCommand {
                 .argument(new TicketArgument<>(
                         true,
                         "ticket",
-                        adminModule.getTicketManager()
+                        adminModule.getTicketManager(),
+                        new ArgumentPredicate<>(
+                                true,
+                                (context, ticket) -> context.getSender().hasPermission(ticket.getPermission()),
+                                "You don't have permission for that ticket"
+                        )
                 ));
     }
 

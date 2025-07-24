@@ -237,6 +237,14 @@ permissions:
     description: "Access to the /ticket close command."
     children:
       - nabsuite.command.ticket
+  nabsuite.command.ticket.delegate:
+    description: "Access to the /ticket delegate command."
+    children:
+      - nabsuite.command.ticket
+  nabsuite.command.ticket.escalate:
+    description: "Access to the /ticket escalate command."
+    children:
+      - nabsuite.command.ticket
   nabsuite.command.nostealing:
     description: "Confirm you understand the rules on stealing."
   nabsuite.command.seeinv:
@@ -309,6 +317,12 @@ permissions:
     description: "Allows players to receive ore alerts."
   nabsuite.joinfull:
     description: "Allows players to join a full server."
+  nabsuite.ticket.deputy:
+    description: "Allow reading tickets for deputy level"
+  nabsuite.ticket.default:
+    description: "Allow reading tickets for default level"
+  nabsuite.ticket.admin:
+    description: "Allow reading tickets for admin level"
 
   # Mechs module commands
   nabsuite.command.pvp:

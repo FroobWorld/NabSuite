@@ -19,7 +19,9 @@ public class TicketCommand extends NabParentCommand {
                 new TicketReadCommand(adminModule),
                 new TicketTeleportCommand(adminModule),
                 new TicketAddNoteCommand(adminModule),
-                new TicketCloseCommand(adminModule)
+                new TicketCloseCommand(adminModule),
+                new TicketDelegateCommand(adminModule),
+                new TicketEscalateCommand(adminModule)
         ));
     }
 

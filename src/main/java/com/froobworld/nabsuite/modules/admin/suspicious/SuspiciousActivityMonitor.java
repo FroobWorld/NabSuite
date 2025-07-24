@@ -6,6 +6,7 @@ import com.froobworld.nabsuite.modules.admin.suspicious.monitors.ActivityMonitor
 import com.froobworld.nabsuite.modules.admin.suspicious.monitors.GriefMonitor;
 import com.froobworld.nabsuite.modules.admin.suspicious.monitors.LavaCastMonitor;
 import com.froobworld.nabsuite.modules.admin.suspicious.monitors.TheftMonitor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
@@ -30,6 +31,11 @@ public class SuspiciousActivityMonitor {
                 new GriefMonitor(adminModule)
         );
         this.adminModule = adminModule;
+        adminModule.getTicketManager().registerTicketType("suspicion", (ticket, subject) -> Component
+                .text("Player ")
+                .append(subject.displayName())
+                .append(Component.text(" - Suspicious activity"))
+        );
         Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), this::checkAllPlayers, 1200, 1200);
     }
 
@@ -43,6 +49,8 @@ public class SuspiciousActivityMonitor {
                     }
                     adminModule.getTicketManager().createSystemTicket(
                             player.getLocation(),
+                            player.getUniqueId(),
+                            "suspicion",
                             "Player " + player.getName() + " has suspicious activity that could indicate they are breaking the rules. Please investigate.\n\n" +
                                     getSuspicionSummary(player)
                     );

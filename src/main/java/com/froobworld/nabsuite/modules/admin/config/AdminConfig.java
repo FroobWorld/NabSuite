@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 public class AdminConfig extends NabConfiguration {
-    private static final int CONFIG_VERSION = 4;
+    private static final int CONFIG_VERSION = 5;
 
     public AdminConfig(AdminModule adminModule) {
         super(
@@ -76,5 +76,19 @@ public class AdminConfig extends NabConfiguration {
         public final ConfigEntry<Long> expiryNotificationTime = new ConfigEntry<>(duration -> DurationParser.fromString(duration.toString()));
     }
 
+    @Entry(key = "ticket-levels")
+    public final ConfigEntry<List<String>> ticketLevels = ConfigEntries.stringListEntry();
+
+    @SectionMap(key = "ticket-types", defaultKey = "default")
+    public ConfigSectionMap<String, TicketType> ticketTypes = new ConfigSectionMap<>(s -> s, TicketType.class,  true);
+
+    public static class TicketType extends ConfigSection {
+
+        @Entry(key = "level")
+        public final ConfigEntry<String> level = new ConfigEntry<>();
+
+        @Entry(key = "allow-delegate")
+        public final ConfigEntry<Boolean> allowDelegate = new ConfigEntry<>();
+    }
 
 }
