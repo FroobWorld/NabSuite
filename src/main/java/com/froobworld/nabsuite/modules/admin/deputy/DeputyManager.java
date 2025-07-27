@@ -5,6 +5,7 @@ import com.froobworld.nabsuite.data.playervar.PlayerVars;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
 import com.froobworld.nabsuite.util.DurationDisplayer;
+import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.cacheddata.Result;
 import net.luckperms.api.event.node.NodeMutateEvent;
@@ -46,6 +47,13 @@ public class DeputyManager {
             updateAllDeputies();
             Bukkit.getScheduler().scheduleSyncRepeatingTask(adminModule.getPlugin(), this::runExpiryCheckTask, 200, 600);
         }
+        levels.forEach(level -> adminModule.getTicketManager().registerTicketType(
+                "deputy-expiry-"+level.getName(),
+                (ticket,subject) -> Component
+                        .text("Player ")
+                        .append(subject.displayName())
+                        .append(Component.text(" - "+level.getName()+" deputy expiry"))
+        ));
     }
 
     private void sendDeputyAddNotification(CommandSender sender, DeputyPlayer previous, DeputyPlayer current, long duration) {
@@ -76,6 +84,8 @@ public class DeputyManager {
         long expiryTime = Math.ceilDiv(deputyPlayer.getExpiry() - System.currentTimeMillis(), 3600000) * 3600000;
         String duration = DurationDisplayer.asDurationString(expiryTime);
         adminModule.getTicketManager().createSystemTicket(
+                deputyPlayer.getUuid(),
+                "deputy-expiry-"+deputyPlayer.getDeputyLevel().getName(),
                 "Appointment of " + deputyPlayer.getPlayerIdentity().getLastName() + " as " + deputyPlayer.getDeputyLevel().getName() + " deputy expires in less than " + duration + ". Please determine if it should be renewed, if another deputy should be appointed, or if no action is needed."
         );
         basicsModule.getMailCentre().sendSystemMail(deputyPlayer.getUuid(), "Your appointment as " + deputyPlayer.getDeputyLevel().getName() + " deputy will expire in less than " + duration + ".");

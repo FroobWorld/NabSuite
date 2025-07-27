@@ -2,7 +2,9 @@ package com.froobworld.nabsuite.modules.admin.ticket;
 
 import com.froobworld.nabsuite.data.SchemaEntries;
 import com.froobworld.nabsuite.data.SimpleDataSchema;
+import com.froobworld.nabsuite.modules.admin.config.AdminConfig;
 import com.google.gson.stream.JsonReader;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 
 import java.io.IOException;
@@ -23,6 +25,22 @@ public class Ticket {
             .addField("creator", SchemaEntries.uuidEntry(
                     ticket -> ticket.creator,
                     (ticket, creator) -> ticket.creator = creator
+            ))
+            .addField("subject", SchemaEntries.uuidEntry(
+                    ticket -> ticket.subject,
+                    (ticket, subject) -> ticket.subject = subject
+            ))
+            .addField("type", SchemaEntries.stringEntry(
+                    ticket -> ticket.type,
+                    (ticket, type) -> ticket.type = type
+            ))
+            .addField("level", SchemaEntries.stringEntry(
+                    ticket -> ticket.level,
+                    (ticket, level) -> ticket.level = level
+            ))
+            .addField("staffLogId", SchemaEntries.longEntry(
+                    ticket -> ticket.staffLogId,
+                    (ticket, staffLogId) -> ticket.staffLogId = staffLogId
             ))
             .addField("location", SchemaEntries.locationEntry(
                     ticket -> ticket.location,
@@ -47,6 +65,10 @@ public class Ticket {
     private int id;
     private long timestamp;
     private UUID creator;
+    private UUID subject;
+    private String type;
+    private String level;
+    private Long staffLogId;
     private Location location;
     private String message;
     private boolean open;
@@ -67,6 +89,20 @@ public class Ticket {
         this.notes = new ArrayList<>();
     }
 
+    Ticket(TicketManager ticketManager, int id, UUID creator, UUID subject, Location location, String type, String message) {
+        this.ticketManager = ticketManager;
+        this.id = id;
+        this.timestamp = System.currentTimeMillis();
+        this.creator = creator;
+        this.subject = subject;
+        this.location = location;
+        this.type = type;
+        this.level = getTypeSettings().level.get();
+        this.message = message;
+        this.open = true;
+        this.notes = new ArrayList<>();
+    }
+
     public int getId() {
         return id;
     }
@@ -79,8 +115,34 @@ public class Ticket {
         return creator;
     }
 
+    public UUID getSubject() {
+        return subject;
+    }
+
     public Location getLocation() {
         return location;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getLevel() {
+        return level == null ? "default" : level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+        ticketManager.ticketSaver.scheduleSave(this);
+    }
+
+    public Long getStaffLogId() {
+        return staffLogId;
+    }
+
+    public void setStaffLogId(Long staffLogId) {
+        this.staffLogId = staffLogId;
+        ticketManager.ticketSaver.scheduleSave(this);
     }
 
     public String getMessage() {
@@ -106,6 +168,33 @@ public class Ticket {
             notes.add(new TicketNote(System.currentTimeMillis(), closer, "(Closed with response: '" + message + "')"));
             ticketManager.ticketSaver.scheduleSave(this);
         }
+    }
+
+    public Boolean canDelegate() {
+        return isOpen() &&
+                getTypeSettings().allowDelegate.get() &&
+                ticketManager.getAdminModule().getAdminConfig().ticketLevels.get().indexOf(getLevel()) > 0 ;
+    }
+
+    public Boolean canEscalate() {
+        if (!isOpen()) {
+            return false;
+        }
+        int index = ticketManager.getAdminModule().getAdminConfig().ticketLevels.get().indexOf(getLevel());
+        int size = ticketManager.getAdminModule().getAdminConfig().ticketLevels.get().size();
+        return index >= 0 && index < (size - 1);
+    }
+
+    public Component getSummary() {
+        return ticketManager.getTicketSummary(this);
+    }
+
+    public String getPermission() {
+        return "nabsuite.ticket." + getLevel();
+    }
+
+    private AdminConfig.TicketType getTypeSettings() {
+        return ticketManager.getAdminModule().getAdminConfig().ticketTypes.of(type == null ? "default" : type);
     }
 
     public static Ticket fromJsonString(TicketManager ticketManager, String jsonString) {

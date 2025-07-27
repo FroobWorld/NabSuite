@@ -58,3 +58,42 @@ deputy-settings:
 
     candidate-groups:
       - staff
+
+# Available ticket levels, ordered by lowest to highest
+ticket-levels:
+  - "deputy"
+  - "default"
+  - "admin"
+
+# Default values for different ticket types
+ticket-types:
+  default:
+    # Default ticket level
+    level: "default"
+
+    # Allow ticket delegation by default
+    allow-delegate: true
+
+  # Staff deputy expiry ticket
+  deputy-expiry-staff:
+    allow-delegate: false
+
+  # Admin deputy expiry ticket
+  deputy-expiry-admin:
+    level: "admin"
+
+    allow-delegate: false
+
+  # Grief/theft/lava cast suspicion
+  suspicion:
+    level: "deputy"
+
+  # Player created tickets
+  modreq:
+
+  # Highly offensive language
+  profanity:
+
+  # Suspicious mining activity
+  xray:
+    level: "deputy"

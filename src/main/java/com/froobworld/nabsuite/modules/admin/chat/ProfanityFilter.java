@@ -38,6 +38,11 @@ public class ProfanityFilter implements Listener {
             highlyOffensiveWords.add(Pattern.compile(expandPattern(offensiveWord), Pattern.CASE_INSENSITIVE));
         }
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
+        adminModule.getTicketManager().registerTicketType("profanity", (ticket, subject) -> Component
+                        .text("Player ")
+                        .append(subject.displayName())
+                        .append(Component.text(" - Highly offensive language"))
+        );
     }
 
     public Component filter(Component component) {
@@ -63,6 +68,8 @@ public class ProfanityFilter implements Listener {
                     );
                     adminModule.getTicketManager().createSystemTicket(
                             event.getPlayer().getLocation(),
+                            event.getPlayer().getUniqueId(),
+                            "profanity",
                             String.format("Player %s was automatically muted for highly offensive language. Message was \"%s\".", event.getPlayer().getName(), plainTextMessage)
                     );
                 }

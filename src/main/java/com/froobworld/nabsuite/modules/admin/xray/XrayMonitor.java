@@ -38,6 +38,11 @@ public class XrayMonitor implements Listener {
     public XrayMonitor(AdminModule adminModule) {
         this.adminModule = adminModule;
         this.diamondVeinTracker = new VeinTracker();
+        adminModule.getTicketManager().registerTicketType("xray", (ticket, subject) -> Component
+                .text("Player ")
+                .append(subject.displayName())
+                .append(Component.text(" - Investigate x-ray"))
+        );
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
@@ -58,6 +63,8 @@ public class XrayMonitor implements Listener {
                         if (marked) {
                             adminModule.getTicketManager().createSystemTicket(
                                     event.getPlayer().getLocation(),
+                                    event.getPlayer().getUniqueId(),
+                                    "xray",
                                     "Player " + event.getPlayer().getName() + " has suspicious mining activity. Please investigate if they have been x-raying." +
                                             " They may have just been cave mining or gotten lucky."
                                     );

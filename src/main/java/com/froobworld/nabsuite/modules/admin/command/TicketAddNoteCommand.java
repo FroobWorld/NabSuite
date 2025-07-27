@@ -4,6 +4,7 @@ import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import com.froobworld.nabsuite.command.NabCommand;
+import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
 import com.froobworld.nabsuite.modules.admin.command.argument.TicketArgument;
 import com.froobworld.nabsuite.modules.admin.ticket.Ticket;
@@ -30,6 +31,7 @@ public class TicketAddNoteCommand extends NabCommand {
         Ticket ticket = context.get("ticket");
         String message = context.get("message");
         ticket.addNote(ConsoleUtils.getSenderUUID(context.getSender()), message);
+        adminModule.getDiscordStaffLog().updateTicketNotification(ticket);
         context.getSender().sendMessage(Component.text("Note added.", NamedTextColor.YELLOW));
     }
 
@@ -39,7 +41,12 @@ public class TicketAddNoteCommand extends NabCommand {
                 .argument(new TicketArgument<>(
                         true,
                         "ticket",
-                        adminModule.getTicketManager()
+                        adminModule.getTicketManager(),
+                        new ArgumentPredicate<>(
+                                true,
+                                (context, ticket) -> context.getSender().hasPermission(ticket.getPermission()),
+                                "You don't have permission for that ticket"
+                        )
                 ))
                 .argument(StringArgument.<CommandSender>newBuilder("message").greedy());
     }
