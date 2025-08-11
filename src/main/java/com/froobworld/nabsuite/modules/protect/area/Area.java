@@ -2,6 +2,7 @@ package com.froobworld.nabsuite.modules.protect.area;
 
 import com.froobworld.nabsuite.data.SchemaEntries;
 import com.froobworld.nabsuite.data.SimpleDataSchema;
+import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.user.User;
 import com.froobworld.nabsuite.user.UserManager;
 import org.bukkit.Location;
@@ -177,7 +178,7 @@ public class Area implements AreaLike {
                 return true;
             }
         }
-        return false;
+        return hasFlag(Flags.INHERIT_USERS) && parent != null && parent.isUser(player);
     }
 
     public boolean isManager(Player player) {
@@ -186,7 +187,7 @@ public class Area implements AreaLike {
                 return true;
             }
         }
-        return false;
+        return hasFlag(Flags.INHERIT_USERS) && parent != null && parent.isManager(player);
     }
 
     public boolean isOwner(Player player) {
@@ -195,7 +196,7 @@ public class Area implements AreaLike {
                 return true;
             }
         }
-        return false;
+        return hasFlag(Flags.INHERIT_USERS) && parent != null && parent.isOwner(player);
     }
 
     public void addUser(User user) {

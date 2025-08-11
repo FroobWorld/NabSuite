@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.command.argument.predicate.ArgumentPredicate;
 import com.froobworld.nabsuite.modules.protect.ProtectModule;
 import com.froobworld.nabsuite.modules.protect.area.Area;
 import com.froobworld.nabsuite.modules.protect.area.AreaManager;
+import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import com.froobworld.nabsuite.modules.protect.command.argument.AreaArgument;
 import com.froobworld.nabsuite.modules.protect.command.argument.FlagArgument;
 import net.kyori.adventure.text.Component;
@@ -75,6 +76,14 @@ public class AreaAddFlagCommand extends NabCommand {
                                             return !area.hasFlag(flag);
                                         },
                                         "The area already has that flag."
+                                ),
+                                new ArgumentPredicate<>(
+                                        false,
+                                        (context, flag) -> {
+                                            Area area = context.get("area");
+                                            return !flag.equals(Flags.INHERIT_USERS) || area.getParent() != null;
+                                        },
+                                        "The flag is only available for subareas."
                                 )
                         )
                 );
