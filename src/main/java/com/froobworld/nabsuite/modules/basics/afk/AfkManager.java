@@ -47,6 +47,9 @@ public class AfkManager implements Listener {
             lastActivityMap.put(player, System.currentTimeMillis());
         }
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (basicsModule.getPlayerDataManager().getIgnoreManager().isIgnoring(onlinePlayer, player)) {
+                continue;
+            }
             onlinePlayer.sendMessage(message);
         }
         Bukkit.getConsoleSender().sendMessage(message);
