@@ -26,16 +26,35 @@ public class ProfanityFilter implements Listener {
         for (String worldFilter : adminModule.getAdminConfig().wordFilters.get()) {
             String[] filterSplit = worldFilter.split(":", 2);
             String word = filterSplit[0];
+            boolean standalone = false;
+
+            // "standalone" to only filter words that don't appear within other words
+            if (word.contains(";")) {
+                String[] wordSplit = word.split(";");
+                if (wordSplit[0].equalsIgnoreCase("standalone")) {
+                    word = wordSplit[1];
+                    standalone = true;
+                }
+            }
+
             String replacement = filterSplit[1];
             replacementConfigs.add(
                     TextReplacementConfig.builder()
-                            .match(Pattern.compile(expandPattern(word), Pattern.CASE_INSENSITIVE))
+                            .match(Pattern.compile(expandPattern(word, standalone), Pattern.CASE_INSENSITIVE))
                             .replacement(replacement)
                             .build()
             );
         }
         for (String offensiveWord : adminModule.getAdminConfig().highlyOffensiveWords.get()) {
-            highlyOffensiveWords.add(Pattern.compile(expandPattern(offensiveWord), Pattern.CASE_INSENSITIVE));
+            boolean standalone = false;
+            if (offensiveWord.contains(";")) {
+                String[] wordSplit = offensiveWord.split(";");
+                if (wordSplit[0].equalsIgnoreCase("standalone")) {
+                    offensiveWord = wordSplit[1];
+                    standalone = true;
+                }
+            }
+            highlyOffensiveWords.add(Pattern.compile(expandPattern(offensiveWord, standalone), Pattern.CASE_INSENSITIVE));
         }
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
         adminModule.getTicketManager().registerTicketType("profanity", (ticket, subject) -> Component
@@ -85,8 +104,13 @@ public class ProfanityFilter implements Listener {
         }
     }
 
-    private static String expandPattern(String pattern) {
+    private static String expandPattern(String pattern, boolean standalone) {
         StringBuilder newPatternBuilder = new StringBuilder();
+
+        if (standalone) {
+            newPatternBuilder.append("\\b");
+        }
+
         for (int i = 0; i < pattern.length(); i++) {
             char character = pattern.charAt(i);
             if (i == 0) {
@@ -100,6 +124,11 @@ public class ProfanityFilter implements Listener {
                 newPatternBuilder.append("[").append(character).append("\\W").append("]*");
             }
         }
+
+        if (standalone) {
+            newPatternBuilder.append("\\b");
+        }
+
         return newPatternBuilder.toString();
     }
 
