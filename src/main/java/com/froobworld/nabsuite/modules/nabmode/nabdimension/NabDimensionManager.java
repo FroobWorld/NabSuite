@@ -1,5 +1,7 @@
 package com.froobworld.nabsuite.modules.nabmode.nabdimension;
 
+import com.destroystokyo.paper.MaterialSetTag;
+import com.destroystokyo.paper.MaterialTags;
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
 import com.froobworld.nabsuite.modules.basics.BasicsModule;
@@ -16,6 +18,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import static org.joor.Reflect.*;
 
@@ -23,6 +27,23 @@ public class NabDimensionManager implements Listener {
     private final NabModeModule nabModeModule;
     private boolean haveWarned = false;
     private final World nabWorld;
+    private static final Tag<Material> illegalBlocks = new MaterialSetTag(NamespacedKey.fromString("illegal_blocks"))
+            .add(Material.BEDROCK)
+            .add(Material.BUDDING_AMETHYST)
+            .add(Material.CHORUS_PLANT)
+            .add(Material.DIRT_PATH)
+            .add(Material.END_PORTAL_FRAME)
+            .add(Material.FARMLAND)
+            .add(Material.FROGSPAWN)
+            .add(MaterialTags.INFESTED_BLOCKS)
+            .add(Material.SPAWNER)
+            .add(Material.PLAYER_HEAD)
+            .add(Material.REINFORCED_DEEPSLATE)
+            .add(MaterialTags.SPAWN_EGGS)
+            .add(Material.SUSPICIOUS_GRAVEL)
+            .add(Material.SUSPICIOUS_SAND)
+            .add(Material.TRIAL_SPAWNER)
+            .add(Material.VAULT);
 
     public NabDimensionManager(NabModeModule nabModeModule) {
         this.nabModeModule = nabModeModule;
@@ -108,6 +129,18 @@ public class NabDimensionManager implements Listener {
         }
     }
 
+    private void illegalBlockCheck(Inventory inventory) {
+        for (int i = 0; i < inventory.getContents().length; i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack == null) {
+                continue;
+            }
+            if (illegalBlocks.isTagged(stack.getType())) {
+                inventory.setItem(i, null);
+            }
+        }
+    }
+
     private void loop() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().equals(nabWorld) && !hasFlagSet()) {
@@ -120,6 +153,10 @@ public class NabDimensionManager implements Listener {
                 }
                 player.teleport(spawnLocation);
                 player.sendMessage(Component.text("You've been moved to spawn. The world you were previously in is currently disabled.", NamedTextColor.RED));
+            }
+            if (!player.getWorld().equals(nabWorld)) {
+                illegalBlockCheck(player.getInventory());
+                illegalBlockCheck(player.getEnderChest());
             }
             if (nabModeModule.getNabModeManager().isNabMode(player) && player.getWorld().equals(nabWorld)) {
                 if (player.getGameMode() != GameMode.CREATIVE) {
