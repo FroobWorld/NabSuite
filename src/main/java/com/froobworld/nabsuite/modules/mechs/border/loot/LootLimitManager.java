@@ -4,10 +4,12 @@ import com.destroystokyo.paper.MaterialSetTag;
 import com.destroystokyo.paper.MaterialTags;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import com.froobworld.nabsuite.modules.mechs.border.WorldBorderManager;
+import io.papermc.paper.event.block.VaultChangeStateEvent;
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.data.type.Vault;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,6 +34,8 @@ public class LootLimitManager implements Listener {
             .add(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.ANCIENT_DEBRIS);
     private static final MaterialSetTag LOOTABLE_EXPLODABLE_BLOCKS = new MaterialSetTag(NamespacedKey.fromString("loot_tracker_lootable_explodable_blocks"))
             .add(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE);
+    private static final MaterialSetTag LOOTABLE_INTERACTABLE_BLOCKS = new MaterialSetTag(NamespacedKey.fromString("loot_tracker_lootable_interactable_blocks"))
+            .add(Material.VAULT);
     private final MechsModule mechsModule;
     private final PlayerLootTracker playerLootTracker;
     private final Map<UUID, Set<Location>> sessionLootCache = new HashMap<>();
@@ -84,6 +88,13 @@ public class LootLimitManager implements Listener {
             return false;
         }
         return !location.getChunk().getPersistentDataContainer().has(placedBlockKey(location));
+    }
+
+    public boolean isInteractableLootBlock(Location location) {
+        if (!worldBorderManager.isBorderRegion(location)) {
+            return false;
+        }
+        return LOOTABLE_INTERACTABLE_BLOCKS.isTagged(location.getBlock()) || isLootChest(location);
     }
 
     public boolean isLootChest(Location location) {
@@ -213,6 +224,16 @@ public class LootLimitManager implements Listener {
         if (event.getInventoryHolder() instanceof Chest) {
             Location location = ((Chest) event.getInventoryHolder()).getLocation();
             location.getChunk().getPersistentDataContainer().set(lootChestKey(location), PersistentDataType.BYTE, (byte) 1);
+        }
+    }
+
+    @EventHandler
+    private void onVaultStateChange(VaultChangeStateEvent event) {
+        if (!worldBorderManager.isBorderRegion(event.getBlock().getLocation())) {
+            return;
+        }
+        if (event.getNewState() == Vault.State.UNLOCKING) {
+            markAsLooted(event.getPlayer(), event.getBlock().getLocation());
         }
     }
 
