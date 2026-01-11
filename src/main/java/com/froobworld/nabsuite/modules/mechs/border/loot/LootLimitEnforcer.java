@@ -75,7 +75,7 @@ public class LootLimitEnforcer implements Listener {
     private void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if (block != null) {
-            if (lootLimitManager.isLootChest(block.getLocation()) && lootLimitManager.hasLootedPreviously(event.getPlayer(), block.getLocation())) {
+            if (lootLimitManager.isInteractableLootBlock(block.getLocation()) && lootLimitManager.hasLootedPreviously(event.getPlayer(), block.getLocation())) {
                 event.setCancelled(true);
                 sendFailureMessage(event.getPlayer());
             }

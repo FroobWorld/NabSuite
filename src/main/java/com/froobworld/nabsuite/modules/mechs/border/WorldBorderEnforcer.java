@@ -1,7 +1,6 @@
 package com.froobworld.nabsuite.modules.mechs.border;
 
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
-import io.papermc.paper.entity.TeleportFlag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -34,7 +33,7 @@ public class WorldBorderEnforcer implements Listener {
         Entity vehicle = player.getVehicle();
         if (vehicle != null) {
             player.leaveVehicle();
-            vehicle.teleport(knockBackLocation, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+            vehicle.teleport(knockBackLocation);
         }
         player.teleport(knockBackLocation);
         player.sendMessage(KNOCK_BACK_MESSAGE);
@@ -53,7 +52,7 @@ public class WorldBorderEnforcer implements Listener {
     private void onPlayerTeleport(PlayerTeleportEvent event) {
         WorldBorder worldBorder = worldBorderManager.getWorldBorder(event.getTo().getWorld());
         if (worldBorder != null && !worldBorder.isInBorder(event.getTo())) {
-            if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL || event.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT) {
+            if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL || event.getCause() == PlayerTeleportEvent.TeleportCause.CONSUMABLE_EFFECT) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(KNOCK_BACK_MESSAGE);
                 return;

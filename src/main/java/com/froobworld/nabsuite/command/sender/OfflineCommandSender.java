@@ -23,7 +23,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Abstract CommandSender representing a player that may not be online.
@@ -182,6 +185,11 @@ public abstract class OfflineCommandSender implements ConsoleCommandSender, Offl
     @Override
     public @Nullable Location getRespawnLocation() {
         return offlinePlayer.getRespawnLocation();
+    }
+
+    @Override
+    public @Nullable Location getRespawnLocation(boolean b) {
+        return offlinePlayer.getRespawnLocation(b);
     }
 
     @Override
