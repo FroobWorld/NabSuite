@@ -72,6 +72,20 @@ public class TeleportCommand extends NabCommand {
                                 new ArgumentPredicate<>(
                                         false,
                                         (context, player) -> {
+                                            if (context.getSender().hasPermission(TELEPORT_ALL_PERM)) {
+                                                return true;
+                                            }
+                                            AdminModule adminModule = basicsModule.getPlugin().getModule(AdminModule.class);
+                                            if (adminModule != null) {
+                                                return adminModule.getPunishmentManager().getPunishments(player.getUniqueId()).getJailPunishment() == null;
+                                            }
+                                            return true;
+                                        },
+                                        "Player has teleportation disabled"
+                                ),
+                                new ArgumentPredicate<>(
+                                        false,
+                                        (context, player) -> {
                                             Player sender = (Player) context.getSender();
                                             if (!sender.hasPermission(VanishManager.VANISH_SEE_PERMISSION)) {
                                                 return true;
