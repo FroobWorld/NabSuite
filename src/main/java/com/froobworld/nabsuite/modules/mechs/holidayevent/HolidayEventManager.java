@@ -20,7 +20,7 @@ public class HolidayEventManager {
 
         registerEvent(
                 LocalDate.of(2026, 4, 1),
-                LocalDate.of(2026, 4, 8),
+                LocalDate.of(2026, 4, 4),
                 () -> new AprilFools26Event(this.mechsModule)
         );
     }
