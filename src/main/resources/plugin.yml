@@ -339,6 +339,8 @@ permissions:
     description: "Access to the /borderwarning command."
   nabsuite.command.noreplant:
     description: "Access to the /noreplant command."
+  nabsuite.command.toggleevent:
+    description: "Access to the /toggleevent command."
 
   # Mechs module other permissions
   nabsuite.nabmode:

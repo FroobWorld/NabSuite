@@ -4,11 +4,9 @@ import com.froobworld.nabsuite.NabModule;
 import com.froobworld.nabsuite.NabSuite;
 import com.froobworld.nabsuite.modules.mechs.border.WorldBorderManager;
 import com.froobworld.nabsuite.modules.mechs.chat.ClickableLinkReplacer;
-import com.froobworld.nabsuite.modules.mechs.command.BorderWarningCommand;
-import com.froobworld.nabsuite.modules.mechs.command.PvpCommand;
-import com.froobworld.nabsuite.modules.mechs.command.ToggleViewDistanceCommand;
-import com.froobworld.nabsuite.modules.mechs.command.NoReplantCommand;
+import com.froobworld.nabsuite.modules.mechs.command.*;
 import com.froobworld.nabsuite.modules.mechs.config.MechsConfig;
+import com.froobworld.nabsuite.modules.mechs.holidayevent.HolidayEventManager;
 import com.froobworld.nabsuite.modules.mechs.signedit.SignEditDisabler;
 import com.froobworld.nabsuite.modules.mechs.mobgriefing.MobGriefingManager;
 import com.froobworld.nabsuite.modules.mechs.pvp.PvpManager;
@@ -23,6 +21,7 @@ public class MechsModule extends NabModule {
     private TreeManager treeManager;
     private ViewDistanceManager viewDistanceManager;
     private WorldBorderManager worldBorderManager;
+    private HolidayEventManager holidayEventManager;
 
     public MechsModule(NabSuite nabSuite) {
         super(nabSuite, "mechs");
@@ -45,13 +44,15 @@ public class MechsModule extends NabModule {
         new MobGriefingManager(this);
         new SignEditDisabler(this);
         new ClickableLinkReplacer(this);
+        this.holidayEventManager = new HolidayEventManager(this);
 
         Lists.newArrayList(
                 new PvpCommand(this),
                 new ToggleViewDistanceCommand(this),
                 //new EffectiveViewDistanceCommand(),
                 new BorderWarningCommand(this),
-                new NoReplantCommand(this)
+                new NoReplantCommand(this),
+                new ToggleEventCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -79,5 +80,9 @@ public class MechsModule extends NabModule {
 
     public WorldBorderManager getWorldBorderManager() {
         return worldBorderManager;
+    }
+
+    public HolidayEventManager getHolidayEventManager() {
+        return holidayEventManager;
     }
 }
