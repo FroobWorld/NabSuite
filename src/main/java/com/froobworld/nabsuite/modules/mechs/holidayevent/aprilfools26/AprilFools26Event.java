@@ -110,6 +110,9 @@ public class AprilFools26Event extends HolidayEvent implements Listener {
     }
 
     public int getActionPoints(Player player, EntityType type) {
+        if (!getKillPoints().containsKey(type)) {
+            return 0;
+        }
         int points = getKillPoints().get(type);
 
         BasicsModule basicsModule = mechsModule.getPlugin().getModule(BasicsModule.class);
