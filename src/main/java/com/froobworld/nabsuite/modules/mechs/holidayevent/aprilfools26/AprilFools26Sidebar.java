@@ -138,7 +138,7 @@ public class AprilFools26Sidebar implements Listener {
 
     private List<Component> getTopScorersOverall(int limit) {
         return mechsModule.getPlugin().getPlayerIdentityManager().getAllPlayerIdentities().stream()
-                .sorted((p1, p2) -> event.getScore(p2.getUuid()) - event.getScore(p1.getUuid()))
+                .sorted((p1, p2) -> Math.abs(event.getScore(p2.getUuid())) - Math.abs(event.getScore(p1.getUuid())))
                 .map(player -> player.displayName().append(
                         Component.text(" (" + event.getScore(player.getUuid()) + ")").color(NamedTextColor.YELLOW)
                 ))
@@ -147,7 +147,7 @@ public class AprilFools26Sidebar implements Listener {
 
     private List<Component> getTopScorersOnline(int limit) {
         return Bukkit.getOnlinePlayers().stream()
-                .sorted((p1, p2) -> event.getScore(p2) - event.getScore(p1))
+                .sorted((p1, p2) -> Math.abs(event.getScore(p2)) - Math.abs(event.getScore(p1)))
                 .map(player -> player.displayName().append(
                         Component.text(" (" + event.getScore(player) + ")").color(NamedTextColor.YELLOW)
                 ))
