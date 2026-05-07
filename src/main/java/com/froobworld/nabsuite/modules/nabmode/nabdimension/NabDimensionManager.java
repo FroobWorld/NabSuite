@@ -20,12 +20,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
-import static org.joor.Reflect.*;
+import static org.joor.Reflect.on;
 
 public class NabDimensionManager implements Listener {
     private final NabModeModule nabModeModule;
     private boolean haveWarned = false;
+    private final NamespacedKey creativeLevelKey = new NamespacedKey("nabulus", "creative_level");
     private final World nabWorld;
     private static final Tag<Material> illegalBlocks = new MaterialSetTag(NamespacedKey.fromString("illegal_blocks"))
             .add(Material.BEDROCK)
@@ -58,18 +60,23 @@ public class NabDimensionManager implements Listener {
     }
 
     private boolean hasFlagSet() {
-        try {
-            return on(nabWorld)
-                    .call("getHandle")
-                    .call("getLevelData") // get WorldData
-                    .get("creativeLevel");
-        } catch (Exception e) {
-            if (!haveWarned) {
-                nabModeModule.getPlugin().getSLF4JLogger().error("Mappings update required?", e);
-                haveWarned = true;
+        Boolean flag = nabWorld.getPersistentDataContainer().get(creativeLevelKey, PersistentDataType.BOOLEAN);
+        if (flag == null) {
+            try {
+                flag = on(nabWorld)
+                        .call("getHandle")
+                        .call("getLevelData") // get WorldData
+                        .get("creativeLevel");
+                nabWorld.getPersistentDataContainer().set(creativeLevelKey, PersistentDataType.BOOLEAN, flag);
+            } catch (Exception e) {
+                if (!haveWarned) {
+                    nabModeModule.getPlugin().getSLF4JLogger().error("Mappings update required?", e);
+                    haveWarned = true;
+                }
+                return false;
             }
-            return false;
         }
+        return flag;
     }
 
     @EventHandler
