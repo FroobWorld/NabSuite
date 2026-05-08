@@ -44,10 +44,15 @@ public class NabsBeGoneCommand extends NabCommand {
     private void sendAway(Player player) {
         Location backLocation = basicsModule.getBackManager().getBackLocation(player);
         Location respawnLocation = player.getRespawnLocation();
-        if (respawnLocation != null && nabDimensionManager.getNabWorld().equals(respawnLocation.getWorld())) {
-            player.setRespawnLocation(null);
-        } else if (backLocation == null || nabDimensionManager.getNabWorld().equals(backLocation.getWorld())) {
-            backLocation = respawnLocation;
+        if (backLocation != null && nabDimensionManager.getNabWorld().equals(backLocation.getWorld())) {
+            backLocation = null;
+        }
+        if (respawnLocation != null) {
+            if (nabDimensionManager.getNabWorld().equals(respawnLocation.getWorld())) {
+                player.setRespawnLocation(null);
+            } else if (backLocation == null) {
+                backLocation = respawnLocation;
+            }
         }
         if (backLocation == null) {
             backLocation = basicsModule.getSpawnManager().getSpawnLocation();
