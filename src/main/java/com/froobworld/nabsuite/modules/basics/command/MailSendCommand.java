@@ -56,7 +56,7 @@ public class MailSendCommand extends NabCommand {
                         }, "While muted you may only mail players on your /friend list."),
                         new ArgumentPredicate<>(false, (context, recipient) -> {
                             Player sender = (Player) context.getSender();
-                            return !basicsModule.getPlayerDataManager().getIgnoreManager().isIgnoring(sender, recipient.getUuid());
+                            return !basicsModule.getPlayerDataManager().getIgnoreManager().isIgnoring(recipient.getUuid(), sender);
                         }, "You cannot mail someone who is ignoring you.")
                 ))
                 .argument(StringArgument.greedy("message"));
