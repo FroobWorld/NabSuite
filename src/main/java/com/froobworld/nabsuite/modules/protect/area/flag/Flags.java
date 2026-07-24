@@ -20,6 +20,8 @@ public final class Flags {
     public static final String NO_WITHER = "no-wither";
     public static final String NO_HOME = "no-home";
     public static final String INHERIT_USERS = "inherit-users";
+    public static final String MONITOR_THEFT = "monitor-theft";
+    public static final String MONITOR_GRIEF = "monitor-grief";
 
     public static final Set<String> flags = Set.of(
             NO_BUILD,
@@ -35,7 +37,9 @@ public final class Flags {
             KEEP_INVENTORY,
             NO_WITHER,
             NO_HOME,
-            INHERIT_USERS
+            INHERIT_USERS,
+            MONITOR_THEFT,
+            MONITOR_GRIEF
     );
 
 }

@@ -3,7 +3,8 @@ package com.froobworld.nabsuite.modules.admin.suspicious.monitors;
 import com.destroystokyo.paper.MaterialSetTag;
 import com.destroystokyo.paper.MaterialTags;
 import com.froobworld.nabsuite.modules.admin.AdminModule;
-import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.froobworld.nabsuite.modules.protect.ProtectModule;
+import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,14 +20,14 @@ import org.bukkit.persistence.PersistentDataType;
 public class GriefMonitor implements ActivityMonitor, Listener {
     private static final MaterialSetTag TRACKABLE_MATERIALS = new MaterialSetTag(NamespacedKey.fromString("trackable_materials"))
             .add(Material.CHEST, Material.BARREL)
-            .add(MaterialTags.SHULKER_BOXES);
-    private static final int SPAWN_DISTANCE_THRESHOLD = 300;
+            .add(MaterialSetTag.SHULKER_BOXES.getValues())
+            .add(MaterialSetTag.COPPER_CHESTS.getValues());
     private static final int DEFICIT_SUSPICION_THRESHOLD = 10;
     private final NamespacedKey pdcKey;
-    private final BasicsModule basicsModule;
+    private final ProtectModule protectModule;
 
     public GriefMonitor(AdminModule adminModule) {
-        this.basicsModule = adminModule.getPlugin().getModule(BasicsModule.class);
+        this.protectModule = adminModule.getPlugin().getModule(ProtectModule.class);
         pdcKey = new NamespacedKey(adminModule.getPlugin(), "grief-monitor-deficit");
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
@@ -49,21 +50,20 @@ public class GriefMonitor implements ActivityMonitor, Listener {
         player.getPersistentDataContainer().set(pdcKey, PersistentDataType.INTEGER, getTrackableBlockDeficit(player) - 1);
     }
 
-    private boolean isInSpawn(Location location) {
-        Location spawnLocation = basicsModule.getSpawnManager().getSpawnLocation();
-        return Math.max(Math.abs(location.getBlockX() - spawnLocation.getBlockX()), Math.abs(location.getBlockZ() - spawnLocation.getBlockZ())) <= SPAWN_DISTANCE_THRESHOLD;
+    private boolean isInMonitoredArea(Location location) {
+        return protectModule.getAreaManager().getTopMostAreasAtLocation(location).stream().anyMatch(a -> a.hasFlag(Flags.MONITOR_GRIEF));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onBlockPlace(BlockPlaceEvent event) {
-        if (TRACKABLE_MATERIALS.isTagged(event.getBlock()) && isInSpawn(event.getBlock().getLocation())) {
+        if (TRACKABLE_MATERIALS.isTagged(event.getBlock()) && isInMonitoredArea(event.getBlock().getLocation())) {
             placeTrackableBlock(event.getPlayer());
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     private void onBlockBreak(BlockBreakEvent event) {
-        if (TRACKABLE_MATERIALS.isTagged(event.getBlock()) && isInSpawn(event.getBlock().getLocation())) {
+        if (TRACKABLE_MATERIALS.isTagged(event.getBlock()) && isInMonitoredArea(event.getBlock().getLocation())) {
             breakTrackableBlock(event.getPlayer());
         }
     }

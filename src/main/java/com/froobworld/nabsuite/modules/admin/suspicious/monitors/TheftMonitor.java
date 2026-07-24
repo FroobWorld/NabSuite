@@ -1,7 +1,8 @@
 package com.froobworld.nabsuite.modules.admin.suspicious.monitors;
 
 import com.froobworld.nabsuite.modules.admin.AdminModule;
-import com.froobworld.nabsuite.modules.basics.BasicsModule;
+import com.froobworld.nabsuite.modules.protect.ProtectModule;
+import com.froobworld.nabsuite.modules.protect.area.flag.Flags;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,14 +22,13 @@ import java.util.Map;
 import java.util.UUID;
 
 public class TheftMonitor implements ActivityMonitor, Listener {
-    private static final int SPAWN_DISTANCE_THRESHOLD = 300;
     private static final int DIAMOND_AMOUNT_THRESHOLD = 3;
     private static final double SUSPICION_LEVEL_PER_LOCATION = 0.5;
-    private final BasicsModule basicsModule;
+    private final ProtectModule protectModule;
     private final Map<UUID, PlayerTheftStats> theftStatsMap = new HashMap<>();
 
     public TheftMonitor(AdminModule adminModule) {
-        this.basicsModule = adminModule.getPlugin().getModule(BasicsModule.class);
+        this.protectModule = adminModule.getPlugin().getModule(ProtectModule.class);
         Bukkit.getPluginManager().registerEvents(this, adminModule.getPlugin());
     }
 
@@ -73,6 +73,10 @@ public class TheftMonitor implements ActivityMonitor, Listener {
         return amount;
     }
 
+    private boolean isInMonitoredArea(Location location) {
+        return protectModule.getAreaManager().getTopMostAreasAtLocation(location).stream().anyMatch(a -> a.hasFlag(Flags.MONITOR_THEFT));
+    }
+
     @EventHandler(ignoreCancelled = true)
     private void onInventoryClick(InventoryClickEvent event) {
         if (event.getInventory().getHolder() instanceof EnderChest || event.getInventory().getHolder() instanceof ShulkerBox) {
@@ -80,13 +84,10 @@ public class TheftMonitor implements ActivityMonitor, Listener {
         }
         Player player = (Player) event.getWhoClicked();
         Location containerLocation = event.getInventory().getLocation();
-        Location spawnLocation = basicsModule.getSpawnManager().getSpawnLocation();
-        if (containerLocation == null || spawnLocation == null) {
+        if (containerLocation == null) {
             return;
         }
-        if (Math.max(Math.abs(containerLocation.getBlockX() - spawnLocation.getBlockX()), Math.abs(containerLocation.getBlockZ() - spawnLocation.getBlockZ())) > SPAWN_DISTANCE_THRESHOLD) {
-            return;
-        }
+        if (!isInMonitoredArea(containerLocation)) return;
 
         int diamondsDifferent = 0; // positive for taking, negative for depositing
         if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
@@ -165,13 +166,10 @@ public class TheftMonitor implements ActivityMonitor, Listener {
     private void onInventoryDrag(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
         Location containerLocation = event.getInventory().getLocation();
-        Location spawnLocation = basicsModule.getSpawnManager().getSpawnLocation();
-        if (containerLocation == null || spawnLocation == null) {
+        if (containerLocation == null) {
             return;
         }
-        if (Math.max(Math.abs(containerLocation.getBlockX() - spawnLocation.getBlockX()), Math.abs(containerLocation.getBlockZ() - spawnLocation.getBlockZ())) > SPAWN_DISTANCE_THRESHOLD) {
-            return;
-        }
+        if (!isInMonitoredArea(containerLocation)) return;
         int diamondsDifferent = 0; // positive for taking, negative for depositing
 
 
