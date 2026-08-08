@@ -4,6 +4,8 @@ import com.destroystokyo.paper.MaterialSetTag;
 import com.destroystokyo.paper.MaterialTags;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import com.froobworld.nabsuite.modules.mechs.border.WorldBorderManager;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import io.papermc.paper.event.block.VaultChangeStateEvent;
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent;
 import org.bukkit.*;
@@ -22,6 +24,7 @@ import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.time.Duration;
 import java.util.*;
 
 public class LootLimitManager implements Listener {
@@ -41,6 +44,9 @@ public class LootLimitManager implements Listener {
     private final Map<UUID, Set<Location>> sessionLootCache = new HashMap<>();
     private final Map<UUID, Set<Chunk>> sessionLootChunkCache = new HashMap<>();
     private final WorldBorderManager worldBorderManager;
+    private final Cache<Location, Boolean> lootChestCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(Duration.ofMinutes(10))
+            .build();
 
     public LootLimitManager(MechsModule mechsModule, WorldBorderManager worldBorderManager) {
         this.mechsModule = mechsModule;
@@ -102,7 +108,13 @@ public class LootLimitManager implements Listener {
             return false;
         }
         if (location.getBlock().getState() instanceof Lootable) {
-            if (((Lootable) location.getBlock().getState()).hasLootTable()) {
+            // this is an expensive call - cache the result in case of hopper spam
+            Boolean lootChest = lootChestCache.getIfPresent(location);
+            if (lootChest == null) {
+                lootChest = ((Lootable) location.getBlock().getState()).hasLootTable();
+                lootChestCache.put(location, lootChest);
+            }
+            if (lootChest) {
                 return true;
             }
             return location.getChunk().getPersistentDataContainer().has(lootChestKey(location));
