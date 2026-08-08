@@ -7,6 +7,7 @@ import com.froobworld.nabsuite.modules.mechs.chat.ClickableLinkReplacer;
 import com.froobworld.nabsuite.modules.mechs.command.*;
 import com.froobworld.nabsuite.modules.mechs.config.MechsConfig;
 import com.froobworld.nabsuite.modules.mechs.holidayevent.HolidayEventManager;
+import com.froobworld.nabsuite.modules.mechs.performance.PerformanceMonitor;
 import com.froobworld.nabsuite.modules.mechs.signedit.SignEditDisabler;
 import com.froobworld.nabsuite.modules.mechs.mobgriefing.MobGriefingManager;
 import com.froobworld.nabsuite.modules.mechs.pvp.PvpManager;
@@ -22,6 +23,7 @@ public class MechsModule extends NabModule {
     private ViewDistanceManager viewDistanceManager;
     private WorldBorderManager worldBorderManager;
     private HolidayEventManager holidayEventManager;
+    private PerformanceMonitor performanceMonitor;
 
     public MechsModule(NabSuite nabSuite) {
         super(nabSuite, "mechs");
@@ -45,6 +47,8 @@ public class MechsModule extends NabModule {
         new SignEditDisabler(this);
         new ClickableLinkReplacer(this);
         this.holidayEventManager = new HolidayEventManager(this);
+        this.performanceMonitor = new PerformanceMonitor();
+        Bukkit.getScheduler().runTask(this.getPlugin(), () -> performanceMonitor.enable(this));
 
         Lists.newArrayList(
                 new PvpCommand(this),
@@ -52,7 +56,8 @@ public class MechsModule extends NabModule {
                 //new EffectiveViewDistanceCommand(),
                 new BorderWarningCommand(this),
                 new NoReplantCommand(this),
-                new ToggleEventCommand(this)
+                new ToggleEventCommand(this),
+                new MsptContribsCommand(this)
         ).forEach(getPlugin().getCommandManager()::registerCommand);
     }
 
@@ -84,5 +89,9 @@ public class MechsModule extends NabModule {
 
     public HolidayEventManager getHolidayEventManager() {
         return holidayEventManager;
+    }
+
+    public PerformanceMonitor getPerformanceMonitor() {
+        return performanceMonitor;
     }
 }
