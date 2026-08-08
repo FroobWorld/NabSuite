@@ -54,7 +54,7 @@ public class PerformanceMonitor {
         }
     }
 
-    public Map<Player, Double> getEstimatedMsptContributions() {
+    public ContributionEstimateResult getEstimatedMsptContributions() {
         if (tickTimes.size() < MIN_OBS) {
             return null;
         }
@@ -90,9 +90,11 @@ public class PerformanceMonitor {
                     || regressionTileEntities.estimateRegressionParameters()[1] < 0) {
                 e = regressionEntities.estimateRegressionParameters()[1];
                 t = 0;
+                regression = regressionEntities;
             } else {
                 e = 0;
                 t = regressionEntities.estimateRegressionParameters()[1];
+                regression = regressionTileEntities;
             }
         }
 
@@ -107,7 +109,7 @@ public class PerformanceMonitor {
             contributions.put(player, msptContribution);
         }
 
-        return contributions;
+        return new ContributionEstimateResult(contributions, c, e, t, regression.calculateAdjustedRSquared());
     }
 
     private double[] getPlayerEntities(Player player) {
@@ -124,6 +126,10 @@ public class PerformanceMonitor {
         }
 
         return entities;
+    }
+
+    public record ContributionEstimateResult(Map<Player, Double> contribs, double c, double e, double t, double adjRsq) {
+
     }
 
 }
