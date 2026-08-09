@@ -100,32 +100,37 @@ public class PerformanceMonitor {
 
         // estimate player MSPT contributions
         Map<Player, Double> contributions = new HashMap<>();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            double[] entities = getPlayerEntities(player);
+        for (Map.Entry<Player, double[]> entry : getPlayerEntities().entrySet()) {
+            double[] entities = entry.getValue();
             double nEntities = entities[0];
             double nTileEntities = entities[1];
 
             double msptContribution = e * nEntities + t * nTileEntities;
-            contributions.put(player, msptContribution);
+            contributions.put(entry.getKey(), msptContribution);
         }
 
         return new ContributionEstimateResult(contributions, c, e, t, regression.calculateAdjustedRSquared());
     }
 
-    private double[] getPlayerEntities(Player player) {
-        // entities[0] = entities
-        // entities[1] = tile entities
-        double[] entities = new double[2];
+    private Map<Player, double[]> getPlayerEntities() {
+        Map<Player, double[]> entitiesMap = new HashMap<>();
 
-        for (Chunk chunk : player.getWorld().getLoadedChunks()) {
-            Collection<Player> loadedBy = chunk.getPlayersSeeingChunk();
-            if (loadedBy.contains(player)) {
-                entities[0] += (double) chunk.getEntities().length / loadedBy.size();
-                entities[1] += (double) chunk.getTileEntities().length / loadedBy.size();
+
+        for (World world : Bukkit.getWorlds()) {
+            for (Chunk chunk : world.getLoadedChunks()) {
+                Collection<Player> loadedBy = chunk.getPlayersSeeingChunk();
+                for (Player player : loadedBy) {
+                    // entities[0] = entities
+                    // entities[1] = tile entities
+                    double[] entities = entitiesMap.computeIfAbsent(player, p -> new double[2]);
+
+                    entities[0] += (double) chunk.getEntities().length / loadedBy.size();
+                    entities[1] += (double) chunk.getTileEntities().length / loadedBy.size();
+                }
             }
         }
 
-        return entities;
+        return entitiesMap;
     }
 
     public record ContributionEstimateResult(Map<Player, Double> contribs, double c, double e, double t, double adjRsq) {
