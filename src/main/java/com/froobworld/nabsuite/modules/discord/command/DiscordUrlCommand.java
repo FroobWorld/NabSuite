@@ -28,7 +28,7 @@ public class DiscordUrlCommand extends NabCommand {
         context.getSender().sendMessage(
                 Component.text("Join us on Discord: ")
                         .append(Component.text(url))
-                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, url))
+                        .clickEvent(ClickEvent.openUrl(url))
                         .color(NamedTextColor.YELLOW)
         );
     }

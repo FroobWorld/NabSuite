@@ -3,6 +3,7 @@ package com.froobworld.nabsuite.modules.mechs.trees;
 import com.froobworld.nabsuite.modules.mechs.MechsModule;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,6 +21,10 @@ public class TreeReplanter implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     private void onBlockBreak(BlockBreakEvent event) {
         if (Tag.LOGS.isTagged(event.getBlock().getType())) {
+            if (!(event.getBlock().getBlockData() instanceof Orientable orientable)  || orientable.getAxis() != Axis.Y) {
+                // Skip fallen trees
+                return;
+            }
             if (treeManager.replantEnabled(event.getPlayer()) && treeManager.isNaturalLog(event.getBlock().getLocation())) {
                 Material saplingMaterial = saplingTypeForWood(event.getBlock().getType());
                 if (saplingMaterial != null) {
@@ -60,6 +65,8 @@ public class TreeReplanter implements Listener {
             return Material.CHERRY_SAPLING;
         } else if (Tag.PALE_OAK_LOGS.isTagged(woodType)) {
             return Material.PALE_OAK_SAPLING;
+        } else if (Tag.POPLAR_LOGS.isTagged(woodType)) {
+            return Material.POPLAR_SAPLING;
         }
         return null;
     }
